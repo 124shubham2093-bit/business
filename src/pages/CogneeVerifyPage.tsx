@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   Play, Database, Server, RefreshCw, Send, CheckCircle2,
-  AlertTriangle, AlertCircle, Clock, BookOpen, Layers, Search, Code, CheckSquare, Info
+  AlertCircle, Clock, BookOpen, Layers, Search, Code, CheckSquare, Info
 } from 'lucide-react';
 import { Card, CardHeader, CardTitle, CardContent } from '../components/ui/Card';
 import { Button } from '../components/ui/Button';
@@ -148,7 +148,7 @@ export const CogneeVerifyPage: React.FC = () => {
         })
       });
       if (!upload1Res.ok) throw new Error('Failed to upload Startup A');
-      const startupA = await upload1Res.json();
+      await upload1Res.json();
       
       // Fetch post-upload-1 stats
       const statsRes1 = await fetch(`${BACKEND_API_BASE}/debug/stats`);

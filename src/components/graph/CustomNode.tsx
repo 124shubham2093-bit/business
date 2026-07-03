@@ -2,14 +2,14 @@ import React, { memo } from 'react';
 import { Handle, Position } from '@xyflow/react';
 import {
   User, Cpu, Landmark, Target, Scale, ShieldAlert,
-  Coins, FileText, Newspaper, Sparkles
+  Coins, FileText, Newspaper, Sparkles, CheckCircle2
 } from 'lucide-react';
 import type { NodeType } from '../../services/investigation/investigationTypes';
 
 interface CustomNodeProps {
   data: {
     title: string;
-    type: NodeType | 'Company';
+    type: NodeType | 'Company' | 'Decision';
     riskLevel: 'Low' | 'Medium' | 'High';
     badge?: string;
   };
@@ -42,6 +42,8 @@ export const CustomNode: React.FC<CustomNodeProps> = ({ data, selected }) => {
         return <FileText className="w-4 h-4 text-gray-300" />;
       case 'News':
         return <Newspaper className="w-4 h-4 text-amber-500" />;
+      case 'Decision':
+        return <CheckCircle2 className="w-4 h-4 text-emerald-400" />;
       default:
         return <Cpu className="w-4 h-4 text-gray-400" />;
     }
@@ -74,6 +76,8 @@ export const CustomNode: React.FC<CustomNodeProps> = ({ data, selected }) => {
         return 'border-gray-500/30 bg-gray-950/20 text-gray-300 shadow-[0_0_15px_rgba(107,114,128,0.1)]';
       case 'News':
         return 'border-amber-500/40 bg-amber-950/20 text-amber-400 shadow-[0_0_15px_rgba(245,158,11,0.1)]';
+      case 'Decision':
+        return 'border-emerald-500 bg-emerald-950/30 text-white shadow-[0_0_20px_rgba(16,185,129,0.3)] scale-[1.02] ring-1 ring-emerald-500/40 font-bold';
       default:
         return 'border-gray-500/20 bg-gray-950/10 text-gray-400';
     }
@@ -82,9 +86,9 @@ export const CustomNode: React.FC<CustomNodeProps> = ({ data, selected }) => {
   return (
     <div className={`relative px-4 py-2.5 rounded-xl border backdrop-blur-md transition-all duration-300 flex items-center space-x-3 select-none ${getColorClasses()}`}>
       
-      {/* Target and source handles */}
-      <Handle type="target" position={Position.Top} className="opacity-0 w-2 h-2" />
-      <Handle type="target" position={Position.Left} className="opacity-0 w-2 h-2" />
+      {/* Handles */}
+      <Handle type="target" position={Position.Left} style={{ background: 'transparent', border: 'none', left: 0 }} />
+      <Handle type="target" position={Position.Top} style={{ background: 'transparent', border: 'none', top: 0 }} />
       
       {/* Icon node wrapper */}
       <div className="flex-shrink-0 flex items-center justify-center p-1.5 rounded-lg bg-white/5 border border-white/5">
@@ -96,8 +100,8 @@ export const CustomNode: React.FC<CustomNodeProps> = ({ data, selected }) => {
           {title}
         </h4>
         <div className="flex items-center space-x-1.5 mt-0.5">
-          <span className="text-[8px] text-gray-400 font-semibold uppercase tracking-wider">
-            {type}
+          <span className="text-[8px] text-gray-400 font-semibold uppercase tracking-wider font-mono">
+            {type === 'Company' ? 'Startup' : type}
           </span>
           {badge && (
             <>
@@ -108,8 +112,8 @@ export const CustomNode: React.FC<CustomNodeProps> = ({ data, selected }) => {
         </div>
       </div>
 
-      <Handle type="source" position={Position.Bottom} className="opacity-0 w-2 h-2" />
-      <Handle type="source" position={Position.Right} className="opacity-0 w-2 h-2" />
+      <Handle type="source" position={Position.Right} style={{ background: 'transparent', border: 'none', right: 0 }} />
+      <Handle type="source" position={Position.Bottom} style={{ background: 'transparent', border: 'none', bottom: 0 }} />
     </div>
   );
 };

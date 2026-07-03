@@ -2,7 +2,8 @@ import React, { useState, useMemo, useEffect, useCallback } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
-  ReactFlow, Background, Controls, MiniMap, useNodesState, useEdgesState
+  ReactFlow, Background, Controls, MiniMap, useNodesState, useEdgesState,
+  ReactFlowProvider, useReactFlow, MarkerType, useViewport
 } from '@xyflow/react';
 import '@xyflow/react/dist/style.css';
 import {
@@ -16,14 +17,478 @@ import CustomNode from '../components/graph/CustomNode';
 import { Button } from '../components/ui/Button';
 import { Badge } from '../components/ui/Badge';
 
+// Translucent background lane groups matching enterprise investigation dashboards
+const GroupNode = ({ data }: any) => {
+  return (
+    <div
+      style={{
+        width: data.width,
+        height: data.height,
+      }}
+      className="border border-white/5 bg-white/[0.01] rounded-2xl p-4 flex flex-col justify-start pointer-events-none select-none relative"
+    >
+      <span className="text-[10px] text-gray-500 font-bold uppercase tracking-widest absolute top-3 left-4 font-mono">
+        {data.label}
+      </span>
+      <div className="absolute inset-0 bg-gradient-to-b from-white/[0.01] to-transparent rounded-2xl pointer-events-none" />
+    </div>
+  );
+};
+
 // Register custom node type mapping
 const nodeTypes = {
   custom: CustomNode,
+  groupCard: GroupNode,
+};
+
+// Map node types in the frontend for custom neon theme colors & Lucide icons matching
+const mapNodeTypesInFrontend = (nodes: any[]) => {
+  return nodes.map(node => {
+    const title = node.data?.title?.toLowerCase() || '';
+    const rawType = node.data?.type || '';
+
+    let mappedType = rawType;
+
+    if (rawType === 'Entity') {
+      if (
+        title.includes('rahul') || 
+        title.includes('jenkins') || 
+        title.includes('rivera') || 
+        title.includes('sharma') || 
+        title.includes('sarah') || 
+        title.includes('alex')
+      ) {
+        mappedType = 'Founder';
+      } else if (
+        title.includes('neurovision') || 
+        title.includes('visionsense') || 
+        title.includes('helixbio') || 
+        title.includes('dynamics') || 
+        title.includes('alpha')
+      ) {
+        mappedType = 'Company';
+      } else if (
+        title.includes('ventures') || 
+        title.includes('sequoia') || 
+        title.includes('combinator') || 
+        title.includes('capital') || 
+        title.includes('peak') || 
+        title.includes('yc')
+      ) {
+        mappedType = 'Investor';
+      } else if (
+        title.includes('tensorflow') || 
+        title.includes('pytorch') || 
+        title.includes('react') || 
+        title.includes('fastapi') || 
+        title.includes('cuda') || 
+        title.includes('python')
+      ) {
+        mappedType = 'Technology';
+      }
+    } else if (rawType === 'EntityType') {
+      if (title.includes('founder')) mappedType = 'Founder';
+      else if (title.includes('startup') || title.includes('company')) mappedType = 'Company';
+      else if (title.includes('investor')) mappedType = 'Investor';
+      else if (title.includes('technology')) mappedType = 'Technology';
+    } else if (
+      rawType === 'TextDocument' || 
+      rawType === 'DocumentChunk' || 
+      rawType === 'TextSummary' ||
+      node.id.startsWith('file:') ||
+      title.startsWith('text_')
+    ) {
+      mappedType = 'Document';
+    }
+
+    let displayTitle = node.data?.title || '';
+    if (mappedType === 'Document') {
+      if (node.id.includes('summary') || displayTitle.toLowerCase().includes('summary')) {
+        displayTitle = 'Executive Summary';
+      } else if (node.id.includes('chunk') || displayTitle.toLowerCase().includes('chunk')) {
+        displayTitle = 'Evidence Source';
+      } else {
+        displayTitle = 'Pitch Deck Source';
+      }
+    } else {
+      // Capitalize the first letter of titles for other node categories
+      displayTitle = displayTitle.split(' ')
+        .map((word: string) => word.charAt(0).toUpperCase() + word.slice(1))
+        .join(' ');
+    }
+
+    return {
+      ...node,
+      data: {
+        ...node.data,
+        type: mappedType,
+        title: displayTitle
+      }
+    };
+  });
+};
+
+// Enhance graph data to support the flowchart reference design with rich connections
+const enhanceGraphData = (nodes: any[], edges: any[], startupName: string) => {
+  // 1. Map raw nodes first to clean custom types
+  let mappedNodes = mapNodeTypesInFrontend(nodes);
+  
+  // Filter out raw schema definitions EntityType nodes
+  mappedNodes = mappedNodes.filter(n => 
+    n.data?.type !== 'EntityType' && 
+    n.data?.title?.toLowerCase() !== 'startup' && 
+    n.data?.title?.toLowerCase() !== 'company' && 
+    n.data?.title?.toLowerCase() !== 'founder' && 
+    n.data?.title?.toLowerCase() !== 'investor' && 
+    n.data?.title?.toLowerCase() !== 'technology'
+  );
+
+  const enhancedNodes = [...mappedNodes];
+  const enhancedEdges = [...edges];
+
+  // Helper to add a node
+  const addNode = (id: string, title: string, type: string, riskLevel: 'Low'|'Medium'|'High' = 'Low') => {
+    if (!enhancedNodes.some(n => n.id === id)) {
+      enhancedNodes.push({
+        id,
+        type: 'custom',
+        position: { x: 0, y: 0 },
+        data: { title, type, riskLevel }
+      });
+    }
+  };
+
+  // Helper to add an edge
+  const addEdge = (source: string, target: string, label: string) => {
+    const edgeId = `e-${source}-${target}`;
+    if (!enhancedEdges.some(e => e.source === source && e.target === target)) {
+      enhancedEdges.push({
+        id: edgeId,
+        source,
+        target,
+        label,
+        animated: true
+      });
+    }
+  };
+
+  // Find all companies and the primary founder
+  const companies = mappedNodes.filter(n => n.data?.type === 'Company');
+  const founderNode = mappedNodes.find(n => n.data?.type === 'Founder');
+
+  // Process Founder details (once for the shared founder)
+  if (founderNode) {
+    const eduId = `edu-iit-${founderNode.id}`;
+    const expId = `exp-nlp-${founderNode.id}`;
+    
+    const eduTitle = founderNode.data?.title?.toLowerCase().includes('rahul') ? 'IIT Delhi' : 'Stanford Univ';
+    const expTitle = founderNode.data?.title?.toLowerCase().includes('rahul') ? 'NLP Research' : 'AI Lab Research';
+    
+    addNode(eduId, eduTitle, 'Founder');
+    addNode(expId, expTitle, 'Founder');
+    
+    addEdge(eduId, founderNode.id, 'educated_at');
+    addEdge(expId, founderNode.id, 'expertise_in');
+  }
+
+  // Iterate over each company to set up its complete data structures independently
+  companies.forEach(company => {
+    const sId = company.id;
+    const sTitle = company.data?.title || company.data?.name || startupName;
+
+    // Connect Founder to this company
+    if (founderNode) {
+      addEdge(founderNode.id, sId, 'founded_in');
+    }
+
+    // Find specific Investor connected to this company, or fallback to the first investor node
+    const investorNode = mappedNodes.find(n => 
+      n.data?.type === 'Investor' && 
+      edges.some(e => (e.source === n.id && e.target === sId) || (e.source === sId && e.target === n.id))
+    ) || mappedNodes.find(n => n.data?.type === 'Investor');
+
+    if (investorNode) {
+      addEdge(investorNode.id, sId, 'invested_in');
+
+      // Add unique details for this investor-company pair
+      const seriesAId = `round-a-${investorNode.id}-${sId}`;
+      const amountId = `amount-12m-${investorNode.id}-${sId}`;
+      
+      const isPeak = investorNode.data?.title?.toLowerCase().includes('peak') || sTitle.toLowerCase().includes('neurovision');
+      const seriesTitle = isPeak ? 'Series A' : 'Seed Round';
+      const amtTitle = isPeak ? '$12M Investment' : '$2.4M Funding';
+      
+      addNode(seriesAId, seriesTitle, 'Finance');
+      addNode(amountId, amtTitle, 'Finance');
+      
+      addEdge(seriesAId, investorNode.id, 'led');
+      addEdge(amountId, investorNode.id, 'amount');
+    }
+
+    // Find specific Technology connected to this company, or fallback to the first tech node
+    const techNode = mappedNodes.find(n => 
+      n.data?.type === 'Technology' && 
+      edges.some(e => (e.source === n.id && e.target === sId) || (e.source === sId && e.target === n.id))
+    ) || mappedNodes.find(n => n.data?.type === 'Technology');
+
+    if (techNode) {
+      addEdge(sId, techNode.id, 'uses');
+
+      // Add unique category for this technology-company pair
+      const catId = `cat-dl-${techNode.id}-${sId}`;
+      const catTitle = techNode.data?.title?.toLowerCase().includes('tensor') || sTitle.toLowerCase().includes('neurovision') ? 'Deep Learning' : 'Deep GenAI';
+      addNode(catId, catTitle, 'Legal');
+      addEdge(techNode.id, catId, 'category_of');
+    }
+
+    // Add company-specific Risk, Opportunity, and Milestone
+    const riskNodeId = `risk-${sId}`;
+    const oppNodeId = `opp-${sId}`;
+    const msNodeId = `ms-${sId}`;
+    
+    const riskTitle = sTitle.toLowerCase().includes('visionsense') ? 'Hardware Yield' : 'High Competition';
+    const oppTitle = 'Market Growth';
+    const msTitle = 'MVP Available';
+
+    addNode(riskNodeId, riskTitle, 'Risk', sTitle.toLowerCase().includes('visionsense') ? 'Medium' : 'High');
+    addNode(oppNodeId, oppTitle, 'Market');
+    addNode(msNodeId, msTitle, 'Investor'); // teal color
+
+    addEdge(sId, riskNodeId, 'has_risk');
+    addEdge(sId, oppNodeId, 'has_opportunity');
+    addEdge(sId, msNodeId, 'has_milestone');
+
+    // Add decision verdict node and edges for this specific company decision node
+    const decisionNodeId = `decision-${sId}`;
+    addNode(decisionNodeId, `${sTitle} Verdict`, 'Decision', company.data?.riskLevel || 'Low');
+    addEdge(sId, decisionNodeId, 'verdict_on');
+    addEdge(riskNodeId, decisionNodeId, 'guides');
+    addEdge(oppNodeId, decisionNodeId, 'decides');
+    addEdge(msNodeId, decisionNodeId, 'justifies');
+  });
+
+  // Connect documents to their respective companies based on title matches or edges, or default to the primary company
+  const docNodes = enhancedNodes.filter(n => n.data?.type === 'Document');
+  docNodes.forEach(doc => {
+    // If there's an existing edge connecting the doc to a company, preserve it.
+    // Otherwise, match based on metadata or connect to all companies.
+    const hasExistingDocConnection = edges.some(e => 
+      (e.source === doc.id || e.target === doc.id) && 
+      companies.some(c => c.id === e.source || c.id === e.target)
+    );
+    if (!hasExistingDocConnection && companies.length > 0) {
+      // Connect to the company that matches the doc ID or metadata
+      const docIdLower = doc.id.toLowerCase();
+      const companyToConnect = companies.find(c => {
+        const cTitleLower = (c.data?.title || c.data?.name || '').toLowerCase();
+        const basicName = cTitleLower.replace(' ai', '').trim();
+        return docIdLower.includes(basicName) || 
+               (c.data?.name && docIdLower.includes(c.data.name.toLowerCase().replace(' ai', '').trim()));
+      }) || companies[0];
+      addEdge(doc.id, companyToConnect.id, 'supports');
+    }
+  });
+
+  // Link companies together if multiple exist
+  if (companies.length > 1) {
+    for (let i = 0; i < companies.length - 1; i++) {
+      addEdge(companies[i].id, companies[i + 1].id, 'related_to');
+    }
+  }
+
+  return { nodes: enhancedNodes, edges: enhancedEdges };
+};
+
+// Helper function to trace the startup parent ID of a node using edge traversals
+const getStartupParentId = (nodeId: string, nodes: any[], edges: any[]): string | null => {
+  const node = nodes.find(n => n.id === nodeId);
+  if (!node) return null;
+  if (node.data?.type === 'Company') return nodeId;
+
+  // Direct edge connection to a company node
+  const directCompanyEdge = edges.find(e => 
+    (e.source === nodeId || e.target === nodeId) && 
+    nodes.some(n => n.data?.type === 'Company' && (n.id === e.source || n.id === e.target))
+  );
+  if (directCompanyEdge) {
+    return directCompanyEdge.source === nodeId ? directCompanyEdge.target : directCompanyEdge.source;
+  }
+
+  // Connects to branch nodes that eventually trace to a company
+  const immediateNeighbors = edges.filter(e => e.source === nodeId || e.target === nodeId);
+  for (const edge of immediateNeighbors) {
+    const neighborId = edge.source === nodeId ? edge.target : edge.source;
+    const neighbor = nodes.find(n => n.id === neighborId);
+    if (neighbor && neighbor.data?.type !== 'Founder' && neighbor.data?.type !== 'Decision') {
+      const indirectCompanyId = getStartupParentId(neighborId, nodes, edges);
+      if (indirectCompanyId) return indirectCompanyId;
+    }
+  }
+
+  return null;
+};
+
+// Automatic node layout positioning calculation — generous spacing, no overlaps
+const applyAutomaticLayout = (nodes: any[], edges: any[]) => {
+  const startups = nodes.filter(n => n.data?.type === 'Company');
+  const numStartups = startups.length;
+
+  // Count how many detail children are visible per startup to dynamically widen
+  const countExpanded = (sId: string) => {
+    return nodes.filter(n => {
+      const t = n.data?.type;
+      const id = n.id;
+      if (t === 'Company' || t === 'Founder') return false;
+      if (t === 'Document' || id.startsWith('cat-') || id.startsWith('round-') || id.startsWith('amount-')) {
+        return getStartupParentId(id, nodes, edges) === sId;
+      }
+      return false;
+    }).length;
+  };
+
+  // Dynamic column width: wider when subtrees are expanded
+  const baseColumnWidth = 1200;
+  const getStartupX = (startupId: string) => {
+    const idx = startups.findIndex(s => s.id === startupId);
+    if (idx === -1) return 600;
+    // Add extra width if any startup has expanded children
+    const maxExpanded = Math.max(1, ...startups.map(s => countExpanded(s.id)));
+    const dynamicWidth = baseColumnWidth + maxExpanded * 60;
+    return 600 + (idx - (numStartups - 1) / 2) * dynamicWidth;
+  };
+
+  // Global center for shared elements (Founder)
+  let globalCenter = 600;
+  if (numStartups > 0) {
+    const sumX = startups.reduce((acc, s) => acc + getStartupX(s.id), 0);
+    globalCenter = sumX / numStartups;
+  }
+
+  // Vertical layer constants — generous gaps
+  const Y_FOUNDER = 60;
+  const Y_COMPANY = 260;
+  const Y_DOCS = 260;       // same row as company, spread horizontally
+  const Y_BRANCHES = 480;   // main branch row
+  const Y_DETAILS = 660;    // expanded detail children
+  const Y_RISK = 840;
+  const Y_VERDICT = 1020;
+
+  return nodes.map(node => {
+    const id = node.id;
+    const type = node.data?.type;
+
+    // 1. Founder at the absolute top center
+    if (type === 'Founder' && !id.startsWith('edu-') && !id.startsWith('exp-')) {
+      return { ...node, position: { x: globalCenter, y: Y_FOUNDER } };
+    }
+    if (id.startsWith('edu-')) {
+      return { ...node, position: { x: globalCenter - 340, y: Y_FOUNDER } };
+    }
+    if (id.startsWith('exp-')) {
+      return { ...node, position: { x: globalCenter + 340, y: Y_FOUNDER } };
+    }
+
+    // Find parent startup column coordinate
+    const startupId = getStartupParentId(id, nodes, edges);
+    const startX = startupId ? getStartupX(startupId) : globalCenter;
+
+    // 2. Company Node
+    if (type === 'Company') {
+      return { ...node, position: { x: startX, y: Y_COMPANY } };
+    }
+
+    // 3. Document nodes — fan out left/right of company with generous spacing
+    if (type === 'Document') {
+      const companyDocs = nodes.filter(n => n.data?.type === 'Document' && getStartupParentId(n.id, nodes, edges) === startupId);
+      const idx = companyDocs.findIndex(d => d.id === id);
+      const docSpacing = 240;
+      // Alternating left-right placement, each further out
+      if (idx % 2 === 0) {
+        const offsetIdx = Math.floor(idx / 2);
+        return { ...node, position: { x: startX - 320 - offsetIdx * docSpacing, y: Y_DOCS + 20 } };
+      } else {
+        const offsetIdx = Math.floor(idx / 2);
+        return { ...node, position: { x: startX + 320 + offsetIdx * docSpacing, y: Y_DOCS + 20 } };
+      }
+    }
+
+    // 4. Branch Nodes — spread horizontally with wide gaps
+    // Investor (primary node)
+    if (type === 'Investor' && !id.startsWith('round-') && !id.startsWith('amount-') && !id.startsWith('ms-')) {
+      return { ...node, position: { x: startX - 420, y: Y_BRANCHES } };
+    }
+    // Investor details — fan out below investor
+    if (id.startsWith('round-')) {
+      const rounds = nodes.filter(n => n.id.startsWith('round-') && getStartupParentId(n.id, nodes, edges) === startupId);
+      const rIdx = rounds.findIndex(n => n.id === id);
+      return { ...node, position: { x: startX - 500 - rIdx * 200, y: Y_DETAILS } };
+    }
+    if (id.startsWith('amount-')) {
+      const amounts = nodes.filter(n => n.id.startsWith('amount-') && getStartupParentId(n.id, nodes, edges) === startupId);
+      const aIdx = amounts.findIndex(n => n.id === id);
+      return { ...node, position: { x: startX - 340 + aIdx * 200, y: Y_DETAILS } };
+    }
+
+    // Technology (primary node)
+    if (type === 'Technology' && !id.startsWith('cat-')) {
+      return { ...node, position: { x: startX + 420, y: Y_BRANCHES } };
+    }
+    // Technology details — fan out below tech
+    if (id.startsWith('cat-')) {
+      const cats = nodes.filter(n => n.id.startsWith('cat-') && getStartupParentId(n.id, nodes, edges) === startupId);
+      const cIdx = cats.findIndex(n => n.id === id);
+      const totalCats = cats.length;
+      const catSpacing = 220;
+      const catStartX = startX + 420 - ((totalCats - 1) * catSpacing) / 2;
+      return { ...node, position: { x: catStartX + cIdx * catSpacing, y: Y_DETAILS } };
+    }
+
+    // Finance
+    if (type === 'Finance') {
+      return { ...node, position: { x: startX - 200, y: Y_BRANCHES } };
+    }
+
+    // Market / Opportunities
+    if (id.startsWith('opp-') || type === 'Market') {
+      return { ...node, position: { x: startX, y: Y_BRANCHES } };
+    }
+
+    // Legal
+    if (type === 'Legal') {
+      return { ...node, position: { x: startX + 200, y: Y_BRANCHES } };
+    }
+    // Milestones
+    if (id.startsWith('ms-')) {
+      return { ...node, position: { x: startX + 200, y: Y_DETAILS } };
+    }
+
+    // 5. Risks
+    if (id.startsWith('risk-') || type === 'Risk') {
+      return { ...node, position: { x: startX, y: Y_RISK } };
+    }
+
+    // 6. Startup Verdict
+    if (type === 'Decision') {
+      return { ...node, position: { x: startX, y: Y_VERDICT } };
+    }
+
+    return { ...node, position: { x: startX, y: Y_RISK - 80 } };
+  });
 };
 
 export const KnowledgeGraphPage: React.FC = () => {
+  return (
+    <ReactFlowProvider>
+      <KnowledgeGraphPageContent />
+    </ReactFlowProvider>
+  );
+};
+
+const KnowledgeGraphPageContent: React.FC = () => {
   const location = useLocation();
   const navigate = useNavigate();
+  const { fitView } = useReactFlow();
+  const { zoom } = useViewport();
 
   // Extract navigation state details or default to HelixBio AI
   const startupData = useMemo(() => {
@@ -56,6 +521,15 @@ export const KnowledgeGraphPage: React.FC = () => {
   const [hoveredNodeId, setHoveredNodeId] = useState<string | null>(null);
   const [hoveredEdgeId, setHoveredEdgeId] = useState<string | null>(null);
 
+  // Progressive disclosure expanded subtrees keyed by startup ID to manage expansion states independently
+  const [expandedSubtrees, setExpandedSubtrees] = useState<{
+    [startupId: string]: {
+      Technology: boolean;
+      Investor: boolean;
+      Document: boolean;
+    }
+  }>({});
+
   // Async data states
   const [timeline, setTimeline] = useState<any[]>([]);
   const [stats, setStats] = useState<any>(null);
@@ -77,8 +551,9 @@ export const KnowledgeGraphPage: React.FC = () => {
       MockInvestigationService.getTimeline(startupData.name),
       MockInvestigationService.getInvestigationStats(startupData.name)
     ]).then(([graph, timelineData, statsData]) => {
-      setRawNodes(graph.nodes);
-      setRawEdges(graph.edges);
+      const enhanced = enhanceGraphData(graph.nodes, graph.edges, startupData.name);
+      setRawNodes(enhanced.nodes);
+      setRawEdges(enhanced.edges);
       setTimeline(timelineData);
       setStats(statsData);
       setIsLoading(false);
@@ -162,24 +637,97 @@ export const KnowledgeGraphPage: React.FC = () => {
 
   // 3. Hide Isolated nodes filter implementation
   const displayNodes = useMemo(() => {
-    let finalNodes = filteredNodes;
+    let mappedRawNodes = mapNodeTypesInFrontend(filteredNodes);
+
+    // Traces company parent ID for layout column mapping
+    const getStartupParentId = (nodeId: string): string | null => {
+      const node = mappedRawNodes.find(n => n.id === nodeId);
+      if (!node) return null;
+      if (node.data?.type === 'Company') return nodeId;
+
+      const directCompanyEdge = rawEdges.find(e => 
+        (e.source === nodeId || e.target === nodeId) && 
+        mappedRawNodes.some(n => n.data?.type === 'Company' && (n.id === e.source || n.id === e.target))
+      );
+      if (directCompanyEdge) {
+        return directCompanyEdge.source === nodeId ? directCompanyEdge.target : directCompanyEdge.source;
+      }
+
+      const immediateNeighbors = rawEdges.filter(e => e.source === nodeId || e.target === nodeId);
+      for (const edge of immediateNeighbors) {
+        const neighborId = edge.source === nodeId ? edge.target : edge.source;
+        const neighbor = mappedRawNodes.find(n => n.id === neighborId);
+        if (neighbor && neighbor.data?.type !== 'Founder' && neighbor.data?.type !== 'Decision') {
+          const indirectCompanyId = getStartupParentId(neighborId);
+          if (indirectCompanyId) return indirectCompanyId;
+        }
+      }
+      return null;
+    };
+    
+    // Filter out unexpanded progressive disclosure subtree nodes per startup
+    let filteredByDisclosure = mappedRawNodes.filter(node => {
+      const id = node.id;
+      const type = node.data?.type;
+
+      // Find company parent
+      const startupId = getStartupParentId(id);
+      if (!startupId) return true; // Keep Founder / education / experience
+
+      const startupState = (expandedSubtrees as any)[startupId] || { Technology: false, Investor: false, Document: false };
+
+      // Filter out Technology details (starts with 'cat-') if unexpanded
+      if (id.startsWith('cat-') && !startupState.Technology) {
+        return false;
+      }
+      
+      // Filter out Investor details (round- / amount-) if unexpanded
+      if ((id.startsWith('round-') || id.startsWith('amount-')) && !startupState.Investor) {
+        return false;
+      }
+
+      // Filter out Document nodes if unexpanded
+      if (type === 'Document' && !startupState.Document) {
+        return false;
+      }
+
+      return true;
+    });
+
+    let finalNodes = filteredByDisclosure;
     if (hideIsolated) {
       const activeEndpoints = new Set<string>();
       filteredEdges.forEach((edge) => {
         activeEndpoints.add(edge.source);
         activeEndpoints.add(edge.target);
       });
-      finalNodes = filteredNodes.filter((n) => activeEndpoints.has(n.id) || n.id === 'n-company');
+      finalNodes = filteredByDisclosure.filter(
+        (n) => activeEndpoints.has(n.id) || n.data?.type === 'Company' || n.data?.type === 'Decision'
+      );
     }
 
-    // Apply hovered/faded highlights
-    return finalNodes.map((node) => {
+    // Apply hovered/faded highlights and update progressive disclosure labels per company
+    const highlightedNodes = finalNodes.map((node) => {
       let faded = false;
       let searched = false;
       const title = (node.data as any).title || '';
+      const type = (node.data as any).type || '';
+
+      const startupId = getStartupParentId(node.id);
+      const startupState = startupId ? ((expandedSubtrees as any)[startupId] || { Technology: false, Investor: false, Document: false }) : { Technology: false, Investor: false, Document: false };
+
+      // Progress disclosure badges
+      let badge = (node.data as any).badge;
+      if (type === 'Technology') {
+        badge = startupState.Technology ? 'Collapse' : 'Click to Expand';
+      } else if (type === 'Investor') {
+        badge = startupState.Investor ? 'Collapse' : 'Click to Expand';
+      } else if (type === 'Company') {
+        badge = startupState.Document ? 'Hide Docs' : 'Show Docs';
+      }
 
       // Highlight if matches search query exactly
-      if (searchQuery && title.toLowerCase().includes(searchQuery.toLowerCase())) {
+      if (searchQuery && (title.toLowerCase().includes(searchQuery.toLowerCase()) || type.toLowerCase().includes(searchQuery.toLowerCase()))) {
         searched = true;
       }
 
@@ -197,6 +745,10 @@ export const KnowledgeGraphPage: React.FC = () => {
 
       return {
         ...node,
+        data: {
+          ...node.data,
+          badge
+        },
         style: {
           ...node.style,
           opacity: faded ? 0.2 : 1,
@@ -206,11 +758,21 @@ export const KnowledgeGraphPage: React.FC = () => {
         },
       };
     });
-  }, [filteredNodes, filteredEdges, hideIsolated, hoveredNodeId, searchQuery, rawEdges]);
+
+    // Apply automatic layout positions passing the raw edges array for traversal
+    const positionedNodes = applyAutomaticLayout(highlightedNodes, rawEdges);
+
+    return positionedNodes;
+  }, [filteredNodes, filteredEdges, hideIsolated, hoveredNodeId, searchQuery, rawEdges, expandedSubtrees]);
 
   // 4. Highlight hovered edges
   const displayEdges = useMemo(() => {
-    return filteredEdges.map((edge) => {
+    const visibleNodeIds = new Set(displayNodes.map((n) => n.id));
+    const activeEdges = filteredEdges.filter((edge) => {
+      return visibleNodeIds.has(edge.source) && visibleNodeIds.has(edge.target);
+    });
+
+    return activeEdges.map((edge) => {
       let highlighted = false;
       let faded = false;
 
@@ -230,9 +792,34 @@ export const KnowledgeGraphPage: React.FC = () => {
         }
       }
 
+      const isDotted = edge.label?.toLowerCase() === 'subject_to' || 
+                        edge.label?.toLowerCase() === 'risk' ||
+                        edge.source.startsWith('doc') || 
+                        edge.target.startsWith('doc') ||
+                        edge.label?.toLowerCase().includes('mention') ||
+                        edge.label?.toLowerCase().includes('support') ||
+                        edge.label?.toLowerCase().includes('justif') ||
+                        edge.label?.toLowerCase().includes('guide') ||
+                        edge.label?.toLowerCase().includes('decid');
+
+      const showLabels = zoom > 0.65 || highlighted;
+
       return {
         ...edge,
+        label: showLabels ? edge.label : undefined,
+        type: 'smoothstep', // orthogonal stepped curves
+        pathOptions: { borderRadius: 10, offset: 15 },
         animated: highlighted || edge.animated,
+        markerEnd: {
+          type: MarkerType.ArrowClosed,
+          width: 14,
+          height: 14,
+          color: highlighted
+            ? '#c084fc'
+            : faded
+            ? 'rgba(139, 92, 246, 0.1)'
+            : 'rgba(139, 92, 246, 0.5)',
+        },
         style: {
           ...edge.style,
           stroke: highlighted
@@ -241,23 +828,57 @@ export const KnowledgeGraphPage: React.FC = () => {
             ? 'rgba(139, 92, 246, 0.04)'
             : 'rgba(139, 92, 246, 0.35)',
           strokeWidth: highlighted ? 3.5 : 1.5,
+          strokeDasharray: isDotted ? '4,4' : undefined,
           transition: 'all 0.25s ease-in-out',
         },
+        labelBgPadding: [4, 2],
+        labelBgBorderRadius: 4,
+        labelBgStyle: { fill: '#030014', fillOpacity: 0.85 },
+        labelStyle: { fill: highlighted ? '#c084fc' : '#a78bfa', fontSize: 8, fontWeight: 600, fontFamily: 'monospace' },
       };
     });
-  }, [filteredEdges, hoveredNodeId, hoveredEdgeId]);
+  }, [filteredEdges, displayNodes, hoveredNodeId, hoveredEdgeId, zoom]);
 
-  // Click handlers
+  // Click handlers — auto-collapse other startups when expanding one
   const handleNodeClick = useCallback(async (_event: any, node: any) => {
     setSelectedRelationship(null);
     
+    const nodeType = node.data?.type;
+    const startupId = getStartupParentId(node.id, rawNodes, rawEdges);
+    if (startupId && (nodeType === 'Technology' || nodeType === 'Investor' || nodeType === 'Company')) {
+      setExpandedSubtrees(prev => {
+        const startupState = prev[startupId] || { Technology: false, Investor: false, Document: false };
+        let updatedState = { ...startupState };
+        if (nodeType === 'Technology') {
+          updatedState.Technology = !startupState.Technology;
+        } else if (nodeType === 'Investor') {
+          updatedState.Investor = !startupState.Investor;
+        } else if (nodeType === 'Company') {
+          updatedState.Document = !startupState.Document;
+        }
+
+        // Auto-collapse OTHER startups to keep the graph readable
+        const newState: typeof prev = {};
+        const allStartups = rawNodes.filter(n => n.data?.type === 'Company');
+        allStartups.forEach(s => {
+          if (s.id === startupId) {
+            newState[s.id] = updatedState;
+          } else {
+            // Collapse the other startup entirely
+            newState[s.id] = { Technology: false, Investor: false, Document: false };
+          }
+        });
+        return newState;
+      });
+    }
+
     try {
       const details = await MockInvestigationService.getNodeDetails(node.id);
       setNodeDetails(details);
     } catch (err) {
       console.error(err);
     }
-  }, []);
+  }, [rawNodes, rawEdges]);
 
   const handleEdgeClick = useCallback(async (_event: any, edge: any) => {
     setNodeDetails(null);
@@ -287,6 +908,16 @@ export const KnowledgeGraphPage: React.FC = () => {
       setEdges(displayEdges);
     }
   }, [displayEdges, setEdges, isLoading]);
+
+  // Re-fit the viewport automatically whenever nodes change (including expand/collapse)
+  useEffect(() => {
+    if (nodes.length > 0) {
+      const timer = setTimeout(() => {
+        fitView({ padding: 0.15, duration: 500, maxZoom: 1.0 });
+      }, 80);
+      return () => clearTimeout(timer);
+    }
+  }, [nodes, fitView, expandedSubtrees]);
 
   // Legend categories configurations
   const legendItems = [
@@ -614,8 +1245,8 @@ export const KnowledgeGraphPage: React.FC = () => {
           </AnimatePresence>
 
           {/* Floating Graph Category Legend */}
-          <div className="absolute bottom-24 left-6 bg-dark-bg/90 backdrop-blur-md border border-white/10 px-4 py-2.5 rounded-xl shadow-2xl flex items-center space-x-4 text-[9px] font-semibold text-gray-400">
-            <span className="text-white border-r border-white/10 pr-3 mr-1 uppercase">Legend</span>
+          <div className="absolute bottom-2.5 left-1/2 -translate-x-1/2 bg-dark-bg/90 backdrop-blur-md border border-white/10 px-5 py-2.5 rounded-xl shadow-2xl flex flex-wrap justify-center items-center gap-4 text-[9px] font-semibold text-gray-400 max-w-[90%] z-20">
+            <span className="text-white border-r border-white/10 pr-3 mr-1 uppercase whitespace-nowrap">Legend</span>
             {legendItems.map((item, index) => (
               <div key={index} className="flex items-center space-x-1.5">
                 <span className={`w-2.5 h-2.5 rounded-full ${item.color} shadow-lg`} />

@@ -38,3 +38,4 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({ searchQuery, s
   );
 };
 export default DashboardLayout;
+
