@@ -2,7 +2,7 @@ import React, { useState, useMemo, useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
-  User, Cpu, Landmark, Target, CheckCircle2,
+  User, Cpu, Landmark, Target,
   FileText, ArrowLeft, Download, Layers, Scale,
   ChevronDown, ChevronUp, ExternalLink, Check, Info, Loader2, ChevronRight,
   Share2, Copy, FileDown, AlertTriangle, ShieldCheck, ShieldAlert, HelpCircle
@@ -415,6 +415,26 @@ export const DecisionCenterPage: React.FC = () => {
     }
   ], [scores, startupData]);
 
+  // ─── Evidence-Based Investment Verdict: derived data ───
+  const topEvidence = useMemo(() => {
+    return agents
+      .flatMap(a => a.evidence)
+      .sort((a, b) => parseInt(b.confidence) - parseInt(a.confidence))
+      .slice(0, 5);
+  }, [agents]);
+
+  const keyRisks = useMemo(() => {
+    const allRisks = [
+      ...finalSummary.weaknesses,
+      ...agents.flatMap(a => a.risks)
+    ];
+    return [...new Set(allRisks)].slice(0, 3);
+  }, [finalSummary.weaknesses, agents]);
+
+  const averageConfidence = useMemo(() => {
+    return Math.round(agents.reduce((sum, a) => sum + a.confidence, 0) / agents.length);
+  }, [agents]);
+
   // Decision Builder simulation panel states
   const [builderStep, setBuilderStep] = useState(0);
   const [isBuilderDone, setIsBuilderDone] = useState(false);
@@ -759,15 +779,156 @@ export const DecisionCenterPage: React.FC = () => {
                 </div>
               </Card>
             ) : (
-              <Card glow className="border border-brand-purple/30 bg-brand-purple/5 p-4 flex flex-col space-y-2.5 relative overflow-hidden flex-shrink-0 text-left">
-                <div className="absolute top-0 right-0 w-32 h-32 bg-brand-purple-light/5 rounded-full blur-2xl pointer-events-none" />
-                <div className="flex items-center space-x-2">
-                  <CheckCircle2 className="w-4 h-4 text-emerald-400" />
-                  <span className="text-[10px] text-emerald-400 font-bold uppercase tracking-wider font-mono">Recommendation Compiled Successfully</span>
+              <Card glow className="border border-brand-purple/30 bg-brand-purple/5 p-5 flex flex-col space-y-4 relative overflow-hidden flex-shrink-0 text-left">
+                {/* Background glows */}
+                <div className="absolute top-0 right-0 w-40 h-40 bg-brand-purple-light/5 rounded-full blur-3xl pointer-events-none" />
+                <div className="absolute bottom-0 left-0 w-32 h-32 bg-emerald-500/5 rounded-full blur-2xl pointer-events-none" />
+
+                {/* ── A. Verdict Header ── */}
+                <div className="flex items-center justify-between pb-3 border-b border-white/5">
+                  <div className="flex items-center space-x-3">
+                    <div className={`p-2.5 rounded-xl border ${finalSummary.recommendation === 'INVEST' ? 'bg-emerald-500/10 border-emerald-500/20' : finalSummary.recommendation === 'PASS' ? 'bg-rose-500/10 border-rose-500/20' : 'bg-amber-500/10 border-amber-500/20'}`}>
+                      <ShieldCheck className={`w-5 h-5 ${finalSummary.recommendation === 'INVEST' ? 'text-emerald-400' : finalSummary.recommendation === 'PASS' ? 'text-rose-400' : 'text-amber-400'}`} />
+                    </div>
+                    <div>
+                      <span className="text-[10px] font-bold text-brand-purple-light uppercase tracking-widest font-mono block">
+                        Evidence-Based Investment Verdict
+                      </span>
+                      <span className="text-[9px] text-gray-500 font-mono">
+                        Compiled from {agents.length} AI agents across {finalSummary.documents} documents
+                      </span>
+                    </div>
+                  </div>
+                  <Badge
+                    variant={finalSummary.recommendation === 'INVEST' ? 'success' : finalSummary.recommendation === 'PASS' ? 'danger' : 'warning'}
+                    glow
+                    className="font-bold text-xs px-3 py-1 font-mono"
+                  >
+                    {finalSummary.recommendation}
+                  </Badge>
                 </div>
-                <p className="text-xs text-gray-300 leading-normal text-left">
+
+                {/* ── B. Score / Confidence / Risk metric strip ── */}
+                <div className="grid grid-cols-3 gap-3">
+                  <div className="bg-white/2 border border-white/5 p-3 rounded-xl text-center">
+                    <span className="text-[8px] text-gray-500 block uppercase font-mono font-medium">Investment Score</span>
+                    <div className="mt-1">
+                      <span className="text-2xl font-bold text-white font-mono">{finalSummary.score}</span>
+                      <span className="text-[10px] text-gray-500 font-mono">/100</span>
+                    </div>
+                  </div>
+                  <div className="bg-white/2 border border-white/5 p-3 rounded-xl text-center">
+                    <span className="text-[8px] text-gray-500 block uppercase font-mono font-medium">AI Confidence</span>
+                    <div className="mt-1">
+                      <span className="text-2xl font-bold text-emerald-400 font-mono">{averageConfidence}</span>
+                      <span className="text-[10px] text-gray-500 font-mono">%</span>
+                    </div>
+                  </div>
+                  <div className="bg-white/2 border border-white/5 p-3 rounded-xl text-center">
+                    <span className="text-[8px] text-gray-500 block uppercase font-mono font-medium">Risk Level</span>
+                    <div className="mt-1">
+                      <span className={`text-lg font-bold font-mono ${finalSummary.riskLevel === 'Low' ? 'text-emerald-400' : finalSummary.riskLevel === 'Medium' ? 'text-amber-400' : 'text-rose-400'}`}>
+                        {finalSummary.riskLevel}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Verdict reasoning summary */}
+                <p className="text-[11px] text-gray-300 leading-relaxed">
                   {finalSummary.reasoning}
                 </p>
+
+                {/* ── C. Strongest Evidence Points ── */}
+                <div className="space-y-2">
+                  <span className="text-[9px] font-bold text-cyan-400 uppercase tracking-widest font-mono block">
+                    Strongest Evidence ({topEvidence.length} verified sources)
+                  </span>
+                  <div className="space-y-1.5">
+                    {topEvidence.map((ev) => (
+                      <div
+                        key={ev.id}
+                        className="bg-white/2 border border-white/5 hover:border-brand-purple/30 p-2.5 rounded-xl flex items-center justify-between gap-3 cursor-pointer transition-colors duration-200 group"
+                        onClick={() => setSelectedEvidence(ev)}
+                      >
+                        <div className="flex items-center space-x-2.5">
+                          <FileText className="w-3.5 h-3.5 text-cyan-400 flex-shrink-0" />
+                          <div>
+                            <span className="text-[10px] font-bold text-white block group-hover:text-brand-purple-light transition-colors">{ev.title}</span>
+                            <span className="text-[8px] text-gray-500 font-mono">{ev.source}</span>
+                          </div>
+                        </div>
+                        <div className="flex items-center space-x-2 flex-shrink-0">
+                          <span className="text-[9px] text-emerald-400 font-mono font-bold">{ev.confidence}</span>
+                          <ChevronRight className="w-3 h-3 text-gray-600 group-hover:text-brand-purple-light transition-colors" />
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                {/* ── D. Key Risk Factors ── */}
+                <div className="space-y-2">
+                  <span className="text-[9px] font-bold text-rose-400 uppercase tracking-widest font-mono block">
+                    Key Risk Factors
+                  </span>
+                  <div className="space-y-1.5">
+                    {keyRisks.map((risk, idx) => (
+                      <div key={idx} className="flex items-start space-x-2.5 bg-rose-500/5 border border-rose-500/10 p-2.5 rounded-xl">
+                        <AlertTriangle className="w-3.5 h-3.5 text-rose-400 flex-shrink-0 mt-0.5" />
+                        <span className="text-[10px] text-gray-300 leading-relaxed">{risk}</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                {/* ── E. Why This Matters ── */}
+                <div className="bg-white/2 border border-white/5 p-3 rounded-xl">
+                  <span className="text-[9px] font-bold text-brand-purple-light uppercase tracking-widest font-mono block mb-1.5">
+                    Why This Matters
+                  </span>
+                  <p className="text-[10px] text-gray-400 leading-relaxed font-mono italic">
+                    Based on {finalSummary.entities} entities extracted across {finalSummary.documents} documents, InvestIQ&apos;s {agents.length} AI agents mapped {finalSummary.relationships} entity relationships in the Cognee knowledge graph. {startupData.name} operating in {startupData.sector} at {startupData.fundingStage} stage {finalSummary.recommendation === 'INVEST' ? 'demonstrates strong fundamentals with defensible positioning' : finalSummary.recommendation === 'PASS' ? 'presents significant structural concerns that warrant caution' : 'shows mixed signals requiring further investigation'}. This verdict is backed by cross-document evidence that only a persistent knowledge graph can surface — connecting founder history, technical moats, and financial patterns across multiple ingested sources.
+                  </p>
+                </div>
+
+                {/* ── F. Suggested Next Actions ── */}
+                <div className="flex items-center gap-2 pt-2 border-t border-white/5">
+                  {finalSummary.recommendation === 'INVEST' ? (
+                    <>
+                      <Button variant="primary" size="sm" onClick={handleExportJSON} className="flex-1 text-[10px] cursor-pointer hover:shadow-[0_0_12px_rgba(139,92,246,0.35)]">
+                        <Download className="w-3.5 h-3.5 mr-1.5" />
+                        Export Due Diligence Report
+                      </Button>
+                      <Button variant="outline" size="sm" onClick={() => handleDeepLinkGraph('Founder')} className="flex-1 border-white/5 text-gray-300 hover:text-white text-[10px] cursor-pointer">
+                        <ExternalLink className="w-3.5 h-3.5 mr-1.5" />
+                        Explore Knowledge Graph
+                      </Button>
+                    </>
+                  ) : finalSummary.recommendation === 'PASS' ? (
+                    <>
+                      <Button variant="outline" size="sm" onClick={() => navigate('/')} className="flex-1 border-white/5 text-gray-300 hover:text-white text-[10px] cursor-pointer">
+                        <ArrowLeft className="w-3.5 h-3.5 mr-1.5" />
+                        Archive Investigation
+                      </Button>
+                      <Button variant="outline" size="sm" onClick={() => handleDeepLinkGraph('Risk')} className="flex-1 border-rose-500/20 text-rose-400 hover:text-rose-300 text-[10px] cursor-pointer">
+                        <AlertTriangle className="w-3.5 h-3.5 mr-1.5" />
+                        Review Risk Graph
+                      </Button>
+                    </>
+                  ) : (
+                    <>
+                      <Button variant="primary" size="sm" onClick={() => handleDeepLinkGraph('Founder')} className="flex-1 text-[10px] cursor-pointer hover:shadow-[0_0_12px_rgba(139,92,246,0.35)]">
+                        <Layers className="w-3.5 h-3.5 mr-1.5" />
+                        Deep Dive Knowledge Graph
+                      </Button>
+                      <Button variant="outline" size="sm" onClick={handleExportJSON} className="flex-1 border-white/5 text-gray-300 hover:text-white text-[10px] cursor-pointer">
+                        <Download className="w-3.5 h-3.5 mr-1.5" />
+                        Export for Partner Review
+                      </Button>
+                    </>
+                  )}
+                </div>
               </Card>
             )}
             {/* AI Investment Partner — 5 Questions to Ask Before Investing */}
