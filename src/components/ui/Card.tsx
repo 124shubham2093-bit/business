@@ -14,7 +14,10 @@ export const Card = React.forwardRef<HTMLDivElement, CardProps>(
         className={twMerge(
           clsx(
             'rounded-xl glass-panel text-gray-200 transition-all duration-300',
-            glow ? 'glass-panel-glow hover:border-brand-purple/40 hover:shadow-[0_0_30px_rgba(139,92,246,0.15)]' : 'hover:border-white/10'
+            glow
+              // Elevated card: uses glass-panel-glow (elevation shadow, not neon glow)
+              ? 'glass-panel-glow hover:border-slate-600/60 hover:shadow-[0_8px_24px_rgba(0,0,0,0.4)]'
+              : 'hover:border-slate-600/40'
           ),
           className
         )}
