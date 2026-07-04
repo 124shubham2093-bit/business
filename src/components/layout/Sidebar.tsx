@@ -37,7 +37,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
         <div className="flex h-16 items-center justify-between px-6 border-b border-white/5 bg-white/2">
           <div className="flex items-center space-x-2">
             <ShieldAlert className="h-6 w-6 text-brand-purple" />
-            <span className="text-sm font-bold tracking-wider text-white">ANTIGRAVITY</span>
+            <span className="text-sm font-bold tracking-wider text-white">INVESTIQ</span>
           </div>
           <button
             onClick={onClose}

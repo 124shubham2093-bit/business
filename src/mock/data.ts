@@ -3,7 +3,7 @@ import type { Startup, Activity, Notification, User } from '../types';
 export const currentUser: User = {
   name: 'Sarah Jenkins',
   role: 'Managing Director, Ventures',
-  email: 'sarah.j@ventureiq.com',
+  email: 'sarah.j@investiq.ai',
   avatar: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=facearea&facepad=2&w=256&h=256&q=80',
 };
 

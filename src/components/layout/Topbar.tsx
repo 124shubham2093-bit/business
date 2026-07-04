@@ -14,7 +14,7 @@ export const Topbar: React.FC<TopbarProps> = ({ onMenuOpen, searchQuery, setSear
   const [currentUser, setCurrentUser] = useState<UserType>({
     name: 'Sarah Jenkins',
     role: 'Managing Director, Ventures',
-    email: 'sarah.j@ventureiq.com',
+    email: 'sarah.j@investiq.ai',
     avatar: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=facearea&facepad=2&w=256&h=256&q=80',
   });
   const [showNotifications, setShowNotifications] = useState(false);

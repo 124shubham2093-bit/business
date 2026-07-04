@@ -13,7 +13,7 @@ class WebsiteParser:
             target_url = "https://" + target_url
 
         try:
-            headers = {"User-Agent": "VentureIQ-Auditor-Bot/1.0"}
+            headers = {"User-Agent": "InvestIQ-Bot/1.0"}
             res = requests.get(target_url, headers=headers, timeout=5)
             if res.status_code != 200:
                 return f"Failed to access URL, status code: {res.status_code}"

@@ -263,7 +263,7 @@ export const NewInvestigationPage: React.FC = () => {
         <div className="flex items-center justify-between p-4 bg-brand-purple/5 border border-brand-purple/10 rounded-xl">
           <div className="flex items-center space-x-2 text-xs text-brand-purple-light">
             <ShieldAlert className="w-4 h-4 flex-shrink-0" />
-            <p>VentureIQ will generate a simulated due diligence graph on the next page.</p>
+            <p>InvestIQ will generate a due diligence knowledge graph on the next page.</p>
           </div>
           <Button type="submit" variant="primary">
             Start Diligence Investigation

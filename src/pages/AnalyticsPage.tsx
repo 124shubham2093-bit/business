@@ -106,7 +106,7 @@ export const AnalyticsPage: React.FC<AnalyticsPageProps> = ({ startups }) => {
         <Card>
           <CardHeader>
             <CardTitle>Evaluation Criteria Framework</CardTitle>
-            <p className="text-xs text-gray-400">VentureIQ auditing scorecard benchmarks</p>
+            <p className="text-xs text-gray-400">InvestIQ auditing scorecard benchmarks</p>
           </CardHeader>
           <CardContent className="space-y-4 text-xs text-gray-300">
             <div className="flex items-start space-x-3 bg-white/2 p-3 rounded-lg border border-white/5">

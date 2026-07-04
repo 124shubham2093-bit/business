@@ -971,7 +971,7 @@ const KnowledgeGraphPageContent: React.FC = () => {
           <div className="flex items-center space-x-2">
             <Database className="w-5 h-5 text-brand-purple-light animate-pulse" />
             <span className="text-sm font-bold font-display text-white">
-              VentureIQ Semantic Auditor
+              InvestIQ Semantic Auditor
             </span>
           </div>
         </div>
