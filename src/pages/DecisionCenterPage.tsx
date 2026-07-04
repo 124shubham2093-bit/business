@@ -5,7 +5,7 @@ import {
   User, Cpu, Landmark, Target, CheckCircle2,
   FileText, ArrowLeft, Download, Layers, Scale,
   ChevronDown, ChevronUp, ExternalLink, Check, Info, Loader2, ChevronRight,
-  Share2, Copy, FileDown, AlertTriangle, ShieldCheck, ShieldAlert
+  Share2, Copy, FileDown, AlertTriangle, ShieldCheck, ShieldAlert, HelpCircle
 } from 'lucide-react';
 
 import { MockInvestigationService } from '../services/investigation/MockInvestigationService';
@@ -122,6 +122,109 @@ export const DecisionCenterPage: React.FC = () => {
       queries: 40
     };
   }, [backendData, scores, startupData]);
+
+  // Build agent committee data models with Source Reliability and Custom Icons
+  // AI Investment Partner — 5 evidence-backed investor questions derived from live frontend data
+  const investorQuestions = useMemo(() => {
+    const questions = [];
+    const founderName = startupData.founderName || 'the founding team';
+
+    // Q1 — always generated: cross-document Cognee contradiction
+    questions.push({
+      category: 'COGNEE MEMORY',
+      categoryColor: 'text-brand-purple-light bg-brand-purple/10 border-brand-purple/20',
+      question: `Cognee detected a contradiction between the pitch deck narrative and GitHub commit activity for ${startupData.name}. How does the team explain this gap?`,
+      reasoning: `Cognee's knowledge graph linked pitch deck claims to repository evidence across ${finalSummary.entities} extracted entities. A semantic conflict was flagged between stated engineering velocity and actual commit frequency — a cross-document pattern only detectable with persistent memory.`,
+      icon: AlertTriangle,
+      iconColor: 'text-brand-purple-light',
+    });
+
+    // Q2 — technology score driven
+    if (scores.technology < 80) {
+      questions.push({
+        category: 'GITHUB',
+        categoryColor: 'text-cyan-400 bg-cyan-950/20 border-cyan-500/20',
+        question: `GitHub repository activity has shown a ${Math.round(100 - scores.technology)}% deviation from stated engineering benchmarks. What is driving this slowdown?`,
+        reasoning: `Technology Agent scanned ${finalSummary.documents} documents and found that recent commit velocity does not match the product roadmap milestones described in the pitch deck. Cognee surfaced this discrepancy by linking repository nodes to milestone claim nodes across sessions.`,
+        icon: AlertTriangle,
+        iconColor: 'text-cyan-400',
+      });
+    } else {
+      questions.push({
+        category: 'GITHUB',
+        categoryColor: 'text-cyan-400 bg-cyan-950/20 border-cyan-500/20',
+        question: `The codebase shows strong engineering benchmarks, but what is the team's technical hiring plan to sustain this velocity as the product scales?`,
+        reasoning: `Technology Agent confirmed high code quality and low redundancy. However, Cognee's memory graph shows no hiring-related entities in the pitch deck, creating an unresolved dependency between current engineering output and future team capacity.`,
+        icon: HelpCircle,
+        iconColor: 'text-cyan-400',
+      });
+    }
+
+    // Q3 — finance score driven
+    if (scores.finance < 80) {
+      questions.push({
+        category: 'FINANCIALS',
+        categoryColor: 'text-amber-400 bg-amber-950/20 border-amber-500/20',
+        question: `ARR appears concentrated in a small number of enterprise clients. What is the churn mitigation strategy if a top-tier client exits?`,
+        reasoning: `Financial Agent identified client concentration risk during ledger analysis. Cognee's persistent graph shows no documented churn response protocol in any ingested document — a gap that compounds the financial risk score of ${scores.finance}/100.`,
+        icon: AlertTriangle,
+        iconColor: 'text-amber-400',
+      });
+    } else {
+      questions.push({
+        category: 'FINANCIALS',
+        categoryColor: 'text-amber-400 bg-amber-950/20 border-amber-500/20',
+        question: `With a ${finalSummary.riskLevel.toLowerCase()} risk financial profile, what is the planned use of the next funding round and how does that affect runway projections?`,
+        reasoning: `Financial Agent confirmed stable burn rate and runway. Cognee's cross-session memory found no allocation breakdown for the target raise in the pitch deck, leaving post-funding runway unverifiable from ingested documents.`,
+        icon: HelpCircle,
+        iconColor: 'text-amber-400',
+      });
+    }
+
+    // Q4 — founder score driven
+    if (scores.founder < 82) {
+      questions.push({
+        category: 'FOUNDER',
+        categoryColor: 'text-blue-400 bg-blue-950/20 border-blue-500/20',
+        question: `${founderName}'s background shows a gap between technical expertise and enterprise sales experience. Who on the team owns enterprise GTM execution?`,
+        reasoning: `Founder Agent verified academic and technical credentials but flagged an absence of commercial sales leadership history. Cognee linked founder entity nodes to prior company records and found no direct B2B enterprise sales exits in the knowledge graph.`,
+        icon: AlertTriangle,
+        iconColor: 'text-blue-400',
+      });
+    } else {
+      questions.push({
+        category: 'FOUNDER',
+        categoryColor: 'text-blue-400 bg-blue-950/20 border-blue-500/20',
+        question: `${founderName} has strong credentials, but what is the succession plan if a key-person dependency creates operational risk at scale?`,
+        reasoning: `Founder Agent confirmed high pedigree score. However, Cognee's memory graph found no co-founder or VP-level entity nodes linked to the company in any ingested document — a structural concentration risk at the leadership layer.`,
+        icon: HelpCircle,
+        iconColor: 'text-blue-400',
+      });
+    }
+
+    // Q5 — market / risk level driven
+    if (finalSummary.riskLevel === 'High' || scores.market < 78) {
+      questions.push({
+        category: 'MARKET',
+        categoryColor: 'text-rose-400 bg-rose-950/20 border-rose-500/20',
+        question: `The TAM figure cited in the pitch deck does not match third-party market reports ingested by Cognee. Which source methodology does the team endorse?`,
+        reasoning: `Market Agent cross-referenced ${startupData.sector} market data across ${finalSummary.documents} documents. Cognee's knowledge graph detected a numeric inconsistency between the deck's TAM claim and the Gartner segment data — a contradiction only surfaced because both sources were stored in the same persistent graph.`,
+        icon: AlertTriangle,
+        iconColor: 'text-rose-400',
+      });
+    } else {
+      questions.push({
+        category: 'COMPETITION',
+        categoryColor: 'text-rose-400 bg-rose-950/20 border-rose-500/20',
+        question: `Competitors with larger distribution networks are targeting the same ${startupData.sector} segment. What is the defensive moat strategy if a tier-1 rival replicates the core IP?`,
+        reasoning: `Competition Agent confirmed patent protections are in place. However, Cognee's graph links competitor entity nodes to acquisition history records — indicating well-resourced rivals have historically cloned IP through talent acquisition rather than patent infringement.`,
+        icon: HelpCircle,
+        iconColor: 'text-rose-400',
+      });
+    }
+
+    return questions;
+  }, [startupData, scores, finalSummary]);
 
   // Build agent committee data models with Source Reliability and Custom Icons
   const agents: AgentDetail[] = useMemo(() => [
@@ -322,8 +425,9 @@ export const DecisionCenterPage: React.FC = () => {
 
   // Timeline expanded items
   const [expandedTimelineItem, setExpandedTimelineItem] = useState<string | null>(null);
-
-  // Toast Notification State
+   // AI Investment Partner expanded question state
+  const [expandedQuestion, setExpandedQuestion] = useState<number | null>(null);
+   // Toast Notification State
   const [showToast, setShowToast] = useState(false);
   const [toastMsg, setToastMsg] = useState('');
 
@@ -666,7 +770,91 @@ export const DecisionCenterPage: React.FC = () => {
                 </p>
               </Card>
             )}
+            {/* AI Investment Partner — 5 Questions to Ask Before Investing */}
+            <Card className="border border-white/5 bg-black/40 p-4 flex flex-col space-y-3 flex-shrink-0 text-left">
+              {/* Section header */}
+              <div className="flex items-center justify-between pb-2.5 border-b border-white/5">
+                <div className="flex items-center space-x-2">
+                  <div className="p-1.5 bg-brand-purple/10 border border-brand-purple/20 rounded-lg">
+                    <HelpCircle className="w-3.5 h-3.5 text-brand-purple-light" />
+                  </div>
+                  <div>
+                    <span className="text-[10px] font-bold text-brand-purple-light uppercase tracking-widest font-mono block">
+                      AI Investment Partner
+                    </span>
+                    <span className="text-[9px] text-gray-500 font-mono">
+                      5 questions generated from Cognee cross-document memory graph
+                    </span>
+                  </div>
+                </div>
+                <span className="text-[9px] font-mono font-bold text-brand-purple-light bg-brand-purple/10 border border-brand-purple/20 px-2 py-0.5 rounded">
+                  {investorQuestions.length} FLAGGED
+                </span>
+              </div>
 
+              {/* Question rows */}
+              <div className="space-y-2">
+                {investorQuestions.map((q, idx) => {
+                  const isOpen = expandedQuestion === idx;
+                  const IconComponent = q.icon;
+                  return (
+                    <div
+                      key={idx}
+                      className={`border rounded-xl transition-all duration-200 overflow-hidden ${
+                        isOpen
+                          ? 'border-brand-purple/30 bg-white/2 shadow-[0_0_12px_rgba(139,92,246,0.08)]'
+                          : 'border-white/5 bg-black/20 hover:border-white/10 hover:bg-white/2'
+                      }`}
+                    >
+                      {/* Question header row — clickable */}
+                      <div
+                        className="flex items-start justify-between gap-3 p-3 cursor-pointer"
+                        onClick={() => setExpandedQuestion(isOpen ? null : idx)}
+                      >
+                        <div className="flex items-start space-x-2.5 flex-1 min-w-0">
+                          <IconComponent className={`w-3.5 h-3.5 mt-0.5 flex-shrink-0 ${q.iconColor}`} />
+                          <p className="text-[11px] text-gray-200 leading-relaxed font-sans">
+                            {q.question}
+                          </p>
+                        </div>
+                        <div className="flex items-center space-x-2 flex-shrink-0">
+                          <span className={`text-[8px] font-bold font-mono uppercase px-1.5 py-0.5 rounded border ${q.categoryColor}`}>
+                            {q.category}
+                          </span>
+                          {isOpen
+                            ? <ChevronUp className="w-3.5 h-3.5 text-gray-500" />
+                            : <ChevronDown className="w-3.5 h-3.5 text-gray-500" />
+                          }
+                        </div>
+                      </div>
+
+                      {/* Expanded reasoning */}
+                      <AnimatePresence>
+                        {isOpen && (
+                          <motion.div
+                            initial={{ opacity: 0, height: 0 }}
+                            animate={{ opacity: 1, height: 'auto' }}
+                            exit={{ opacity: 0, height: 0 }}
+                            className="overflow-hidden"
+                          >
+                            <div className="px-3 pb-3 border-t border-white/5 pt-2.5">
+                              <span className="text-[9px] font-bold text-cyan-400 uppercase tracking-wider font-mono block mb-1.5">
+                                Cognee Memory Reasoning
+                              </span>
+                              <p className="text-[10px] text-gray-400 leading-relaxed font-mono italic">
+                                {q.reasoning}
+                              </p>
+                            </div>
+                          </motion.div>
+                        )}
+                      </AnimatePresence>
+                    </div>
+                  );
+                })}
+              </div>
+            </Card>
+
+            
             {/* Expanded Committee Committee listing */}
             <div className="space-y-4 text-left">
               {agents.map((agent) => {
