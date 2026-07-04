@@ -10,13 +10,12 @@ interface SidebarProps {
 
 export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
   const menuItems = [
+    { name: 'New Investigation', path: '/new-investigation', icon: Sparkles },
     { name: 'Dashboard', path: '/', icon: LayoutDashboard },
     { name: 'Investigations', path: '/investigations', icon: Briefcase },
     { name: 'Analytics Trend', path: '/analytics', icon: BarChart3 },
-    { name: 'New Investigation', path: '/new-investigation', icon: Sparkles },
     { name: 'Cognee Verify', path: '/cognee-verify', icon: ShieldCheck },
   ];
-
   return (
     <>
       {/* Mobile backdrop */}
