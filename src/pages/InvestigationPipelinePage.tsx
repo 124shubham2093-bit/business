@@ -9,9 +9,9 @@ import {
   Coins, Sparkles, CheckCircle2, Loader2
 } from 'lucide-react';
 
-import { MockInvestigationService } from '../services/investigation/MockInvestigationService';
 import { generateScores } from '../services/investigation/mockGenerator';
 import type { Startup } from '../services/investigation/investigationTypes';
+import { BACKEND_API_BASE } from '../services/investigation/config';
 import { Button } from '../components/ui/Button';
 import { Card, CardHeader, CardTitle, CardContent } from '../components/ui/Card';
 import { Badge } from '../components/ui/Badge';
@@ -48,6 +48,7 @@ export const InvestigationPipelinePage: React.FC = () => {
       description: 'Dynamic automation platform',
       pitchDeckName: 'pitch_deck_v1.pdf',
       financialsName: 'financials_q2.xlsx',
+      pitchDeckText: ''
     };
   }, [location.state]);
 
@@ -59,44 +60,44 @@ export const InvestigationPipelinePage: React.FC = () => {
   // stats hooks removed to satisfy unused variable warnings
 
   // Trigger backend execution on mount
+  // Trigger backend investigation on mount — fires in background, does not affect simulation
   const [backendResult, setBackendResult] = useState<Startup | null>(null);
   useEffect(() => {
-    MockInvestigationService.createInvestigation({
-      id: `st-${Date.now()}`,
-      name: startupData.name,
-      logo: '🚀',
-      elevatorPitch: startupData.description || '',
-      sector: startupData.sector,
-      investmentScore: scores.investmentScore,
-      riskLevel: (scores.risk >= 25 ? 'High' : scores.risk >= 18 ? 'Medium' : 'Low') as any,
-      status: (scores.recommendation === 'INVEST' ? 'Approved' : scores.recommendation === 'PASS' ? 'Flagged' : 'Under Review') as any,
-      dateInvestigated: new Date().toISOString().split('T')[0],
-      metrics: {
-        financials: scores.finance,
-        marketSize: scores.market,
-        team: scores.founder,
-        product: scores.technology,
-      },
-      details: {
-        summary: '',
-        strengths: [],
-        risks: [],
-        founderBackground: `${startupData.founderName} (CEO & Founder).`,
-        financialSnapshot: {
-          revenue: '$1.2M ARR',
-          burnRate: '$90k/mo',
-          runway: '24 months',
-          valuation: '$22M Post-Money',
-        },
-        marketOpportunity: '',
-        techStackRisk: '',
+    const runBackendInvestigation = async () => {
+      try {
+        const combinedDescription = [
+          startupData.description || '',
+          startupData.pitchDeckText || '',
+        ].filter(Boolean).join('\n\n').trim();
+
+        const res = await fetch(`${BACKEND_API_BASE}/investigations`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            name: startupData.name,
+            founderName: startupData.founderName,
+            sector: startupData.sector,
+            fundingStage: startupData.fundingStage || 'Seed',
+            websiteUrl: startupData.websiteUrl || 'https://example.com',
+            githubUrl: startupData.githubUrl || 'https://github.com/example',
+            description: combinedDescription || 'No description provided.',
+          }),
+        });
+
+        if (!res.ok) {
+          console.warn(`Backend investigation returned ${res.status}. Completion summary will use deterministic scores.`);
+          return;
+        }
+
+        const created = await res.json();
+        setBackendResult(created as Startup);
+      } catch (err) {
+        console.warn('Backend investigation unreachable. Completion summary will use deterministic scores.', err);
       }
-    }).then((created) => {
-      setBackendResult(created);
-    }).catch((err) => {
-      console.warn("Backend run failover to mock parameters:", err);
-    });
-  }, [startupData, scores]);
+    };
+
+    runBackendInvestigation();
+  }, [startupData]);
 
   // Define agents configs
   const agents: AgentConfig[] = useMemo(() => [
