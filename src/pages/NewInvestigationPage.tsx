@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { UploadCloud, ShieldAlert, Sparkles, Building, User, Target, Globe, Code2, FileText } from 'lucide-react';
+import { UploadCloud, ShieldAlert, Sparkles, Building, User, Target, Globe, Code2, FileText, Loader2 } from 'lucide-react';
 import { Card, CardHeader, CardTitle, CardContent } from '../components/ui/Card';
 import { Button } from '../components/ui/Button';
+import { uploadPitchDeck } from '../services/investigation/BackendInvestigationService';
 
 export const NewInvestigationPage: React.FC = () => {
   const navigate = useNavigate();
@@ -17,12 +18,14 @@ export const NewInvestigationPage: React.FC = () => {
   const [description, setDescription] = useState('');
   
   // Simulated files
-  const [pitchDeckName, setPitchDeckName] = useState<string | null>(null);
+  // File state — store actual File object, not just the name
+  const [pitchDeckFile, setPitchDeckFile] = useState<File | null>(null);
   const [financialsName, setFinancialsName] = useState<string | null>(null);
+  const [isUploading, setIsUploading] = useState(false);
 
   const handlePitchDeckChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
-      setPitchDeckName(e.target.files[0].name);
+      setPitchDeckFile(e.target.files[0]);
     }
   };
 
@@ -31,15 +34,21 @@ export const NewInvestigationPage: React.FC = () => {
       setFinancialsName(e.target.files[0].name);
     }
   };
-
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!name || !founderName || !sector) {
       alert('Please fill in the required fields (Startup Name, Founder Name, Sector).');
       return;
     }
 
-    // Redirect to pipeline, passing form details via router state
+    // Upload pitch deck if one was selected; degrade gracefully on failure
+    let pitchDeckText = '';
+    if (pitchDeckFile) {
+      setIsUploading(true);
+      pitchDeckText = await uploadPitchDeck(pitchDeckFile);
+      setIsUploading(false);
+    }
+
     navigate('/investigations/pipeline', {
       state: {
         name,
@@ -49,8 +58,9 @@ export const NewInvestigationPage: React.FC = () => {
         websiteUrl: websiteUrl || 'https://example.com',
         githubUrl: githubUrl || 'https://github.com/example',
         description: description || 'No description provided.',
-        pitchDeckName: pitchDeckName || 'pitch_deck_executive.pdf',
+        pitchDeckName: pitchDeckFile?.name || 'pitch_deck_executive.pdf',
         financialsName: financialsName || 'financial_statements_q2.xlsx',
+        pitchDeckText,
       },
     });
   };
@@ -211,7 +221,7 @@ export const NewInvestigationPage: React.FC = () => {
             <CardContent className="p-6">
               <span className="text-xs font-semibold text-gray-300 block mb-3">Pitch Deck Upload</span>
               <div className="relative border border-dashed border-white/10 hover:border-brand-purple/50 transition-colors rounded-xl p-6 flex flex-col items-center justify-center text-center cursor-pointer bg-white/1 group">
-                <input
+              <input
                   type="file"
                   accept=".pdf"
                   onChange={handlePitchDeckChange}
@@ -219,10 +229,10 @@ export const NewInvestigationPage: React.FC = () => {
                 />
                 <UploadCloud className="w-8 h-8 text-gray-500 group-hover:text-brand-purple-light transition-colors mb-2" />
                 <span className="text-xs text-gray-300 font-medium">
-                  {pitchDeckName ? pitchDeckName : 'Drag and drop pitch deck (PDF)'}
+                  {pitchDeckFile ? pitchDeckFile.name : 'Drag and drop pitch deck (PDF)'}
                 </span>
                 <span className="text-[10px] text-gray-500 mt-1">Maximum file size: 15MB</span>
-                {pitchDeckName && (
+                {pitchDeckFile && (
                   <div className="mt-3 flex items-center space-x-1 bg-brand-purple/20 border border-brand-purple/30 rounded px-2 py-0.5 text-[10px] text-brand-purple-light">
                     <FileText className="w-3.5 h-3.5" />
                     <span>File Selected</span>
@@ -265,9 +275,18 @@ export const NewInvestigationPage: React.FC = () => {
             <ShieldAlert className="w-4 h-4 flex-shrink-0" />
             <p>InvestIQ will generate a due diligence knowledge graph on the next page.</p>
           </div>
-          <Button type="submit" variant="primary">
-            Start Diligence Investigation
-            <Sparkles className="w-4 h-4 ml-1.5" />
+          <Button type="submit" variant="primary" disabled={isUploading}>
+            {isUploading ? (
+              <>
+                <Loader2 className="w-4 h-4 mr-1.5 animate-spin" />
+                Uploading Pitch Deck...
+              </>
+            ) : (
+              <>
+                Start Diligence Investigation
+                <Sparkles className="w-4 h-4 ml-1.5" />
+              </>
+            )}
           </Button>
         </div>
       </form>
