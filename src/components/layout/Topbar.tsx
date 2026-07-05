@@ -1,30 +1,56 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { Bell, Search, Menu, ChevronDown, User, LogOut, CircleAlert, Sun, Moon } from 'lucide-react';
+import { Bell, Menu, ChevronDown, CircleAlert, Sun, Moon } from 'lucide-react';
 import { useTheme } from '../../context/ThemeContext';
 import { MockInvestigationService } from '../../services/investigation/MockInvestigationService';
 import type { Notification, User as UserType } from '../../services/investigation/investigationTypes';
 
 interface TopbarProps {
   onMenuOpen: () => void;
-  searchQuery: string;
-  setSearchQuery: (query: string) => void;
+  searchQuery?: string;
+  setSearchQuery?: (query: string) => void;
 }
 
-export const Topbar: React.FC<TopbarProps> = ({ onMenuOpen, searchQuery, setSearchQuery }) => {
+export const Topbar: React.FC<TopbarProps> = ({ onMenuOpen }) => {
   const { theme, toggleTheme } = useTheme();
   const [notifications, setNotifications] = useState<Notification[]>([]);
   const [currentUser, setCurrentUser] = useState<UserType>({
     name: 'Sarah Jenkins',
-    role: 'Managing Director, Ventures',
+    role: 'Managing Partner',
     email: 'sarah.j@investiq.ai',
     avatar: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=facearea&facepad=2&w=256&h=256&q=80',
   });
   const [showNotifications, setShowNotifications] = useState(false);
   const [showProfile, setShowProfile] = useState(false);
+  const [backendStatus, setBackendStatus] = useState<'checking' | 'online' | 'offline'>('checking');
 
   useEffect(() => {
-    MockInvestigationService.getCurrentUser().then(setCurrentUser);
+    MockInvestigationService.getCurrentUser().then((u) => {
+      setCurrentUser({ ...u, role: 'Managing Partner' });
+    });
     MockInvestigationService.getNotifications().then(setNotifications);
+  }, []);
+
+  useEffect(() => {
+    const checkBackend = async () => {
+      try {
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 3000);
+        const res = await fetch('http://localhost:8000/health', {
+          signal: controller.signal
+        });
+        clearTimeout(timeoutId);
+        if (res.ok) {
+          setBackendStatus('online');
+        } else {
+          setBackendStatus('offline');
+        }
+      } catch (err) {
+        setBackendStatus('offline');
+      }
+    };
+    checkBackend();
+    const interval = setInterval(checkBackend, 20000);
+    return () => clearInterval(interval);
   }, []);
 
   const notificationRef = useRef<HTMLDivElement>(null);
@@ -55,7 +81,7 @@ export const Topbar: React.FC<TopbarProps> = ({ onMenuOpen, searchQuery, setSear
 
   return (
     <header className="flex items-center justify-between h-16 px-6 border-b border-[var(--border-color)] bg-[var(--bg-surface)] backdrop-blur-md sticky top-0 z-30 transition-colors duration-200">
-      {/* Mobile Toggle & Search */}
+      {/* Mobile Toggle & Left Space */}
       <div className="flex items-center flex-1 space-x-4">
         <button
           onClick={onMenuOpen}
@@ -63,21 +89,6 @@ export const Topbar: React.FC<TopbarProps> = ({ onMenuOpen, searchQuery, setSear
         >
           <Menu className="w-5 h-5" />
         </button>
-
-        {/* Global Command Palette Style Search Bar */}
-        <div className="relative w-full max-w-md hidden md:block">
-          <Search className="absolute left-3.5 top-2.5 h-4 w-4 text-[var(--text-secondary)]" />
-          <input
-            type="text"
-            placeholder="Search startup investigations, sectors, or scores..."
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full pl-10 pr-12 py-2 text-xs bg-[var(--bg-subtle)] border border-[var(--border-color)] rounded-lg text-[var(--text-primary)] placeholder-[var(--text-secondary)] focus:outline-none focus:border-indigo-500/50 focus:ring-1 focus:ring-indigo-500/30 transition-all shadow-inner"
-          />
-          <div className="absolute right-3 top-2.5 flex items-center space-x-0.5 px-1.5 py-0.5 rounded border border-[var(--border-color)] bg-[var(--bg-surface)] text-[10px] font-mono text-[var(--text-secondary)] pointer-events-none select-none">
-            <span>⌘</span><span>K</span>
-          </div>
-        </div>
       </div>
 
       {/* Action Items: Theme Toggle, Notifications & Profile */}
@@ -187,29 +198,36 @@ export const Topbar: React.FC<TopbarProps> = ({ onMenuOpen, searchQuery, setSear
           </button>
 
           {showProfile && (
-            <div className="absolute right-0 mt-2 w-56 rounded-xl bg-[var(--bg-surface)] border border-[var(--border-color)] shadow-2xl backdrop-blur-md overflow-hidden z-50">
+            <div className="absolute right-0 mt-2 w-64 rounded-xl bg-[var(--bg-surface)] border border-[var(--border-color)] shadow-2xl backdrop-blur-md overflow-hidden z-50 text-xs">
               <div className="p-4 border-b border-[var(--border-color)] bg-[var(--bg-subtle)]">
                 <p className="text-sm font-semibold text-[var(--text-primary)]">{currentUser.name}</p>
-                <p className="text-xs text-[var(--text-secondary)] truncate">{currentUser.email}</p>
-                <span className="inline-block mt-2 px-2 py-0.5 text-[10px] font-medium bg-[var(--bg-surface)] text-indigo-600 dark:text-indigo-400 border border-[var(--border-color)] rounded-md font-mono">
+                <span className="inline-block mt-1 px-2 py-0.5 text-[10px] font-medium bg-[var(--bg-surface)] text-indigo-600 dark:text-indigo-400 border border-[var(--border-color)] rounded-md font-mono">
                   {currentUser.role}
-                 </span>
+                </span>
               </div>
-              <div className="p-1">
-                <button
-                  onClick={() => alert('Settings is a mock link')}
-                  className="flex w-full items-center space-x-2 px-3 py-2 rounded-lg text-sm text-[var(--text-primary)] hover:bg-[var(--bg-hover)] transition-colors cursor-pointer font-medium"
-                >
-                  <User className="w-4 h-4 text-[var(--text-secondary)]" />
-                  <span>My Profile</span>
-                </button>
-                <button
-                  onClick={() => alert('Logout is mock behavior')}
-                  className="flex w-full items-center space-x-2 px-3 py-2 rounded-lg text-sm text-rose-600 dark:text-rose-400 hover:bg-rose-500/10 transition-colors cursor-pointer font-medium"
-                >
-                  <LogOut className="w-4 h-4" />
-                  <span>Log Out</span>
-                </button>
+              <div className="p-4 space-y-2.5 text-[var(--text-secondary)] font-mono text-[11px]">
+                <div className="flex justify-between items-center">
+                  <span>Workspace:</span>
+                  <span className="font-semibold text-[var(--text-primary)] font-sans">InvestIQ Demo</span>
+                </div>
+                <div className="flex justify-between items-center">
+                  <span>Version:</span>
+                  <span className="font-semibold text-[var(--text-primary)]">v1.2</span>
+                </div>
+                <div className="flex justify-between items-center">
+                  <span>Backend Status:</span>
+                  <span className={`font-semibold ${
+                    backendStatus === 'online' ? 'text-emerald-600 dark:text-emerald-400' : 'text-amber-600 dark:text-amber-400'
+                  }`}>
+                    {backendStatus === 'online' ? 'Live Backend' : 'Local Demo Mode'}
+                  </span>
+                </div>
+                <div className="flex justify-between items-center">
+                  <span>Theme:</span>
+                  <span className="font-semibold text-[var(--text-primary)] font-sans">
+                    {theme === 'light' ? 'Light' : 'Dark'}
+                  </span>
+                </div>
               </div>
             </div>
           )}
