@@ -5,7 +5,8 @@ import {
   User, Cpu, Landmark, Target,
   FileText, ArrowLeft, Download, Layers, Scale,
   ChevronDown, ChevronUp, ExternalLink, Check, Info, Loader2, ChevronRight,
-  Share2, Copy, FileDown, AlertTriangle, ShieldCheck, ShieldAlert, HelpCircle
+  Share2, Copy, FileDown, AlertTriangle, ShieldCheck, ShieldAlert, HelpCircle,
+  ListChecks, TrendingUp, TrendingDown, Gavel
 } from 'lucide-react';
 
 import { MockInvestigationService } from '../services/investigation/MockInvestigationService';
@@ -434,6 +435,58 @@ export const DecisionCenterPage: React.FC = () => {
   const averageConfidence = useMemo(() => {
     return Math.round(agents.reduce((sum, a) => sum + a.confidence, 0) / agents.length);
   }, [agents]);
+
+  // ─── Why This Verdict? — deterministic data derived from existing component state ───
+  const whyVerdictData = useMemo(() => {
+    // Evidence categories: show only if the corresponding agent has evidence
+    const agentIds = agents.map(a => a.id);
+    const evidenceCategories = [
+      { label: 'Founder Background', icon: User, agentId: 'founder' },
+      { label: 'Technical Architecture', icon: Cpu, agentId: 'tech' },
+      { label: 'Financial Information', icon: Landmark, agentId: 'finance' },
+      { label: 'Market Opportunity', icon: Target, agentId: 'market' },
+      { label: 'Competitive Landscape', icon: Scale, agentId: 'competition' },
+      { label: 'Legal & Compliance Review', icon: ShieldAlert, agentId: 'legal' },
+    ].filter(cat => agentIds.includes(cat.agentId));
+
+    // Confidence drivers: top-scoring agents (score >= 80) strengths, capped at 4
+    const confidenceDrivers = agents
+      .filter(a => a.score >= 80)
+      .sort((a, b) => b.score - a.score)
+      .flatMap(a => a.strengths)
+      .slice(0, 4);
+
+    // Risk drivers: from weaknesses of lower-scoring agents or finalSummary.weaknesses, capped at 4
+    const allWeaknesses = [
+      ...finalSummary.weaknesses,
+      ...agents.filter(a => a.score < 85).flatMap(a => a.weaknesses),
+    ];
+    const riskDrivers = [...new Set(allWeaknesses)].slice(0, 4);
+
+    // Strongest agents by score
+    const sorted = [...agents].sort((a, b) => b.score - a.score);
+    const strongestNames = sorted.slice(0, 2).map(a => a.name.replace(' Agent', ''));
+    const weakestNames = sorted.slice(-2).map(a => a.name.replace(' Agent', ''));
+
+    // Deterministic verdict logic text
+    const recText = finalSummary.recommendation === 'INVEST'
+      ? 'recommends INVEST'
+      : finalSummary.recommendation === 'PASS'
+      ? 'recommends PASS'
+      : 'recommends UNDER REVIEW';
+
+    const strengthPhrase = strongestNames.length > 0
+      ? `strong ${strongestNames.join(' and ')} signals`
+      : 'multiple positive evaluation signals';
+
+    const riskPhrase = weakestNames.length > 0
+      ? `with notable concerns in ${weakestNames.join(' and ')} dimensions`
+      : 'with risks noted across select evaluation dimensions';
+
+    const verdictLogic = `InvestIQ ${recText} for ${startupData.name} based on an investment score of ${finalSummary.score}/100 and ${finalSummary.riskLevel} risk profile. The committee identified ${strengthPhrase}, ${riskPhrase}.`;
+
+    return { evidenceCategories, confidenceDrivers, riskDrivers, verdictLogic };
+  }, [agents, finalSummary, startupData]);
 
   // Decision Builder simulation panel states
   const [builderStep, setBuilderStep] = useState(0);
@@ -931,6 +984,98 @@ export const DecisionCenterPage: React.FC = () => {
                 </div>
               </Card>
             )}
+
+            {/* ── Why This Verdict? — Investment Committee Explanation Panel ── */}
+            {isBuilderDone && (
+              <Card className="border border-[var(--border-color)] bg-[var(--bg-subtle)] p-5 flex flex-col space-y-5 flex-shrink-0 text-left">
+
+                {/* Header */}
+                <div className="flex items-center space-x-3 pb-3 border-b border-[var(--border-color)]">
+                  <div className="p-2 rounded-xl bg-indigo-500/10 border border-indigo-500/20 text-indigo-600 dark:text-indigo-400 flex-shrink-0">
+                    <Gavel className="w-4 h-4" />
+                  </div>
+                  <div>
+                    <span className="text-[10px] font-bold text-indigo-600 dark:text-indigo-400 uppercase tracking-widest font-mono block">
+                      Why This Verdict?
+                    </span>
+                    <span className="text-[9px] text-[var(--text-secondary)] font-mono">
+                      Investment committee explanation — derived from agent evaluations
+                    </span>
+                  </div>
+                </div>
+
+                {/* A. Evidence Reviewed */}
+                <div className="space-y-2">
+                  <div className="flex items-center space-x-2">
+                    <ListChecks className="w-3.5 h-3.5 text-cyan-600 dark:text-cyan-400" />
+                    <span className="text-[9px] font-bold text-cyan-600 dark:text-cyan-400 uppercase tracking-widest font-mono">
+                      Evidence Reviewed
+                    </span>
+                  </div>
+                  <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
+                    {whyVerdictData.evidenceCategories.map((cat, idx) => {
+                      const IconComp = cat.icon;
+                      return (
+                        <div key={idx} className="flex items-center space-x-2 bg-[var(--bg-surface)] border border-[var(--border-color)] px-2.5 py-2 rounded-xl">
+                          <div className="p-1 rounded-lg bg-cyan-500/10 flex-shrink-0">
+                            <IconComp className="w-3 h-3 text-cyan-600 dark:text-cyan-400" />
+                          </div>
+                          <span className="text-[10px] font-medium text-[var(--text-primary)] leading-tight">{cat.label}</span>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+
+                {/* B. Confidence Drivers */}
+                <div className="space-y-2">
+                  <div className="flex items-center space-x-2">
+                    <TrendingUp className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400" />
+                    <span className="text-[9px] font-bold text-emerald-600 dark:text-emerald-400 uppercase tracking-widest font-mono">
+                      Confidence Drivers
+                    </span>
+                  </div>
+                  <div className="space-y-1.5">
+                    {whyVerdictData.confidenceDrivers.map((point, idx) => (
+                      <div key={idx} className="flex items-start space-x-2.5 bg-emerald-500/5 border border-emerald-500/10 px-3 py-2 rounded-xl">
+                        <Check className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400 flex-shrink-0 mt-0.5" />
+                        <span className="text-[10px] text-[var(--text-primary)] leading-relaxed">{point}</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                {/* C. Risk Drivers */}
+                <div className="space-y-2">
+                  <div className="flex items-center space-x-2">
+                    <TrendingDown className="w-3.5 h-3.5 text-rose-600 dark:text-rose-400" />
+                    <span className="text-[9px] font-bold text-rose-600 dark:text-rose-400 uppercase tracking-widest font-mono">
+                      Risk Drivers
+                    </span>
+                  </div>
+                  <div className="space-y-1.5">
+                    {whyVerdictData.riskDrivers.map((point, idx) => (
+                      <div key={idx} className="flex items-start space-x-2.5 bg-rose-500/5 border border-rose-500/10 px-3 py-2 rounded-xl">
+                        <AlertTriangle className="w-3.5 h-3.5 text-rose-600 dark:text-rose-400 flex-shrink-0 mt-0.5" />
+                        <span className="text-[10px] text-[var(--text-primary)] leading-relaxed">{point}</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                {/* D. Verdict Logic */}
+                <div className="bg-[var(--bg-surface)] border border-indigo-500/20 px-4 py-3 rounded-xl">
+                  <span className="text-[9px] font-bold text-indigo-600 dark:text-indigo-400 uppercase tracking-widest font-mono block mb-1.5">
+                    Verdict Logic
+                  </span>
+                  <p className="text-[11px] text-[var(--text-primary)] leading-relaxed m-0 font-sans">
+                    {whyVerdictData.verdictLogic}
+                  </p>
+                </div>
+
+              </Card>
+            )}
+
             {/* AI Investment Partner — 5 Questions to Ask Before Investing */}
             <Card className="border border-[var(--border-color)] bg-[var(--bg-subtle)] p-4 flex flex-col space-y-3 flex-shrink-0 text-left">
               {/* Section header */}
