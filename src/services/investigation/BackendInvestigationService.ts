@@ -139,5 +139,51 @@ export const BackendInvestigationService: InvestigationService = {
     }
   }
 };
+/**
+ * Uploads a pitch deck PDF to the backend and returns extracted text.
+ * Returns empty string on any failure so callers can degrade gracefully.
+ */
+export async function uploadPitchDeck(file: File): Promise<string> {
+  try {
+    const formData = new FormData();
+    formData.append('file', file);
+
+    const res = await fetch(`${BACKEND_API_BASE}/documents/upload`, {
+      method: 'POST',
+      body: formData,
+      // No Content-Type header — browser sets it automatically with boundary for multipart
+    });
+
+    if (!res.ok) {
+      console.warn(`Pitch deck upload failed with status ${res.status}. Continuing without extracted text.`);
+      return '';
+    }
+
+    const data = await res.json();
+    return data.extracted_text || '';
+  } catch (err) {
+    console.warn('Pitch deck upload network error. Continuing without extracted text.', err);
+    return '';
+  }
+}
+
+export interface CrossMemoryInsight {
+  label: string;
+  type: string;
+  relationship: string;
+  sourceCount: number;
+}
+
+export async function getCrossMemoryInsights(): Promise<CrossMemoryInsight[]> {
+  try {
+    const res = await fetch(`${BACKEND_API_BASE}/investigations/cross-memory`);
+    if (!res.ok) return [];
+    const data = await res.json();
+    return Array.isArray(data) ? data : [];
+  } catch (err) {
+    return [];
+  }
+}
 
 export default BackendInvestigationService;
+

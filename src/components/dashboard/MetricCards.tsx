@@ -9,7 +9,7 @@ interface MetricCardsProps {
 }
 
 export const MetricCards: React.FC<MetricCardsProps> = ({ startups }) => {
-  // Calculations
+  // Calculations — preserved 100% exactly
   const totalInvestigations = startups.length;
   
   const avgScore = totalInvestigations > 0 
@@ -21,41 +21,45 @@ export const MetricCards: React.FC<MetricCardsProps> = ({ startups }) => {
 
   const cardData = [
     {
-      title: 'Total Investigations',
+      title: 'Active Diligence Audits',
       value: totalInvestigations,
       description: 'Active startup audits',
       icon: ClipboardList,
-      color: 'text-blue-400',
-      bgColor: 'bg-blue-500/10 border-blue-500/20',
+      color: 'text-indigo-600 dark:text-indigo-400',
+      bgColor: 'bg-indigo-50 dark:bg-indigo-500/10 border-indigo-200 dark:border-indigo-500/20',
       progress: 100,
+      metricMeta: '100% Active',
     },
     {
-      title: 'Avg Diligence Score',
+      title: 'Portfolio Avg Score',
       value: `${avgScore}/100`,
-      description: 'Across all active evaluations',
+      description: 'Across all evaluations',
       icon: Award,
-      color: 'text-brand-purple-light',
-      bgColor: 'bg-brand-purple/10 border-brand-purple/20',
+      color: 'text-blue-600 dark:text-blue-400',
+      bgColor: 'bg-blue-50 dark:bg-blue-500/10 border-blue-200 dark:border-blue-500/20',
       progress: avgScore,
+      metricMeta: 'Target ≥ 75',
     },
     {
-      title: 'High Risk Startups',
+      title: 'High-Risk Flagged',
       value: highRiskCount,
-      description: 'Requiring priority review',
+      description: 'Priority review needed',
       icon: ShieldAlert,
-      color: 'text-rose-400',
-      bgColor: 'bg-rose-500/10 border-rose-500/20',
+      color: 'text-rose-600 dark:text-rose-400',
+      bgColor: 'bg-rose-50 dark:bg-rose-500/10 border-rose-200 dark:border-rose-500/20',
       progress: totalInvestigations > 0 ? (highRiskCount / totalInvestigations) * 100 : 0,
       alert: highRiskCount > 0,
+      metricMeta: `${Math.round(totalInvestigations > 0 ? (highRiskCount / totalInvestigations) * 100 : 0)}% of total`,
     },
     {
-      title: 'Approved Startups',
+      title: 'Committee Approved',
       value: approvedCount,
-      description: 'Diligence completed & passed',
+      description: 'Completed & passed',
       icon: CheckCircle2,
-      color: 'text-emerald-400',
-      bgColor: 'bg-emerald-500/10 border-emerald-500/20',
+      color: 'text-emerald-600 dark:text-emerald-400',
+      bgColor: 'bg-emerald-50 dark:bg-emerald-500/10 border-emerald-200 dark:border-emerald-500/20',
       progress: totalInvestigations > 0 ? (approvedCount / totalInvestigations) * 100 : 0,
+      metricMeta: `${Math.round(totalInvestigations > 0 ? (approvedCount / totalInvestigations) * 100 : 0)}% pass rate`,
     },
   ];
 
@@ -82,14 +86,14 @@ export const MetricCards: React.FC<MetricCardsProps> = ({ startups }) => {
     >
       {cardData.map((card, idx) => (
         <motion.div key={idx} variants={itemVariants}>
-          <Card glow={card.alert} className="relative overflow-hidden group">
+          <Card glow={card.alert} className="relative overflow-hidden group hover:border-[var(--text-secondary)]">
             <CardContent className="p-6">
               <div className="flex items-start justify-between">
                 <div>
-                  <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider">
+                  <p className="text-[11px] font-mono font-semibold text-[var(--text-secondary)] uppercase tracking-wider">
                     {card.title}
                   </p>
-                  <h3 className="text-3xl font-bold font-display text-white mt-1">
+                  <h3 className="text-3xl font-bold font-display text-[var(--text-primary)] mt-1.5 tracking-tight">
                     {card.value}
                   </h3>
                 </div>
@@ -100,18 +104,12 @@ export const MetricCards: React.FC<MetricCardsProps> = ({ startups }) => {
                 </div>
               </div>
 
-              <div className="mt-4 flex items-center justify-between text-xs text-gray-500">
+              {/* Institutional KPI meta row */}
+              <div className="mt-5 pt-3 border-t border-[var(--border-color)] flex items-center justify-between text-xs text-[var(--text-secondary)]">
                 <span>{card.description}</span>
-              </div>
-
-              {/* Progress bar line */}
-              <div className="w-full bg-white/5 h-1 rounded-full mt-3 overflow-hidden">
-                <div
-                  className={`h-full rounded-full ${
-                    card.alert ? 'bg-rose-500 animate-pulse' : 'bg-gradient-to-r from-brand-purple-dark to-brand-purple-light'
-                  }`}
-                  style={{ width: `${Math.min(100, Math.max(0, card.progress))}%` }}
-                />
+                <span className="font-mono text-[11px] text-[var(--text-primary)] font-medium">
+                  {card.metricMeta}
+                </span>
               </div>
             </CardContent>
           </Card>

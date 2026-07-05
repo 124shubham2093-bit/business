@@ -357,16 +357,16 @@ export const CogneeVerifyPage: React.FC = () => {
     <motion.div
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
-      className="space-y-6 max-w-7xl mx-auto p-4 md:p-6 text-white font-sans"
+      className="space-y-6 max-w-7xl mx-auto p-4 md:p-6 text-[var(--text-primary)] font-sans"
     >
       {/* Header */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-white/5 pb-5">
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-[var(--border-color)] pb-5">
         <div>
-          <h1 className="text-3xl font-bold tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-white via-white to-brand-purple-light m-0">
-            Cognee Graph Verification Suite
+          <h1 className="text-3xl font-bold tracking-tight text-[var(--text-primary)] m-0">
+            Knowledge Graph Verification Console
           </h1>
-          <p className="text-sm text-gray-400 mt-1">
-            Validate Cognee semantic memory, graph growth, duplicate merging, and semantic search directly in the database.
+          <p className="text-sm text-[var(--text-secondary)] mt-1">
+            Validate knowledge graph integrity, cross-investigation entity matching, and semantic retrieval.
           </p>
         </div>
         <div className="flex items-center gap-2">
@@ -374,7 +374,7 @@ export const CogneeVerifyPage: React.FC = () => {
             onClick={handleResetDb}
             disabled={isDbConnecting || isRunning}
             variant="outline"
-            className="border-white/5 bg-white/2 hover:bg-white/5 text-gray-300 font-medium text-xs flex items-center space-x-1 py-2 px-3 animate-fade-in"
+            className="border-[var(--border-color)] bg-[var(--bg-subtle)] hover:bg-[var(--bg-subtle)]/80 text-[var(--text-primary)] font-medium text-xs flex items-center space-x-1 py-2 px-3 animate-fade-in"
           >
             <RefreshCw className={`w-3.5 h-3.5 ${isDbConnecting ? 'animate-spin' : ''}`} />
             <span>Reset Cognee DB</span>
@@ -382,7 +382,7 @@ export const CogneeVerifyPage: React.FC = () => {
           <Button
             onClick={runVerificationSuite}
             disabled={isRunning || isDbConnecting}
-            className="bg-brand-purple hover:bg-brand-purple-dark text-white font-medium text-xs shadow-lg shadow-brand-purple/25 flex items-center space-x-1.5 py-2 px-4 animate-fade-in"
+            className="bg-indigo-600 hover:bg-indigo-700 text-white font-medium text-xs shadow-lg shadow-indigo-500/25 flex items-center space-x-1.5 py-2 px-4 animate-fade-in"
           >
             <Play className={`w-3.5 h-3.5 ${isRunning ? 'animate-pulse' : ''}`} />
             <span>Run Verification Suite</span>
@@ -393,24 +393,24 @@ export const CogneeVerifyPage: React.FC = () => {
       {/* Grid Stats */}
       <div className="grid grid-cols-2 lg:grid-cols-6 gap-4">
         {[
-          { title: 'Total Nodes', val: stats?.nodes ?? '-', desc: 'SQL total nodes count', icon: Database, color: 'text-brand-purple-light bg-brand-purple/10' },
-          { title: 'Total Edges', val: stats?.edges ?? '-', desc: 'SQL total edges count', icon: Layers, color: 'text-blue-400 bg-blue-500/10' },
-          { title: 'Companies', val: stats?.companies ?? '-', desc: 'Startup entities', icon: Server, color: 'text-emerald-400 bg-emerald-500/10' },
-          { title: 'Founders', val: stats?.founders ?? '-', desc: 'Lead executive nodes', icon: Clock, color: 'text-amber-400 bg-amber-500/10' },
-          { title: 'Investors', val: stats?.investors ?? '-', desc: 'Joint funding nodes', icon: BookOpen, color: 'text-purple-400 bg-purple-500/10' },
-          { title: 'Documents', val: stats?.documents ?? '-', desc: 'Ingested data items', icon: Search, color: 'text-rose-400 bg-rose-500/10' }
+          { title: 'Total Nodes', val: stats?.nodes ?? '-', desc: 'SQL total nodes count', icon: Database, color: 'text-indigo-600 dark:text-indigo-400 bg-indigo-50 dark:bg-indigo-950/20' },
+          { title: 'Total Edges', val: stats?.edges ?? '-', desc: 'SQL total edges count', icon: Layers, color: 'text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-500/10' },
+          { title: 'Companies', val: stats?.companies ?? '-', desc: 'Startup entities', icon: Server, color: 'text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-500/10' },
+          { title: 'Founders', val: stats?.founders ?? '-', desc: 'Lead executive nodes', icon: Clock, color: 'text-amber-600 dark:text-amber-400 bg-amber-50 dark:bg-amber-500/10' },
+          { title: 'Investors', val: stats?.investors ?? '-', desc: 'Joint funding nodes', icon: BookOpen, color: 'text-purple-600 dark:text-purple-400 bg-purple-50 dark:bg-purple-500/10' },
+          { title: 'Documents', val: stats?.documents ?? '-', desc: 'Ingested data items', icon: Search, color: 'text-rose-600 dark:text-rose-400 bg-rose-50 dark:bg-rose-500/10' }
         ].map((s, idx) => (
-          <Card key={idx} className="border-white/5 bg-dark-bg/95 hover:border-white/10 transition-colors">
+          <Card key={idx} className="border border-[var(--border-color)] bg-[var(--bg-surface)] hover:border-indigo-500/50 transition-colors">
             <CardContent className="p-4 flex flex-col justify-between h-24">
               <div className="flex justify-between items-center">
-                <span className="text-gray-400 text-xs font-medium">{s.title}</span>
+                <span className="text-[var(--text-secondary)] text-xs font-medium">{s.title}</span>
                 <div className={`p-1.5 rounded-lg ${s.color}`}>
                   <s.icon className="w-4 h-4" />
                 </div>
               </div>
               <div>
-                <h3 className="text-xl font-bold mt-1 text-white">{s.val}</h3>
-                <span className="text-[10px] text-gray-500">{s.desc}</span>
+                <h3 className="text-xl font-bold mt-1 text-[var(--text-primary)]">{s.val}</h3>
+                <span className="text-[10px] text-[var(--text-secondary)]">{s.desc}</span>
               </div>
             </CardContent>
           </Card>
@@ -419,14 +419,14 @@ export const CogneeVerifyPage: React.FC = () => {
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Main Step Logger */}
-        <Card className="lg:col-span-2 border-white/5 bg-dark-bg/95">
-          <CardHeader className="border-b border-white/5 p-4 flex flex-row items-center justify-between">
+        <Card className="lg:col-span-2 border border-[var(--border-color)] bg-[var(--bg-surface)]">
+          <CardHeader className="border-b border-[var(--border-color)] p-4 flex flex-row items-center justify-between">
             <CardTitle className="text-sm font-semibold flex items-center gap-2">
-              <CheckSquare className="w-4 h-4 text-brand-purple-light" />
+              <CheckSquare className="w-4 h-4 text-indigo-600 dark:text-indigo-400" />
               <span>Automated Verification Steps</span>
             </CardTitle>
             {isRunning && (
-              <Badge className="bg-brand-purple/20 text-brand-purple-light border-brand-purple/30 animate-pulse text-[10px]">
+              <Badge className="bg-indigo-50 dark:bg-indigo-950/20 text-indigo-600 dark:text-indigo-400 border-indigo-200 dark:border-indigo-500/30 animate-pulse text-[10px]">
                 Running Step {currentStep}/9
               </Badge>
             )}
@@ -437,33 +437,33 @@ export const CogneeVerifyPage: React.FC = () => {
                 key={step.step}
                 className={`p-3 rounded-lg border transition-all duration-300 ${
                   currentStep === step.step
-                    ? 'border-brand-purple bg-brand-purple/5 shadow-md shadow-brand-purple/5'
+                    ? 'border-indigo-500 bg-indigo-50/50 dark:bg-indigo-950/20 shadow-md'
                     : step.status === 'success'
-                    ? 'border-emerald-500/20 bg-emerald-500/2'
+                    ? 'border-emerald-500/20 bg-emerald-500/5 dark:bg-emerald-500/10'
                     : step.status === 'failed'
-                    ? 'border-rose-500/20 bg-rose-500/2'
-                    : 'border-white/5 bg-white/1'
+                    ? 'border-rose-500/20 bg-rose-500/5 dark:bg-rose-500/10'
+                    : 'border-[var(--border-color)] bg-[var(--bg-subtle)]'
                 }`}
               >
                 <div className="flex items-start justify-between">
                   <div className="flex gap-3 items-start">
                     <span className={`text-xs font-mono font-bold mt-0.5 px-2 py-0.5 rounded ${
-                      step.status === 'success' ? 'bg-emerald-500/25 text-emerald-400' :
-                      step.status === 'failed' ? 'bg-rose-500/25 text-rose-400' :
-                      currentStep === step.step ? 'bg-brand-purple/25 text-brand-purple-light animate-pulse' :
-                      'bg-white/5 text-gray-400'
+                      step.status === 'success' ? 'bg-emerald-500/25 text-emerald-600 dark:text-emerald-400' :
+                      step.status === 'failed' ? 'bg-rose-500/25 text-rose-600 dark:text-rose-400' :
+                      currentStep === step.step ? 'bg-indigo-100 dark:bg-indigo-950/40 text-indigo-600 dark:text-indigo-400 animate-pulse' :
+                      'bg-[var(--bg-subtle)] text-[var(--text-secondary)]'
                     }`}>
                       Step {step.step}
                     </span>
                     <div>
-                      <h4 className="text-sm font-bold text-white">{step.title}</h4>
-                      <p className="text-xs text-gray-400 mt-1">{step.message}</p>
+                      <h4 className="text-sm font-bold text-[var(--text-primary)]">{step.title}</h4>
+                      <p className="text-xs text-[var(--text-secondary)] mt-1">{step.message}</p>
                     </div>
                   </div>
                   <div>
-                    {step.status === 'success' && <CheckCircle2 className="w-4.5 h-4.5 text-emerald-400" />}
-                    {step.status === 'failed' && <AlertCircle className="w-4.5 h-4.5 text-rose-400" />}
-                    {step.status === 'running' && <div className="w-4 h-4 border-2 border-brand-purple border-t-transparent rounded-full animate-spin" />}
+                    {step.status === 'success' && <CheckCircle2 className="w-4.5 h-4.5 text-emerald-600 dark:text-emerald-400" />}
+                    {step.status === 'failed' && <AlertCircle className="w-4.5 h-4.5 text-rose-600 dark:text-rose-400" />}
+                    {step.status === 'running' && <div className="w-4 h-4 border-2 border-indigo-600 dark:border-indigo-400 border-t-transparent rounded-full animate-spin" />}
                   </div>
                 </div>
 
@@ -472,9 +472,9 @@ export const CogneeVerifyPage: React.FC = () => {
                   <motion.div
                     initial={{ opacity: 0, height: 0 }}
                     animate={{ opacity: 1, height: 'auto' }}
-                    className="mt-3 bg-black/40 rounded p-2.5 border border-white/5 font-mono text-[10px] overflow-x-auto text-gray-300 max-h-36"
+                    className="mt-3 bg-[var(--bg-subtle)] rounded p-2.5 border border-[var(--border-color)] font-mono text-[10px] overflow-x-auto text-[var(--text-primary)] max-h-36"
                   >
-                    <div className="flex justify-between text-gray-500 mb-1 border-b border-white/5 pb-1">
+                    <div className="flex justify-between text-[var(--text-secondary)] mb-1 border-b border-[var(--border-color)] pb-1">
                       <span className="flex items-center gap-1"><Code className="w-3.5 h-3.5" /> COGNEE DB QUERY RESULT</span>
                       <span>JSON</span>
                     </div>
@@ -489,27 +489,27 @@ export const CogneeVerifyPage: React.FC = () => {
         {/* Right column */}
         <div className="space-y-6">
           {/* Memory Write Log */}
-          <Card className="border-white/5 bg-dark-bg/95">
-            <CardHeader className="border-b border-white/5 p-4 flex flex-row items-center gap-2">
-              <Clock className="w-4 h-4 text-amber-400" />
+          <Card className="border border-[var(--border-color)] bg-[var(--bg-surface)]">
+            <CardHeader className="border-b border-[var(--border-color)] p-4 flex flex-row items-center gap-2">
+              <Clock className="w-4 h-4 text-amber-500 dark:text-amber-400" />
               <CardTitle className="text-sm font-semibold">Memory Write Log (Cognitive Stream)</CardTitle>
             </CardHeader>
             <CardContent className="p-4">
               <div className="space-y-3 font-mono text-[11px] max-h-48 overflow-y-auto pr-1">
                 {writeLogs.length === 0 ? (
-                  <div className="text-gray-500 text-center py-6">
+                  <div className="text-[var(--text-secondary)] text-center py-6">
                     <Info className="w-5 h-5 mx-auto mb-1.5 opacity-55" />
                     <span>No write events. Run verification suite.</span>
                   </div>
                 ) : (
                   writeLogs.map((log, idx) => (
-                    <div key={idx} className="flex gap-2.5 items-start border-l border-white/10 pl-3 py-0.5 animate-fade-in">
-                      <span className="text-gray-500">{log.timestamp}</span>
+                    <div key={idx} className="flex gap-2.5 items-start border-l border-[var(--border-color)] pl-3 py-0.5 animate-fade-in">
+                      <span className="text-[var(--text-secondary)]">{log.timestamp}</span>
                       <div className="flex-1">
-                        <span className="text-gray-300 font-bold">{log.event}</span>
-                        <div className="text-gray-500 text-[10px]">{log.details}</div>
+                        <span className="text-[var(--text-primary)] font-bold">{log.event}</span>
+                        <div className="text-[var(--text-secondary)] text-[10px]">{log.details}</div>
                       </div>
-                      <span className="text-emerald-400 font-bold">✔</span>
+                      <span className="text-emerald-600 dark:text-emerald-400 font-bold">✔</span>
                     </div>
                   ))
                 )}
@@ -518,9 +518,9 @@ export const CogneeVerifyPage: React.FC = () => {
           </Card>
 
           {/* Sandbox Query */}
-          <Card className="border-white/5 bg-dark-bg/95">
-            <CardHeader className="border-b border-white/5 p-4 flex flex-row items-center gap-2">
-              <Search className="w-4 h-4 text-blue-400" />
+          <Card className="border border-[var(--border-color)] bg-[var(--bg-surface)]">
+            <CardHeader className="border-b border-[var(--border-color)] p-4 flex flex-row items-center gap-2">
+              <Search className="w-4 h-4 text-blue-600 dark:text-blue-400" />
               <CardTitle className="text-sm font-semibold">Semantic Query Sandbox</CardTitle>
             </CardHeader>
             <CardContent className="p-4 space-y-4">
@@ -530,12 +530,12 @@ export const CogneeVerifyPage: React.FC = () => {
                   placeholder="Ask a question..."
                   value={queryText}
                   onChange={(e) => setQueryText(e.target.value)}
-                  className="flex-1 px-3 py-1.5 text-xs bg-white/5 border border-white/5 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:border-brand-purple/50 focus:ring-1 focus:ring-brand-purple/50 transition-colors"
+                  className="flex-1 px-3 py-1.5 text-xs bg-[var(--bg-subtle)] border border-[var(--border-color)] rounded-lg text-[var(--text-primary)] placeholder-[var(--text-secondary)] focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition-colors"
                 />
                 <Button
                   type="submit"
                   disabled={isQuerying || !queryText.trim()}
-                  className="bg-brand-purple hover:bg-brand-purple-dark text-white p-2 rounded-lg text-xs"
+                  className="bg-indigo-600 hover:bg-indigo-700 text-white p-2 rounded-lg text-xs"
                 >
                   <Send className="w-3.5 h-3.5" />
                 </Button>
@@ -547,35 +547,35 @@ export const CogneeVerifyPage: React.FC = () => {
                     initial={{ opacity: 0, y: 5 }}
                     animate={{ opacity: 1, y: 0 }}
                     exit={{ opacity: 0, y: -5 }}
-                    className="space-y-3 bg-white/2 border border-white/5 p-3 rounded-lg text-xs"
+                    className="space-y-3 bg-[var(--bg-subtle)] border border-[var(--border-color)] p-3 rounded-lg text-xs"
                   >
                     <div className="flex items-start justify-between">
                       <div>
-                        <span className="text-gray-400 font-medium block">Semantic Answer:</span>
-                        <p className="text-white font-semibold mt-0.5">{queryResponse.answer}</p>
+                        <span className="text-[var(--text-secondary)] font-medium block">Semantic Answer:</span>
+                        <p className="text-[var(--text-primary)] font-semibold mt-0.5">{queryResponse.answer}</p>
                       </div>
                       <div className="flex items-center gap-1 px-2 py-1 rounded-md bg-emerald-500/10 border border-emerald-500/20 shrink-0 ml-2">
-                        <Database className="w-3 h-3 text-emerald-400" />
-                        <span className="text-[10px] text-emerald-400 font-bold">Cognee Memory</span>
-                        <CheckCircle2 className="w-3 h-3 text-emerald-400" />
+                        <Database className="w-3 h-3 text-emerald-600 dark:text-emerald-400" />
+                        <span className="text-[10px] text-emerald-600 dark:text-emerald-400 font-bold">Cognee Memory</span>
+                        <CheckCircle2 className="w-3 h-3 text-emerald-600 dark:text-emerald-400" />
                       </div>
                     </div>
 
-                    <div className="grid grid-cols-2 gap-2 text-[11px] border-t border-white/5 pt-2">
+                    <div className="grid grid-cols-2 gap-2 text-[11px] border-t border-[var(--border-color)] pt-2">
                       <div>
-                        <span className="text-gray-500">Confidence:</span>
-                        <span className="text-emerald-400 font-bold block">{queryResponse.confidence}</span>
+                        <span className="text-[var(--text-secondary)]">Confidence:</span>
+                        <span className="text-emerald-600 dark:text-emerald-400 font-bold block">{queryResponse.confidence}</span>
                       </div>
                       <div>
-                        <span className="text-gray-500">Source Evidence:</span>
-                        <span className="text-gray-300 font-medium block truncate">{queryResponse.evidence}</span>
+                        <span className="text-[var(--text-secondary)]">Source Evidence:</span>
+                        <span className="text-[var(--text-primary)] font-medium block truncate">{queryResponse.evidence}</span>
                       </div>
                     </div>
 
                     {queryResponse.memoryPath && (
-                      <div className="border-t border-white/5 pt-2 text-[10px]">
-                        <span className="text-gray-500 block mb-1">Graph Traversal Memory Path:</span>
-                        <div className="font-mono bg-black/30 p-1.5 rounded text-brand-purple-light whitespace-normal leading-normal">
+                      <div className="border-t border-[var(--border-color)] pt-2 text-[10px]">
+                        <span className="text-[var(--text-secondary)] block mb-1">Graph Traversal Memory Path:</span>
+                        <div className="font-mono bg-[var(--bg-surface)] border border-[var(--border-color)] p-1.5 rounded text-indigo-600 dark:text-indigo-400 whitespace-normal leading-normal">
                           {queryResponse.memoryPath}
                         </div>
                       </div>

@@ -12,7 +12,7 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({ searchQuery, s
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
   return (
-    <div className="flex h-screen overflow-hidden bg-dark-bg text-gray-200">
+    <div className="flex h-screen overflow-hidden bg-[var(--bg-page)] text-[var(--text-primary)] transition-colors duration-200">
       {/* Sidebar Navigation */}
       <Sidebar isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} />
 
@@ -27,10 +27,6 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({ searchQuery, s
 
         {/* Dynamic page routes */}
         <main className="flex-1 overflow-y-auto px-6 py-8 relative">
-          {/* Subtle background glow ambient effects */}
-          <div className="absolute top-0 right-1/4 w-96 h-96 bg-brand-purple/5 rounded-full blur-[120px] pointer-events-none -z-10" />
-          <div className="absolute bottom-10 left-1/4 w-96 h-96 bg-brand-purple-light/5 rounded-full blur-[120px] pointer-events-none -z-10" />
-
           <Outlet />
         </main>
       </div>
@@ -38,4 +34,3 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({ searchQuery, s
   );
 };
 export default DashboardLayout;
-

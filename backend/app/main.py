@@ -5,7 +5,7 @@ from app.routers import investigations, health
 from app.config.settings import settings
 
 app = FastAPI(
-    title="VentureIQ Auditor API",
+    title="InvestIQ API",
     description="Python backend running Cognee semantic memory and agent analyzers.",
     version="1.0.0"
 )

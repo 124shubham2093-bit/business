@@ -9,9 +9,9 @@ import {
   Coins, Sparkles, CheckCircle2, Loader2
 } from 'lucide-react';
 
-import { MockInvestigationService } from '../services/investigation/MockInvestigationService';
 import { generateScores } from '../services/investigation/mockGenerator';
 import type { Startup } from '../services/investigation/investigationTypes';
+import { BACKEND_API_BASE } from '../services/investigation/config';
 import { Button } from '../components/ui/Button';
 import { Card, CardHeader, CardTitle, CardContent } from '../components/ui/Card';
 import { Badge } from '../components/ui/Badge';
@@ -48,6 +48,7 @@ export const InvestigationPipelinePage: React.FC = () => {
       description: 'Dynamic automation platform',
       pitchDeckName: 'pitch_deck_v1.pdf',
       financialsName: 'financials_q2.xlsx',
+      pitchDeckText: ''
     };
   }, [location.state]);
 
@@ -59,51 +60,51 @@ export const InvestigationPipelinePage: React.FC = () => {
   // stats hooks removed to satisfy unused variable warnings
 
   // Trigger backend execution on mount
+  // Trigger backend investigation on mount — fires in background, does not affect simulation
   const [backendResult, setBackendResult] = useState<Startup | null>(null);
   useEffect(() => {
-    MockInvestigationService.createInvestigation({
-      id: `st-${Date.now()}`,
-      name: startupData.name,
-      logo: '🚀',
-      elevatorPitch: startupData.description || '',
-      sector: startupData.sector,
-      investmentScore: scores.investmentScore,
-      riskLevel: (scores.risk >= 25 ? 'High' : scores.risk >= 18 ? 'Medium' : 'Low') as any,
-      status: (scores.recommendation === 'INVEST' ? 'Approved' : scores.recommendation === 'PASS' ? 'Flagged' : 'Under Review') as any,
-      dateInvestigated: new Date().toISOString().split('T')[0],
-      metrics: {
-        financials: scores.finance,
-        marketSize: scores.market,
-        team: scores.founder,
-        product: scores.technology,
-      },
-      details: {
-        summary: '',
-        strengths: [],
-        risks: [],
-        founderBackground: `${startupData.founderName} (CEO & Founder).`,
-        financialSnapshot: {
-          revenue: '$1.2M ARR',
-          burnRate: '$90k/mo',
-          runway: '24 months',
-          valuation: '$22M Post-Money',
-        },
-        marketOpportunity: '',
-        techStackRisk: '',
+    const runBackendInvestigation = async () => {
+      try {
+        const combinedDescription = [
+          startupData.description || '',
+          startupData.pitchDeckText || '',
+        ].filter(Boolean).join('\n\n').trim();
+
+        const res = await fetch(`${BACKEND_API_BASE}/investigations`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            name: startupData.name,
+            founderName: startupData.founderName,
+            sector: startupData.sector,
+            fundingStage: startupData.fundingStage || 'Seed',
+            websiteUrl: startupData.websiteUrl || 'https://example.com',
+            githubUrl: startupData.githubUrl || 'https://github.com/example',
+            description: combinedDescription || 'No description provided.',
+          }),
+        });
+
+        if (!res.ok) {
+          console.warn(`Backend investigation returned ${res.status}. Completion summary will use deterministic scores.`);
+          return;
+        }
+
+        const created = await res.json();
+        setBackendResult(created as Startup);
+      } catch (err) {
+        console.warn('Backend investigation unreachable. Completion summary will use deterministic scores.', err);
       }
-    }).then((created) => {
-      setBackendResult(created);
-    }).catch((err) => {
-      console.warn("Backend run failover to mock parameters:", err);
-    });
-  }, [startupData, scores]);
+    };
+
+    runBackendInvestigation();
+  }, [startupData]);
 
   // Define agents configs
   const agents: AgentConfig[] = useMemo(() => [
     {
       id: 'founder',
       name: 'Founder Agent',
-      role: 'Biographical Audits',
+      role: 'Founder Assessment',
       icon: User,
       color: 'text-blue-400 border-blue-500/20 bg-blue-500/5',
       tasks: {
@@ -121,7 +122,7 @@ export const InvestigationPipelinePage: React.FC = () => {
     {
       id: 'tech',
       name: 'Technology Agent',
-      role: 'Code Moat Validation',
+      role: 'Technical Moat Analysis',
       icon: Cpu,
       color: 'text-purple-400 border-purple-500/20 bg-purple-500/5',
       tasks: {
@@ -139,7 +140,7 @@ export const InvestigationPipelinePage: React.FC = () => {
     {
       id: 'finance',
       name: 'Financial Agent',
-      role: 'Runway Balance Review',
+      role: 'Financial Health Review',
       icon: Landmark,
       color: 'text-emerald-400 border-emerald-500/20 bg-emerald-500/5',
       tasks: {
@@ -541,7 +542,7 @@ export const InvestigationPipelinePage: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen bg-[#030014] text-gray-200 font-sans flex flex-col overflow-hidden relative">
+    <div className="min-h-screen bg-[#030014] dark:bg-[#030014] bg-slate-50 text-[var(--text-primary)] font-sans flex flex-col overflow-hidden relative">
       
       {/* Background neon blur overlays */}
       <div className="absolute top-1/4 left-1/4 w-[400px] h-[400px] bg-brand-purple/5 rounded-full blur-[140px] pointer-events-none -z-10 animate-pulse" />
@@ -558,36 +559,36 @@ export const InvestigationPipelinePage: React.FC = () => {
             className="flex-1 flex flex-col p-6 space-y-4 max-w-7xl mx-auto w-full overflow-hidden"
           >
             {/* Header progress panel */}
-            <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 bg-white/2 border border-white/5 rounded-2xl p-5 backdrop-blur-xl">
+            <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 bg-white/30 dark:bg-white/2 border border-slate-200 dark:border-white/5 rounded-2xl p-5 backdrop-blur-xl">
               <div>
                 <span className="text-[9px] text-brand-purple-light font-bold uppercase tracking-widest flex items-center space-x-1">
                   <Activity className="w-3.5 h-3.5 animate-pulse mr-1" />
                   <span>DILIGENCE MISSION CONTROL</span>
                 </span>
-                <h1 className="text-2xl font-bold font-display text-white mt-1">
+                <h1 className="text-2xl font-bold font-display text-slate-900 dark:text-white mt-1">
                   Scanning: {startupData.name}
                 </h1>
-                <p className="text-[10px] text-gray-400 mt-0.5 font-mono">
+                <p className="text-[10px] text-slate-500 dark:text-gray-400 mt-0.5 font-mono">
                   Target: {startupData.sector} • {startupData.fundingStage} stage
                 </p>
               </div>
 
               {/* Progress timer widgets */}
               <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 text-xs font-mono">
-                <div className="bg-black/35 border border-white/5 px-4 py-2 rounded-xl text-center min-w-28">
-                  <span className="text-[9px] text-gray-500 block uppercase tracking-wider">ELAPSED TIME</span>
-                  <span className="text-sm font-semibold text-white">{elapsedTime}s</span>
+                <div className="bg-black/10 dark:bg-black/35 border border-slate-200 dark:border-white/5 px-4 py-2 rounded-xl text-center min-w-28">
+                  <span className="text-[9px] text-slate-500 dark:text-gray-500 block uppercase tracking-wider">ELAPSED TIME</span>
+                  <span className="text-sm font-semibold text-slate-900 dark:text-white">{elapsedTime}s</span>
                 </div>
-                <div className="bg-black/35 border border-white/5 px-4 py-2 rounded-xl text-center min-w-28">
-                  <span className="text-[9px] text-gray-500 block uppercase tracking-wider">REMAINING</span>
-                  <span className="text-sm font-semibold text-white">{remainingTimeSeconds}s</span>
+                <div className="bg-black/10 dark:bg-black/35 border border-slate-200 dark:border-white/5 px-4 py-2 rounded-xl text-center min-w-28">
+                  <span className="text-[9px] text-slate-500 dark:text-gray-500 block uppercase tracking-wider">REMAINING</span>
+                  <span className="text-sm font-semibold text-slate-900 dark:text-white">{remainingTimeSeconds}s</span>
                 </div>
-                <div className="bg-black/35 border border-white/5 px-4 py-2 rounded-xl text-center min-w-28">
-                  <span className="text-[9px] text-gray-500 block uppercase tracking-wider">STAGE RATE</span>
+                <div className="bg-black/10 dark:bg-black/35 border border-slate-200 dark:border-white/5 px-4 py-2 rounded-xl text-center min-w-28">
+                  <span className="text-[9px] text-slate-500 dark:text-gray-500 block uppercase tracking-wider">STAGE RATE</span>
                   <span className="text-sm font-semibold text-brand-purple-light">{stepProgress}%</span>
                 </div>
-                <div className="bg-black/35 border border-white/5 px-4 py-2 rounded-xl text-center min-w-28">
-                  <span className="text-[9px] text-gray-500 block uppercase tracking-wider">COMPLETED AGENTS</span>
+                <div className="bg-black/10 dark:bg-black/35 border border-slate-200 dark:border-white/5 px-4 py-2 rounded-xl text-center min-w-28">
+                  <span className="text-[9px] text-slate-500 dark:text-gray-500 block uppercase tracking-wider">COMPLETED AGENTS</span>
                   <span className="text-sm font-semibold text-emerald-400">{activeStepIdx} / {totalSteps}</span>
                 </div>
               </div>
@@ -608,8 +609,8 @@ export const InvestigationPipelinePage: React.FC = () => {
                           <currentAgent.icon className="w-5 h-5 text-brand-purple-light animate-pulse" />
                         </div>
                         <div>
-                          <span className="text-[9px] text-gray-500 uppercase font-semibold">ACTIVE AGENT</span>
-                          <h3 className="text-sm font-bold text-white leading-tight">{currentAgent.name}</h3>
+                          <span className="text-[9px] text-slate-500 dark:text-gray-500 uppercase font-semibold">ACTIVE AGENT</span>
+                          <h3 className="text-sm font-bold text-slate-900 dark:text-white leading-tight">{currentAgent.name}</h3>
                           <span className="text-[10px] text-brand-purple-light font-mono block mt-0.5">{currentAgent.role}</span>
                         </div>
                       </div>
@@ -623,7 +624,7 @@ export const InvestigationPipelinePage: React.FC = () => {
                         <div className="w-full bg-white/5 h-1.5 rounded-full overflow-hidden">
                           <div className="h-full bg-brand-purple-light" style={{ width: `${stepProgress}%` }} />
                         </div>
-                        <p className="text-[11px] text-gray-300 italic pt-1 leading-normal">
+                        <p className="text-[11px] text-slate-600 dark:text-gray-300 italic pt-1 leading-normal">
                           &gt; {currentTask}
                         </p>
                       </div>
@@ -632,8 +633,8 @@ export const InvestigationPipelinePage: React.FC = () => {
                 )}
 
                 {/* Ingestion Cognee Memory Stats Panel */}
-                <Card className="border border-white/5 bg-black/40 p-4 flex flex-col space-y-3.5 flex-shrink-0">
-                  <div className="flex justify-between items-center pb-2 border-b border-white/5">
+                <Card className="border border-slate-200 dark:border-white/5 bg-white/60 dark:bg-black/40 p-4 flex flex-col space-y-3.5 flex-shrink-0">
+                  <div className="flex justify-between items-center pb-2 border-b border-slate-200 dark:border-white/5">
                     <span className="text-[10px] font-bold text-cyan-400 uppercase tracking-widest">Cognee Memory Telemetry</span>
                     <span className="flex items-center text-[9px] text-emerald-400 font-bold bg-emerald-950/30 px-2 py-0.5 rounded border border-emerald-500/20">
                       <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 mr-1.5 animate-ping" />
@@ -648,17 +649,17 @@ export const InvestigationPipelinePage: React.FC = () => {
                       { label: 'Documents Indexed', val: cogneeStats.documents },
                       { label: 'Queries Executed', val: cogneeStats.queries }
                     ].map((s, idx) => (
-                      <div key={idx} className="bg-white/2 border border-white/5 p-2 rounded-xl">
-                        <span className="text-[8px] text-gray-500 block uppercase font-medium">{s.label}</span>
-                        <span className="text-sm font-bold text-white mt-0.5 block">{s.val}</span>
+                      <div key={idx} className="bg-slate-100 dark:bg-white/2 border border-slate-200 dark:border-white/5 p-2 rounded-xl">
+                        <span className="text-[8px] text-slate-500 dark:text-gray-500 block uppercase font-medium">{s.label}</span>
+                        <span className="text-sm font-bold text-slate-900 dark:text-white mt-0.5 block">{s.val}</span>
                       </div>
                     ))}
                   </div>
                 </Card>
 
                 {/* Agents List Queue */}
-                <div className="flex-1 bg-white/2 border border-white/5 rounded-2xl p-4 overflow-y-auto space-y-2">
-                  <span className="text-[9px] font-bold text-gray-400 block uppercase tracking-widest pb-1 border-b border-white/5 mb-2">Agent Queue Status</span>
+                <div className="flex-1 bg-slate-100 dark:bg-white/2 border border-slate-200 dark:border-white/5 rounded-2xl p-4 overflow-y-auto space-y-2">
+                  <span className="text-[9px] font-bold text-slate-500 dark:text-gray-400 block uppercase tracking-widest pb-1 border-b border-slate-200 dark:border-white/5 mb-2">Agent Queue Status</span>
                   {agents.map((agent, idx) => {
                     const isStepCompleted = idx < activeStepIdx;
                     const isStepActive = idx === activeStepIdx;
@@ -688,8 +689,8 @@ export const InvestigationPipelinePage: React.FC = () => {
                             </div>
                           )}
                           <div>
-                            <span className={`font-semibold block ${isStepActive ? 'text-white' : 'text-gray-300'}`}>{agent.name}</span>
-                            <span className="text-[9px] text-gray-500">{agent.role}</span>
+                            <span className={`font-semibold block ${isStepActive ? 'text-slate-900 dark:text-white' : 'text-slate-600 dark:text-gray-300'}`}>{agent.name}</span>
+                            <span className="text-[9px] text-slate-400 dark:text-gray-500">{agent.role}</span>
                           </div>
                         </div>
                         <div className="text-[9px] text-right font-mono">
@@ -708,7 +709,7 @@ export const InvestigationPipelinePage: React.FC = () => {
               </div>
 
               {/* Column 2: Live Knowledge Graph Constructor */}
-              <div className="flex flex-col bg-black/40 border border-white/5 rounded-2xl overflow-hidden relative min-h-[400px]">
+              <div className="flex flex-col bg-slate-100 dark:bg-black/40 border border-slate-200 dark:border-white/5 rounded-2xl overflow-hidden relative min-h-[400px]">
                 <div className="absolute top-4 left-4 z-20 pointer-events-none select-none">
                   <span className="text-[9px] text-cyan-400 font-bold bg-cyan-950/30 border border-cyan-500/20 px-2 py-0.5 rounded font-mono">
                     LIVE SEMANTIC GRAPH
@@ -730,7 +731,7 @@ export const InvestigationPipelinePage: React.FC = () => {
                     <Background color="rgba(139, 92, 246, 0.1)" gap={16} size={1} />
                   </ReactFlow>
                 </div>
-                <div className="p-3 bg-white/2 border-t border-white/5 text-[9px] text-gray-500 text-center pointer-events-none select-none">
+                <div className="p-3 bg-slate-50 dark:bg-white/2 border-t border-slate-200 dark:border-white/5 text-[9px] text-slate-400 dark:text-gray-500 text-center pointer-events-none select-none">
                   Nodes and semantic edges populate automatically as agents write data to Cognee memory.
                 </div>
               </div>
@@ -739,17 +740,17 @@ export const InvestigationPipelinePage: React.FC = () => {
               <div className="flex flex-col space-y-4 overflow-hidden">
                 
                 {/* Live Terminal logs */}
-                <div className="flex-1 bg-black/50 border border-white/5 rounded-2xl flex flex-col overflow-hidden font-mono text-[10px] min-h-[180px]">
-                  <div className="flex items-center justify-between px-4 py-2 border-b border-white/5 bg-white/2 flex-shrink-0">
+                <div className="flex-1 bg-slate-900 dark:bg-black/50 border border-slate-200 dark:border-white/5 rounded-2xl flex flex-col overflow-hidden font-mono text-[10px] min-h-[180px]">
+                  <div className="flex items-center justify-between px-4 py-2 border-b border-slate-700 dark:border-white/5 bg-slate-800 dark:bg-white/2 flex-shrink-0">
                     <div className="flex items-center space-x-2">
                       <Terminal className="w-3.5 h-3.5 text-brand-purple-light" />
-                      <span className="font-semibold text-gray-300 text-xs">Live Telemetry logs</span>
+                      <span className="font-semibold text-slate-200 dark:text-gray-300 text-xs">Live Telemetry logs</span>
                     </div>
                   </div>
                   
                   <div className="flex-1 overflow-y-auto p-4 space-y-2 select-text scrollbar-none">
                     {logs.map((log, index) => (
-                      <div key={index} className="text-gray-400 break-all leading-relaxed">
+                      <div key={index} className="text-slate-300 dark:text-gray-400 break-all leading-relaxed">
                         {log}
                       </div>
                     ))}
@@ -758,9 +759,9 @@ export const InvestigationPipelinePage: React.FC = () => {
                 </div>
 
                 {/* Evidence Stream scrolling box */}
-                <div className="flex-1 bg-black/40 border border-white/5 rounded-2xl flex flex-col overflow-hidden min-h-[180px]">
-                  <div className="px-4 py-2 border-b border-white/5 bg-white/2 flex-shrink-0">
-                    <span className="text-xs font-bold text-white uppercase tracking-wider block">Evidence Stream</span>
+                <div className="flex-1 bg-slate-100 dark:bg-black/40 border border-slate-200 dark:border-white/5 rounded-2xl flex flex-col overflow-hidden min-h-[180px]">
+                  <div className="px-4 py-2 border-b border-slate-200 dark:border-white/5 bg-slate-50 dark:bg-white/2 flex-shrink-0">
+                    <span className="text-xs font-bold text-slate-800 dark:text-white uppercase tracking-wider block">Evidence Stream</span>
                   </div>
 
                   <div className="flex-1 overflow-y-auto p-3 space-y-2.5 scrollbar-none">
@@ -777,8 +778,8 @@ export const InvestigationPipelinePage: React.FC = () => {
                             <span className="text-brand-purple-light font-bold">{ev.category.toUpperCase()}</span>
                             <span className="text-gray-500">{ev.timestamp}</span>
                           </div>
-                          <p className="text-[10px] text-gray-300 leading-normal">{ev.reason}</p>
-                          <div className="flex justify-between items-center text-[8px] text-gray-500 font-mono">
+                          <p className="text-[10px] text-slate-700 dark:text-gray-300 leading-normal">{ev.reason}</p>
+                          <div className="flex justify-between items-center text-[8px] text-slate-500 dark:text-gray-500 font-mono">
                             <span>Src: {ev.source}</span>
                             <span className="text-emerald-400">Conf: {ev.confidence}</span>
                           </div>
@@ -797,7 +798,7 @@ export const InvestigationPipelinePage: React.FC = () => {
 
             {/* Bottom Progress loader bar */}
             <div className="bg-white/2 border border-white/5 rounded-2xl p-4 flex-shrink-0 flex items-center justify-between gap-4">
-              <span className="text-xs font-semibold text-gray-400 uppercase tracking-wider font-mono whitespace-nowrap">
+              <span className="text-xs font-semibold text-slate-600 dark:text-gray-400 uppercase tracking-wider font-mono whitespace-nowrap">
                 Overall Diligence Progress
               </span>
               <div className="flex-1 bg-white/5 h-2.5 rounded-full overflow-hidden">
@@ -806,7 +807,7 @@ export const InvestigationPipelinePage: React.FC = () => {
                   style={{ width: `${overallProgress}%` }}
                 />
               </div>
-              <span className="text-xs font-bold text-white font-mono whitespace-nowrap w-12 text-right">
+              <span className="text-xs font-bold text-slate-900 dark:text-white font-mono whitespace-nowrap w-12 text-right">
                 {overallProgress}%
               </span>
             </div>
@@ -820,17 +821,17 @@ export const InvestigationPipelinePage: React.FC = () => {
             exit={{ opacity: 0 }}
             className="flex-1 flex items-center justify-center p-6 w-full max-w-4xl mx-auto"
           >
-            <Card glow className="w-full border border-white/10 relative overflow-hidden bg-dark-bg/85 backdrop-blur-3xl">
+            <Card glow className="w-full border border-slate-200 dark:border-white/10 relative overflow-hidden bg-white dark:bg-dark-bg/85 backdrop-blur-3xl">
               <div className="absolute top-0 inset-x-0 h-1 bg-gradient-to-r from-emerald-500 via-brand-purple-light to-emerald-500 shadow-[0_0_20px_rgba(139,92,246,0.8)]" />
 
               <CardHeader className="text-center pb-2">
                 <div className="mx-auto w-12 h-12 rounded-full bg-emerald-950/50 border border-emerald-500/30 flex items-center justify-center shadow-[0_0_30px_rgba(16,185,129,0.2)] mb-3 animate-bounce">
                   <Check className="w-6 h-6 text-emerald-400" />
                 </div>
-                <CardTitle className="text-2xl font-bold text-white">
+                <CardTitle className="text-2xl font-bold text-slate-900 dark:text-white">
                   ✓ Investigation Complete
                 </CardTitle>
-                <p className="text-xs text-gray-400">
+                <p className="text-xs text-slate-500 dark:text-gray-400">
                   Diligence report successfully compiled and saved to memory.
                 </p>
 
@@ -871,22 +872,22 @@ export const InvestigationPipelinePage: React.FC = () => {
                         <div className="flex items-center space-x-3">
                           <span className="text-2xl">🚀</span>
                           <div className="text-left">
-                            <h4 className="text-sm font-bold text-white">{startupData.name}</h4>
-                            <p className="text-[9px] text-gray-400 uppercase tracking-wider">{startupData.sector}</p>
+                            <h4 className="text-sm font-bold text-slate-900 dark:text-white">{startupData.name}</h4>
+                            <p className="text-[9px] text-slate-500 dark:text-gray-400 uppercase tracking-wider">{startupData.sector}</p>
                           </div>
                         </div>
 
                         <div className="flex items-center space-x-6">
                           <div className="text-center sm:text-right">
-                            <span className="text-[9px] text-gray-500 block">INVESTMENT INDEX</span>
-                            <span className="text-3xl font-bold font-display text-white">
+                            <span className="text-[9px] text-slate-500 dark:text-gray-500 block">INVESTMENT INDEX</span>
+                            <span className="text-3xl font-bold font-display text-slate-900 dark:text-white">
                               {finalReportSummary.score}
-                              <span className="text-xs font-normal text-gray-500">/100</span>
+                              <span className="text-xs font-normal text-slate-500 dark:text-gray-500">/100</span>
                             </span>
                           </div>
                           <div className="h-10 w-px bg-white/10" />
                           <div className="text-center">
-                            <span className="text-[9px] text-gray-500 block">RECOMMENDATION</span>
+                            <span className="text-[9px] text-slate-500 dark:text-gray-500 block">RECOMMENDATION</span>
                             <Badge
                               variant={finalReportSummary.recommendation === 'INVEST' ? 'success' : 'warning'}
                               glow={finalReportSummary.recommendation === 'INVEST'}
@@ -900,17 +901,17 @@ export const InvestigationPipelinePage: React.FC = () => {
 
                       {/* Strengths / Risks / Detail lists */}
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs text-left">
-                        <div className="bg-white/2 border border-white/5 p-4 rounded-xl space-y-2">
-                          <span className="text-[10px] font-bold text-emerald-400 block uppercase tracking-wider">Major Strengths</span>
-                          <ul className="space-y-1.5 list-disc pl-4 text-gray-300">
+                        <div className="bg-slate-50 dark:bg-white/2 border border-slate-200 dark:border-white/5 p-4 rounded-xl space-y-2">
+                          <span className="text-[10px] font-bold text-emerald-700 dark:text-emerald-400 block uppercase tracking-wider">Major Strengths</span>
+                          <ul className="space-y-1.5 list-disc pl-4 text-slate-700 dark:text-gray-300">
                             {finalReportSummary.strengths.map((str, idx) => (
                               <li key={idx} className="leading-relaxed">{str}</li>
                             ))}
                           </ul>
                         </div>
-                        <div className="bg-white/2 border border-white/5 p-4 rounded-xl space-y-2">
-                          <span className="text-[10px] font-bold text-rose-400 block uppercase tracking-wider">Major Risks</span>
-                          <ul className="space-y-1.5 list-disc pl-4 text-gray-300">
+                        <div className="bg-slate-50 dark:bg-white/2 border border-slate-200 dark:border-white/5 p-4 rounded-xl space-y-2">
+                          <span className="text-[10px] font-bold text-rose-700 dark:text-rose-400 block uppercase tracking-wider">Major Risks</span>
+                          <ul className="space-y-1.5 list-disc pl-4 text-slate-700 dark:text-gray-300">
                             {finalReportSummary.risks.map((rsk, idx) => (
                               <li key={idx} className="leading-relaxed">{rsk}</li>
                             ))}
@@ -919,31 +920,31 @@ export const InvestigationPipelinePage: React.FC = () => {
                       </div>
 
                       {/* Cognee DB metadata stats */}
-                      <div className="bg-white/2 border border-white/5 p-4 rounded-xl text-left space-y-2">
-                        <span className="text-[10px] font-bold text-cyan-400 block uppercase tracking-wider">Cognee Memory Statistics</span>
+                      <div className="bg-slate-50 dark:bg-white/2 border border-slate-200 dark:border-white/5 p-4 rounded-xl text-left space-y-2">
+                        <span className="text-[10px] font-bold text-cyan-700 dark:text-cyan-400 block uppercase tracking-wider">Cognee Memory Statistics</span>
                         <div className="grid grid-cols-4 gap-4 text-center font-mono py-2">
                           <div>
-                            <span className="text-[8px] text-gray-500 block">EVIDENCE SCAN</span>
-                            <span className="text-sm font-bold text-white">{finalReportSummary.evidence}</span>
+                            <span className="text-[8px] text-slate-500 dark:text-gray-500 block">EVIDENCE SCAN</span>
+                            <span className="text-sm font-bold text-slate-900 dark:text-white">{finalReportSummary.evidence}</span>
                           </div>
                           <div>
-                            <span className="text-[8px] text-gray-500 block">RELATIONS LINKED</span>
-                            <span className="text-sm font-bold text-white">{finalReportSummary.relations}</span>
+                            <span className="text-[8px] text-slate-500 dark:text-gray-500 block">RELATIONS LINKED</span>
+                            <span className="text-sm font-bold text-slate-900 dark:text-white">{finalReportSummary.relations}</span>
                           </div>
                           <div>
-                            <span className="text-[8px] text-gray-500 block">MEMORY QUERIES</span>
-                            <span className="text-sm font-bold text-white">{finalReportSummary.queries}</span>
+                            <span className="text-[8px] text-slate-500 dark:text-gray-500 block">MEMORY QUERIES</span>
+                            <span className="text-sm font-bold text-slate-900 dark:text-white">{finalReportSummary.queries}</span>
                           </div>
                           <div>
-                            <span className="text-[8px] text-gray-500 block">CONFIDENCE RATE</span>
-                            <span className="text-sm font-bold text-emerald-400">94%</span>
+                            <span className="text-[8px] text-slate-500 dark:text-gray-500 block">CONFIDENCE RATE</span>
+                            <span className="text-sm font-bold text-emerald-600 dark:text-emerald-400">94%</span>
                           </div>
                         </div>
                       </div>
 
                       {/* Diligence explanation */}
-                      <div className="bg-white/2 border border-white/5 p-4 rounded-xl text-xs text-left text-gray-400 leading-relaxed">
-                        <span className="text-[9px] font-bold text-gray-500 block uppercase tracking-wider mb-1">Reasoning Narrative</span>
+                      <div className="bg-slate-50 dark:bg-white/2 border border-slate-200 dark:border-white/5 p-4 rounded-xl text-xs text-left text-slate-600 dark:text-gray-400 leading-relaxed">
+                        <span className="text-[9px] font-bold text-slate-500 dark:text-gray-500 block uppercase tracking-wider mb-1">Reasoning Narrative</span>
                         {finalReportSummary.summary}
                       </div>
                     </motion.div>
@@ -954,7 +955,7 @@ export const InvestigationPipelinePage: React.FC = () => {
                       initial={{ opacity: 0, y: 10 }}
                       animate={{ opacity: 1, y: 0 }}
                       exit={{ opacity: 0, y: -10 }}
-                      className="w-full h-[320px] rounded-xl border border-white/5 bg-black/60 relative overflow-hidden"
+                      className="w-full h-[320px] rounded-xl border border-slate-200 dark:border-white/5 bg-slate-100 dark:bg-black/60 relative overflow-hidden"
                     >
                       <ReactFlow
                         nodes={nodes}
@@ -974,7 +975,7 @@ export const InvestigationPipelinePage: React.FC = () => {
                 </AnimatePresence>
 
                 {/* Action buttons */}
-                <div className="flex flex-col sm:flex-row items-center justify-end gap-3 mt-6 border-t border-white/5 pt-4">
+                <div className="flex flex-col sm:flex-row items-center justify-end gap-3 mt-6 border-t border-slate-200 dark:border-white/5 pt-4">
                   <Button
                     variant="outline"
                     onClick={handleViewKnowledgeGraph}
@@ -985,7 +986,7 @@ export const InvestigationPipelinePage: React.FC = () => {
                   <Button
                     variant="secondary"
                     onClick={handleReturnToDashboard}
-                    className="w-full sm:w-auto h-10 px-4 py-2 border-white/5 text-gray-300 hover:text-white cursor-pointer"
+                    className="w-full sm:w-auto h-10 px-4 py-2 border-slate-200 dark:border-white/5 text-slate-700 dark:text-gray-300 hover:text-slate-900 dark:hover:text-white cursor-pointer"
                   >
                     Return to Dashboard
                   </Button>

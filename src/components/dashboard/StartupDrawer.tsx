@@ -60,22 +60,22 @@ export const StartupDrawer: React.FC<StartupDrawerProps> = ({
           animate={{ x: 0 }}
           exit={{ x: '100%' }}
           transition={{ type: 'spring', stiffness: 260, damping: 30 }}
-          className="relative w-full max-w-3xl h-full bg-dark-bg/95 backdrop-blur-md border-l border-white/10 shadow-2xl flex flex-col z-50 overflow-hidden"
+          className="relative w-full max-w-3xl h-full bg-[var(--bg-surface)] backdrop-blur-md border-l border-[var(--border-color)] shadow-2xl flex flex-col z-50 overflow-hidden"
         >
           {/* Header */}
-          <div className="flex items-center justify-between p-6 border-b border-white/5 bg-white/2">
+          <div className="flex items-center justify-between p-6 border-b border-[var(--border-color)] bg-[var(--bg-subtle)]">
             <div className="flex items-center space-x-3">
-              <span className="text-3xl flex-shrink-0 w-12 h-12 flex items-center justify-center rounded-xl bg-white/5 border border-white/10">
+              <span className="text-3xl flex-shrink-0 w-12 h-12 flex items-center justify-center rounded-xl bg-[var(--bg-subtle)] border border-[var(--border-color)]">
                 {startup.logo}
               </span>
               <div>
-                <h2 className="text-xl font-bold font-display text-white">{startup.name}</h2>
-                <p className="text-xs text-gray-400">{startup.sector} • Investigated {startup.dateInvestigated}</p>
+                <h2 className="text-xl font-bold font-display text-[var(--text-primary)]">{startup.name}</h2>
+                <p className="text-xs text-[var(--text-secondary)]">{startup.sector} • Investigated {startup.dateInvestigated}</p>
               </div>
             </div>
             <button
               onClick={onClose}
-              className="p-1.5 rounded-lg text-gray-400 hover:text-white hover:bg-white/5 transition-colors cursor-pointer"
+              className="p-1.5 rounded-lg text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-subtle)] transition-colors cursor-pointer"
             >
               <X className="w-5 h-5" />
             </button>
@@ -84,23 +84,23 @@ export const StartupDrawer: React.FC<StartupDrawerProps> = ({
           {/* Drawer Body Scroll Content */}
           <div className="flex-1 overflow-y-auto p-6 space-y-6">
             {/* Quick Actions Board */}
-            <div className="p-4 rounded-xl border border-brand-purple/20 bg-brand-purple/5 space-y-3">
-              <h4 className="text-xs font-semibold uppercase text-brand-purple-light tracking-wider">
+            <div className="p-4 rounded-xl border border-indigo-200 dark:border-indigo-500/20 bg-indigo-50 dark:bg-indigo-950/20 space-y-3">
+              <h4 className="text-xs font-semibold uppercase text-indigo-600 dark:text-indigo-400 tracking-wider">
                 Auditor Action Committee Controls
               </h4>
               <div className="flex flex-wrap gap-4 items-center justify-between text-xs">
                 {/* Status selector */}
                 <div className="flex items-center space-x-2">
-                  <span className="text-gray-400">Set Diligence Status:</span>
-                  <div className="flex rounded-lg overflow-hidden border border-white/10">
+                  <span className="text-[var(--text-secondary)]">Set Diligence Status:</span>
+                  <div className="flex rounded-lg overflow-hidden border border-[var(--border-color)]">
                     {(['Approved', 'Under Review', 'Flagged'] as Startup['status'][]).map((st) => (
                       <button
                         key={st}
                         onClick={() => handleStatusChange(st)}
                         className={`px-3 py-1.5 font-medium transition-colors cursor-pointer ${
                           startup.status === st
-                            ? 'bg-brand-purple text-white shadow-lg'
-                            : 'bg-white/5 text-gray-400 hover:bg-white/10 hover:text-gray-200'
+                            ? 'bg-indigo-600 text-white shadow-lg'
+                            : 'bg-[var(--bg-subtle)] text-[var(--text-secondary)] hover:bg-[var(--bg-subtle)]/80 hover:text-[var(--text-primary)]'
                         }`}
                       >
                         {st}
@@ -111,8 +111,8 @@ export const StartupDrawer: React.FC<StartupDrawerProps> = ({
 
                 {/* Risk Level Selector */}
                 <div className="flex items-center space-x-2">
-                  <span className="text-gray-400">Audit Risk Tier:</span>
-                  <div className="flex rounded-lg overflow-hidden border border-white/10">
+                  <span className="text-[var(--text-secondary)]">Audit Risk Tier:</span>
+                  <div className="flex rounded-lg overflow-hidden border border-[var(--border-color)]">
                     {(['Low', 'Medium', 'High'] as Startup['riskLevel'][]).map((rk) => (
                       <button
                         key={rk}
@@ -120,11 +120,11 @@ export const StartupDrawer: React.FC<StartupDrawerProps> = ({
                         className={`px-3 py-1.5 font-medium transition-colors cursor-pointer ${
                           startup.riskLevel === rk
                             ? rk === 'Low'
-                              ? 'bg-emerald-500 text-white'
+                              ? 'bg-emerald-600 text-white'
                               : rk === 'Medium'
-                              ? 'bg-amber-500 text-white'
-                              : 'bg-rose-500 text-white'
-                            : 'bg-white/5 text-gray-400 hover:bg-white/10 hover:text-gray-200'
+                              ? 'bg-amber-600 text-white'
+                              : 'bg-rose-600 text-white'
+                            : 'bg-[var(--bg-subtle)] text-[var(--text-secondary)] hover:bg-[var(--bg-subtle)]/80 hover:text-[var(--text-primary)]'
                         }`}
                       >
                         {rk}
@@ -143,21 +143,21 @@ export const StartupDrawer: React.FC<StartupDrawerProps> = ({
                 { name: 'Product/Tech', val: startup.metrics.product },
                 { name: 'Financials', val: startup.metrics.financials },
               ].map((m, idx) => (
-                <div key={idx} className="p-3 bg-white/2 border border-white/5 rounded-xl text-center">
-                  <span className="text-[10px] text-gray-400 font-medium block uppercase tracking-wider">
+                <div key={idx} className="p-3 bg-[var(--bg-subtle)] border border-[var(--border-color)] rounded-xl text-center">
+                  <span className="text-[10px] text-[var(--text-secondary)] font-medium block uppercase tracking-wider">
                     {m.name}
                   </span>
                   <span
                     className={`text-2xl font-bold font-display block mt-1 ${
                       m.val >= 80
-                        ? 'text-emerald-400'
+                        ? 'text-emerald-600 dark:text-emerald-400'
                         : m.val >= 60
-                        ? 'text-amber-400'
-                        : 'text-rose-400'
+                        ? 'text-amber-600 dark:text-amber-400'
+                        : 'text-rose-600 dark:text-rose-400'
                     }`}
                   >
                     {m.val}
-                    <span className="text-xs font-normal text-gray-500">/100</span>
+                    <span className="text-xs font-normal text-[var(--text-secondary)]">/100</span>
                   </span>
                 </div>
               ))}
@@ -168,51 +168,51 @@ export const StartupDrawer: React.FC<StartupDrawerProps> = ({
 
             {/* Executive Summary */}
             <div className="space-y-2">
-              <h3 className="text-sm font-semibold text-white uppercase tracking-wider">Diligence Summary</h3>
-              <p className="text-sm text-gray-300 leading-relaxed bg-white/2 p-4 rounded-xl border border-white/5">
+              <h3 className="text-sm font-semibold text-[var(--text-primary)] uppercase tracking-wider">Diligence Summary</h3>
+              <p className="text-sm text-[var(--text-primary)] leading-relaxed bg-[var(--bg-subtle)] p-4 rounded-xl border border-[var(--border-color)]">
                 {startup.details.summary}
               </p>
             </div>
 
             {/* Financial Snapshot */}
             <div className="space-y-2">
-              <h3 className="text-sm font-semibold text-white uppercase tracking-wider">Financial Diligence</h3>
-              <div className="grid grid-cols-2 gap-4 bg-white/2 border border-white/5 p-4 rounded-xl">
+              <h3 className="text-sm font-semibold text-[var(--text-primary)] uppercase tracking-wider">Financial Diligence</h3>
+              <div className="grid grid-cols-2 gap-4 bg-[var(--bg-subtle)] border border-[var(--border-color)] p-4 rounded-xl">
                 <div className="flex items-center space-x-3">
-                  <Landmark className="w-5 h-5 text-brand-purple-light" />
+                  <Landmark className="w-5 h-5 text-indigo-600 dark:text-indigo-400" />
                   <div>
-                    <span className="text-[10px] text-gray-500 block">Current ARR</span>
-                    <span className="text-sm font-semibold text-white">
+                    <span className="text-[10px] text-[var(--text-secondary)] block">Current ARR</span>
+                    <span className="text-sm font-semibold text-[var(--text-primary)]">
                       {startup.details.financialSnapshot.revenue}
                     </span>
                   </div>
                 </div>
 
                 <div className="flex items-center space-x-3">
-                  <DollarSign className="w-5 h-5 text-brand-purple-light" />
+                  <DollarSign className="w-5 h-5 text-indigo-600 dark:text-indigo-400" />
                   <div>
-                    <span className="text-[10px] text-gray-500 block">Monthly Burn</span>
-                    <span className="text-sm font-semibold text-white">
+                    <span className="text-[10px] text-[var(--text-secondary)] block">Monthly Burn</span>
+                    <span className="text-sm font-semibold text-[var(--text-primary)]">
                       {startup.details.financialSnapshot.burnRate}
                     </span>
                   </div>
                 </div>
 
                 <div className="flex items-center space-x-3">
-                  <Calendar className="w-5 h-5 text-brand-purple-light" />
+                  <Calendar className="w-5 h-5 text-indigo-600 dark:text-indigo-400" />
                   <div>
-                    <span className="text-[10px] text-gray-500 block">Runway</span>
-                    <span className="text-sm font-semibold text-white">
+                    <span className="text-[10px] text-[var(--text-secondary)] block">Runway</span>
+                    <span className="text-sm font-semibold text-[var(--text-primary)]">
                       {startup.details.financialSnapshot.runway}
                     </span>
                   </div>
                 </div>
 
                 <div className="flex items-center space-x-3">
-                  <TrendingUp className="w-5 h-5 text-brand-purple-light" />
+                  <TrendingUp className="w-5 h-5 text-indigo-600 dark:text-indigo-400" />
                   <div>
-                    <span className="text-[10px] text-gray-500 block">Estimated Valuation</span>
-                    <span className="text-sm font-semibold text-white">
+                    <span className="text-[10px] text-[var(--text-secondary)] block">Estimated Valuation</span>
+                    <span className="text-sm font-semibold text-[var(--text-primary)]">
                       {startup.details.financialSnapshot.valuation}
                     </span>
                   </div>
@@ -224,11 +224,11 @@ export const StartupDrawer: React.FC<StartupDrawerProps> = ({
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               {/* Strengths */}
               <div className="space-y-2.5">
-                <h4 className="text-xs font-semibold uppercase text-emerald-400 tracking-wider">Key Strengths</h4>
+                <h4 className="text-xs font-semibold uppercase text-emerald-600 dark:text-emerald-400 tracking-wider">Key Strengths</h4>
                 <ul className="space-y-2">
                   {startup.details.strengths.map((str, idx) => (
-                    <li key={idx} className="flex items-start space-x-2 text-xs text-gray-300">
-                      <Check className="w-4 h-4 text-emerald-400 flex-shrink-0 mt-0.5" />
+                    <li key={idx} className="flex items-start space-x-2 text-xs text-[var(--text-primary)]">
+                      <Check className="w-4 h-4 text-emerald-600 dark:text-emerald-400 flex-shrink-0 mt-0.5" />
                       <span>{str}</span>
                     </li>
                   ))}
@@ -237,11 +237,11 @@ export const StartupDrawer: React.FC<StartupDrawerProps> = ({
 
               {/* Risks */}
               <div className="space-y-2.5">
-                <h4 className="text-xs font-semibold uppercase text-rose-400 tracking-wider">Identified Risks</h4>
+                <h4 className="text-xs font-semibold uppercase text-rose-600 dark:text-rose-400 tracking-wider">Identified Risks</h4>
                 <ul className="space-y-2">
                   {startup.details.risks.map((rsk, idx) => (
-                    <li key={idx} className="flex items-start space-x-2 text-xs text-gray-300">
-                      <AlertTriangle className="w-4 h-4 text-rose-400 flex-shrink-0 mt-0.5" />
+                    <li key={idx} className="flex items-start space-x-2 text-xs text-[var(--text-primary)]">
+                      <AlertTriangle className="w-4 h-4 text-rose-600 dark:text-rose-400 flex-shrink-0 mt-0.5" />
                       <span>{rsk}</span>
                     </li>
                   ))}
@@ -253,39 +253,39 @@ export const StartupDrawer: React.FC<StartupDrawerProps> = ({
             <div className="space-y-4 pt-2">
               {/* Founder Background */}
               <div className="text-xs space-y-1">
-                <span className="text-gray-400 font-semibold uppercase tracking-wider block">Founders Profile</span>
-                <p className="text-gray-300 leading-relaxed bg-white/2 p-3 rounded-lg border border-white/5">
+                <span className="text-[var(--text-secondary)] font-semibold uppercase tracking-wider block">Founders Profile</span>
+                <p className="text-[var(--text-primary)] leading-relaxed bg-[var(--bg-subtle)] p-3 rounded-lg border border-[var(--border-color)]">
                   {startup.details.founderBackground}
                 </p>
               </div>
 
               {/* Market Opportunity */}
               <div className="text-xs space-y-1">
-                <span className="text-gray-400 font-semibold uppercase tracking-wider block">Market TAM & Opportunity</span>
-                <p className="text-gray-300 leading-relaxed bg-white/2 p-3 rounded-lg border border-white/5">
+                <span className="text-[var(--text-secondary)] font-semibold uppercase tracking-wider block">Market TAM & Opportunity</span>
+                <p className="text-[var(--text-primary)] leading-relaxed bg-[var(--bg-subtle)] p-3 rounded-lg border border-[var(--border-color)]">
                   {startup.details.marketOpportunity}
                 </p>
               </div>
 
               {/* Tech Stack Risk */}
               <div className="text-xs space-y-1">
-                <span className="text-gray-400 font-semibold uppercase tracking-wider block">Architecture & Technology Moat</span>
-                <p className="text-gray-300 leading-relaxed bg-white/2 p-3 rounded-lg border border-white/5">
+                <span className="text-[var(--text-secondary)] font-semibold uppercase tracking-wider block">Architecture & Technology Moat</span>
+                <p className="text-[var(--text-primary)] leading-relaxed bg-[var(--bg-subtle)] p-3 rounded-lg border border-[var(--border-color)]">
                   {startup.details.techStackRisk}
                 </p>
               </div>
             </div>
 
             {/* Notes Activity Feed */}
-            <div className="space-y-3 border-t border-white/5 pt-4">
-              <h3 className="text-sm font-semibold text-white uppercase tracking-wider">Internal Analyst Notes</h3>
+            <div className="space-y-3 border-t border-[var(--border-color)] pt-4">
+              <h3 className="text-sm font-semibold text-[var(--text-primary)] uppercase tracking-wider">Internal Analyst Notes</h3>
               <form onSubmit={handleAddNote} className="flex gap-2">
                 <input
                   type="text"
                   placeholder="Attach a note to this due diligence assessment..."
                   value={newNote}
                   onChange={(e) => setNewNote(e.target.value)}
-                  className="flex-1 bg-white/5 border border-white/5 rounded-lg px-3 py-2 text-xs text-white placeholder-gray-400 focus:outline-none focus:border-brand-purple/50 focus:ring-1 focus:ring-brand-purple/50 transition-colors"
+                  className="flex-1 bg-[var(--bg-subtle)] border border-[var(--border-color)] rounded-lg px-3 py-2 text-xs text-[var(--text-primary)] placeholder-[var(--text-secondary)] focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition-colors"
                 />
                 <Button type="submit" size="sm">
                   <Plus className="w-4 h-4 mr-1" />
@@ -295,12 +295,12 @@ export const StartupDrawer: React.FC<StartupDrawerProps> = ({
 
               <div className="space-y-2 mt-2">
                 {localNotes.length === 0 ? (
-                  <p className="text-xs text-gray-500 italic">No notes attached. Enter a comment above.</p>
+                  <p className="text-xs text-[var(--text-secondary)] italic">No notes attached. Enter a comment above.</p>
                 ) : (
                   localNotes.map((note, index) => (
-                    <div key={index} className="p-3 bg-white/2 border border-white/5 rounded-lg text-xs flex justify-between items-start">
-                      <p className="text-gray-300">{note}</p>
-                      <span className="text-[9px] text-gray-500 ml-2 whitespace-nowrap">Just now</span>
+                    <div key={index} className="p-3 bg-[var(--bg-subtle)] border border-[var(--border-color)] rounded-lg text-xs flex justify-between items-start">
+                      <p className="text-[var(--text-primary)]">{note}</p>
+                      <span className="text-[9px] text-[var(--text-secondary)] ml-2 whitespace-nowrap">Just now</span>
                     </div>
                   ))
                 )}

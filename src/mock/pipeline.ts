@@ -19,7 +19,7 @@ export const pipelineSteps: PipelineStepConfig[] = [
     confidence: 99,
     memoryStatus: 'Connected (Mock)',
     logs: [
-      '> Initializing VentureIQ telemetry logs...',
+      '> Initializing InvestIQ telemetry logs...',
       '> Checking host diagnostics: 100% OK.',
       '> Audit container status: ONLINE',
       '> Security authorization token verified.'

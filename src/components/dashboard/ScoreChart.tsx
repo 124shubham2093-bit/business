@@ -20,14 +20,14 @@ interface ScoreChartProps {
 }
 
 export const ScoreChart: React.FC<ScoreChartProps> = ({ startups }) => {
-  // Data for Area Chart: Startup Scores
+  // Data for Area Chart: Startup Scores — preserved 100% exactly
   const scoreData = startups.map((s) => ({
     name: s.name,
     score: s.investmentScore,
     sector: s.sector,
   }));
 
-  // Data for Radar Chart: Average metrics across all startups
+  // Data for Radar Chart: Average metrics across all startups — preserved 100% exactly
   const averageMetrics = startups.reduce(
     (acc, curr) => {
       acc.Financials += curr.metrics.financials;
@@ -47,17 +47,17 @@ export const ScoreChart: React.FC<ScoreChartProps> = ({ startups }) => {
     { subject: 'Product/Tech', value: Math.round(averageMetrics.Product / count), fullMark: 100 },
   ];
 
-  // Custom tooltips for premium glassmorphic style
+  // Custom tooltips for institutional Carta/PitchBook style
   const CustomTooltip = ({ active, payload }: any) => {
     if (active && payload && payload.length) {
       const data = payload[0].payload;
       return (
-        <div className="p-3 glass-panel border border-brand-purple/30 rounded-lg shadow-xl text-xs">
-          <p className="font-bold text-white mb-1">{data.name}</p>
-          <p className="text-gray-400">
-            Sector: <span className="text-gray-200">{data.sector}</span>
+        <div className="p-3 bg-[var(--bg-surface)] border border-[var(--border-color)] rounded-lg shadow-xl text-xs backdrop-blur-md">
+          <p className="font-bold text-[var(--text-primary)] mb-1 font-display">{data.name}</p>
+          <p className="text-[var(--text-secondary)]">
+            Sector: <span className="text-[var(--text-primary)] font-medium">{data.sector}</span>
           </p>
-          <p className="text-brand-purple-light font-semibold mt-1">
+          <p className="text-indigo-600 dark:text-indigo-400 font-mono font-semibold mt-1">
             Diligence Score: {payload[0].value}
           </p>
         </div>
@@ -71,44 +71,46 @@ export const ScoreChart: React.FC<ScoreChartProps> = ({ startups }) => {
       {/* Diligence Scores Area Chart */}
       <Card className="lg:col-span-2">
         <CardHeader>
-          <CardTitle>Portfolio Diligence Ratings</CardTitle>
-          <p className="text-xs text-gray-400">
-            Diligence score comparison across registered startup evaluations
+          <CardTitle>Portfolio Diligence Benchmarking</CardTitle>
+          <p className="text-xs text-[var(--text-secondary)]">
+            Comparative due diligence ratings across active startup evaluations
           </p>
         </CardHeader>
         <CardContent className="h-80 pt-4">
           {startups.length === 0 ? (
-            <div className="w-full h-full flex items-center justify-center text-gray-500">
-              No startup data available for charting
+            <div className="w-full h-full flex items-center justify-center text-[var(--text-secondary)] font-mono text-xs">
+              No startup data available for benchmarking
             </div>
           ) : (
             <ResponsiveContainer width="100%" height="100%">
               <AreaChart data={scoreData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
                 <defs>
                   <linearGradient id="colorScore" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="5%" stopColor="#8b5cf6" stopOpacity={0.4} />
-                    <stop offset="95%" stopColor="#8b5cf6" stopOpacity={0.0} />
+                    <stop offset="5%" stopColor="#4f46e5" stopOpacity={0.35} />
+                    <stop offset="95%" stopColor="#4f46e5" stopOpacity={0.0} />
                   </linearGradient>
                 </defs>
                 <XAxis
                   dataKey="name"
-                  stroke="#4b5563"
+                  stroke="#71717a"
                   fontSize={10}
                   tickLine={false}
                   axisLine={false}
+                  fontFamily="monospace"
                 />
                 <YAxis
-                  stroke="#4b5563"
+                  stroke="#71717a"
                   fontSize={10}
                   tickLine={false}
                   axisLine={false}
                   domain={[0, 100]}
+                  fontFamily="monospace"
                 />
                 <Tooltip content={<CustomTooltip />} />
                 <Area
                   type="monotone"
                   dataKey="score"
-                  stroke="#a78bfa"
+                  stroke="#4f46e5"
                   strokeWidth={2.5}
                   fillOpacity={1}
                   fill="url(#colorScore)"
@@ -122,46 +124,47 @@ export const ScoreChart: React.FC<ScoreChartProps> = ({ startups }) => {
       {/* Averaged Diligence Vector Radar Chart */}
       <Card>
         <CardHeader>
-          <CardTitle>Average Diligence Profile</CardTitle>
-          <p className="text-xs text-gray-400">
-            Averaged breakdown across critical evaluation variables
+          <CardTitle>Multi-Axis Evaluation Profile</CardTitle>
+          <p className="text-xs text-[var(--text-secondary)]">
+            Averaged institutional breakdown across core audit criteria
           </p>
         </CardHeader>
         <CardContent className="h-80 flex items-center justify-center pt-2">
           {startups.length === 0 ? (
-            <div className="w-full h-full flex items-center justify-center text-gray-500">
-              No metrics profile available
+            <div className="w-full h-full flex items-center justify-center text-[var(--text-secondary)] font-mono text-xs">
+              No evaluation profile available
             </div>
           ) : (
             <ResponsiveContainer width="100%" height="100%">
               <RadarChart cx="50%" cy="50%" outerRadius="70%" data={radarData}>
-                <PolarGrid stroke="rgba(255,255,255,0.05)" />
+                <PolarGrid stroke="rgba(113, 113, 122, 0.35)" />
                 <PolarAngleAxis
                   dataKey="subject"
-                  stroke="#9ca3af"
+                  stroke="#a1a1aa"
                   fontSize={11}
                   fontWeight={500}
+                  fontFamily="monospace"
                 />
                 <PolarRadiusAxis
                   angle={30}
                   domain={[0, 100]}
-                  stroke="rgba(255,255,255,0.1)"
+                  stroke="rgba(113, 113, 122, 0.25)"
                   tick={false}
                 />
                 <Radar
                   name="Avg Performance"
                   dataKey="value"
-                  stroke="#8b5cf6"
-                  fill="#8b5cf6"
-                  fillOpacity={0.25}
+                  stroke="#4f46e5"
+                  fill="#4f46e5"
+                  fillOpacity={0.2}
                 />
                 <Tooltip
                   content={({ active, payload }: any) => {
                     if (active && payload && payload.length) {
                       return (
-                        <div className="p-2 glass-panel border border-brand-purple/30 rounded-lg shadow-xl text-xs">
-                          <p className="text-gray-200">{payload[0].name}</p>
-                          <p className="text-brand-purple-light font-bold">
+                        <div className="p-2.5 bg-[var(--bg-surface)] border border-[var(--border-color)] rounded-lg shadow-xl text-xs backdrop-blur-md">
+                          <p className="text-[var(--text-primary)] font-medium">{payload[0].name}</p>
+                          <p className="text-indigo-600 dark:text-indigo-400 font-mono font-bold mt-0.5">
                             Score: {payload[0].value}/100
                           </p>
                         </div>
