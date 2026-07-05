@@ -10,7 +10,6 @@ import {
 } from 'lucide-react';
 
 import { MockInvestigationService } from '../services/investigation/MockInvestigationService';
-import { generateScores } from '../services/investigation/mockGenerator';
 import type { Startup } from '../services/investigation/investigationTypes';
 import { Button } from '../components/ui/Button';
 import { Card, CardHeader } from '../components/ui/Card';
@@ -52,7 +51,19 @@ export const DecisionCenterPage: React.FC = () => {
 
   // Extract navigation data or fallback
   const startupData = useMemo(() => {
-    return location.state?.startup || {
+    if (location.state?.startup) {
+      sessionStorage.setItem('last_decision_startup', JSON.stringify(location.state.startup));
+      return location.state.startup;
+    }
+    const saved = sessionStorage.getItem('last_decision_startup');
+    if (saved) {
+      try {
+        return JSON.parse(saved);
+      } catch (e) {
+        console.error(e);
+      }
+    }
+    return {
       name: 'Alpha Dynamics',
       founderName: 'Alex Rivera',
       sector: 'BioTech AI',
@@ -63,13 +74,38 @@ export const DecisionCenterPage: React.FC = () => {
     };
   }, [location.state]);
 
-  const scores = useMemo(() => {
-    return generateScores(startupData.name, startupData.sector);
-  }, [startupData.name, startupData.sector]);
-
   // Load results from backend if available
   const [backendData, setBackendData] = useState<Startup | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+
+  const activeStartup = useMemo(() => {
+    return backendData || startupData;
+  }, [backendData, startupData]);
+
+  const scores = useMemo(() => {
+    if (activeStartup && activeStartup.metrics) {
+      return {
+        investmentScore: activeStartup.investmentScore,
+        founder: activeStartup.metrics.team,
+        technology: activeStartup.metrics.product,
+        market: activeStartup.metrics.marketSize,
+        finance: activeStartup.metrics.financials,
+        competition: (activeStartup.metrics as any).competition || 80,
+        risk: activeStartup.riskLevel === 'High' ? 30 : activeStartup.riskLevel === 'Medium' ? 20 : 10,
+        recommendation: activeStartup.status === 'Approved' ? 'INVEST' : activeStartup.status === 'Flagged' ? 'PASS' : 'UNDER REVIEW',
+      };
+    }
+    return {
+      investmentScore: activeStartup?.investmentScore || 0,
+      founder: 80,
+      technology: 80,
+      market: 80,
+      finance: 80,
+      competition: 80,
+      risk: 10,
+      recommendation: 'UNDER REVIEW' as const,
+    };
+  }, [activeStartup]);
 
   useEffect(() => {
     setIsLoading(true);
@@ -87,42 +123,35 @@ export const DecisionCenterPage: React.FC = () => {
 
   // Compile final metrics (from backend or deterministic mock)
   const finalSummary = useMemo(() => {
-    if (backendData) {
+    if (activeStartup) {
       return {
-        score: backendData.investmentScore,
-        recommendation: backendData.status === 'Approved' ? 'INVEST' : backendData.status === 'Flagged' ? 'PASS' : 'UNDER REVIEW',
-        riskLevel: backendData.riskLevel,
-        reasoning: backendData.details.summary,
-        strengths: backendData.details.strengths,
-        weaknesses: backendData.details.risks,
+        score: activeStartup.investmentScore,
+        recommendation: activeStartup.status === 'Approved' ? 'INVEST' : activeStartup.status === 'Flagged' ? 'PASS' : 'UNDER REVIEW',
+        riskLevel: activeStartup.riskLevel || 'Low',
+        reasoning: activeStartup.details?.summary || `Audit engine completed for ${activeStartup.name}.`,
+        strengths: activeStartup.details?.strengths || [],
+        weaknesses: activeStartup.details?.risks || [],
         documents: 6,
         entities: 48,
         relationships: 215,
-        evidenceCount: backendData.details.evidenceList?.length || 8,
+        evidenceCount: activeStartup.details?.evidenceList?.length || 8,
         queries: 40
       };
     }
     return {
-      score: scores.investmentScore,
-      recommendation: scores.recommendation,
-      riskLevel: scores.risk >= 25 ? 'High' : scores.risk >= 18 ? 'Medium' : 'Low',
-      reasoning: `Audit engine completed for ${startupData.name} yielding an overall investment score of ${scores.investmentScore}/100. Relational integrity audits match key CS PhD pedigree checks and deep IP custom kernels.`,
-      strengths: [
-        'Founder possesses high-rank academic PhD publications.',
-        'CUDA kernels showcase distinct processing benchmarks.',
-        'Market segments TAM size validated at $45B.'
-      ],
-      weaknesses: [
-        'Regulatory trial hurdles represent key deployment delays.',
-        'AWS container backup drift risks detected.'
-      ],
+      score: 0,
+      recommendation: 'UNDER REVIEW' as const,
+      riskLevel: 'Low',
+      reasoning: '',
+      strengths: [],
+      weaknesses: [],
       documents: 6,
       entities: 48,
       relationships: 215,
       evidenceCount: 8,
       queries: 40
     };
-  }, [backendData, scores, startupData]);
+  }, [activeStartup]);
 
   // Build agent committee data models with Source Reliability and Custom Icons
   // AI Investment Partner — 5 evidence-backed investor questions derived from live frontend data

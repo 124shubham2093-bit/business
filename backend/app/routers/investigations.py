@@ -55,9 +55,12 @@ async def create_investigation(req: InvestigationRequestSchema):
             f"Startup: {req.name}\n"
             f"Description: {req.description}\n"
             f"Founder Bio: {founder_text}\n"
-            f"{github_text}\n"
-            f"{website_text}"
         )
+        if req.pitchDeckText:
+            combined_text += f"Pitch Deck Text: {req.pitchDeckText}\n"
+        if req.financialsText:
+            combined_text += f"Financials Text: {req.financialsText}\n"
+        combined_text += f"{github_text}\n{website_text}"
         
         # 2. Extract structured fields via LLM Extractor
         entities = await EntityExtractor.extract(combined_text)
@@ -66,7 +69,7 @@ async def create_investigation(req: InvestigationRequestSchema):
         await MemoryManager.store_startup_memory(req.name, entities)
         
         # 4. Trigger the multi-agent investigation engine
-        results = await InvestigationEngine.run_diligence(req.name)
+        results = await InvestigationEngine.run_diligence(req.name, combined_text)
         
         analyses = results["analyses"]
         decision = results["decision"]
@@ -98,19 +101,21 @@ async def create_investigation(req: InvestigationRequestSchema):
                 "financials": finance_score,
                 "marketSize": market_score,
                 "team": founder_score,
-                "product": tech_score
+                "product": tech_score,
+                "competition": competition_score,
+                "legal": legal_score
             },
             "details": {
                 "summary": decision["reasoning"],
                 "strengths": decision["strengths"],
                 "risks": decision["riskFactors"],
                 "founderBackground": analyses["founder"]["reasoning"],
-                "financialSnapshot": {
+                "financialSnapshot": analyses["finance"].get("snapshot", {
                     "revenue": "$1.2M ARR",
                     "burnRate": "$90k/mo",
                     "runway": "24 months",
                     "valuation": "$22M Post-Money"
-                },
+                }),
                 "marketOpportunity": analyses["market"]["reasoning"],
                 "techStackRisk": analyses["tech"]["reasoning"],
                 "decision": decision,
@@ -124,6 +129,10 @@ async def create_investigation(req: InvestigationRequestSchema):
         return startup_obj
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Diligence analysis execution failed: {str(e)}")
+
+@router.get("/investigations")
+async def get_all_investigations():
+    return list(_investigations_db.values())
 
 @router.get("/investigations/cross-memory")
 async def get_cross_memory():

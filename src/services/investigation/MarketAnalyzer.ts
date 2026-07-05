@@ -2,7 +2,7 @@ import type { Evidence } from './investigationTypes';
 import { getStringHash } from './mockGenerator';
 
 export const MarketAnalyzer = {
-  async analyze(name: string, sector: string): Promise<{
+  async analyze(name: string, sector: string, description?: string): Promise<{
     score: number;
     opportunity: string;
     strengths: string[];
@@ -10,7 +10,10 @@ export const MarketAnalyzer = {
     evidence: Evidence[];
   }> {
     const seed = getStringHash(name);
-    const score = 78 + ((seed >> 4) % 18); // 78 - 95
+    let score = 78 + ((seed >> 4) % 18); // 78 - 95
+    if (description && (description.toLowerCase().includes('pitch deck') || description.toLowerCase().includes('.pdf') || description.length > 200)) {
+      score = Math.min(98, score + 2);
+    }
     
     const opportunity = `Total Addressable Market (TAM) is estimated at $45B in pharmaceutical pre-clinical discovery. Target Market CAGR is 18.2%.`;
     const strengths = [

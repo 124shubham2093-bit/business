@@ -4,6 +4,7 @@ export interface InvestigationService {
   createInvestigation(startup: Startup): Promise<Startup>;
   updateStartup(startup: Startup): Promise<Startup>;
   getAllInvestigations(): Promise<Startup[]>;
+  getInvestigations(): Promise<Startup[]>;
   getInvestigationById(id: string): Promise<Startup | null>;
   getKnowledgeGraph(name: string): Promise<{ nodes: any[]; edges: any[] }>;
   getTimeline(name: string): Promise<any[]>;

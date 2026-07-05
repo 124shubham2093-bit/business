@@ -66,3 +66,5 @@ class InvestigationRequestSchema(BaseModel):
     websiteUrl: str
     githubUrl: str
     description: str
+    pitchDeckText: Optional[str] = ""
+    financialsText: Optional[str] = ""

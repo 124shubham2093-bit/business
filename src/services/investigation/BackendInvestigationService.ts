@@ -11,12 +11,14 @@ export const BackendInvestigationService: InvestigationService = {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           name: startup.name,
-          founderName: startup.details.founderBackground.split(' (')[0] || 'Alex Rivera',
+          founderName: startup.details?.founderBackground?.split(' (')[0] || 'Alex Rivera',
           sector: startup.sector,
-          fundingStage: 'Seed',
-          websiteUrl: 'https://example.com',
-          githubUrl: 'https://github.com/example',
+          fundingStage: (startup as any).fundingStage || 'Seed',
+          websiteUrl: (startup as any).websiteUrl || 'https://example.com',
+          githubUrl: (startup as any).githubUrl || 'https://github.com/example',
           description: startup.elevatorPitch,
+          pitchDeckText: (startup as any).pitchDeckText || '',
+          financialsText: (startup as any).financialsText || '',
         }),
       });
       if (!res.ok) {
@@ -62,22 +64,82 @@ export const BackendInvestigationService: InvestigationService = {
   },
 
   async getAllInvestigations(): Promise<Startup[]> {
-    return MockInvestigationService.getAllInvestigations();
+    return BackendInvestigationService.getInvestigations();
+  },
+
+  async getInvestigations(): Promise<Startup[]> {
+    try {
+      const res = await fetch(`${BACKEND_API_BASE}/investigations`);
+      if (!res.ok) {
+        console.warn(`Backend investigations fetch returned status ${res.status}. Falling back to mock.`);
+        return MockInvestigationService.getAllInvestigations();
+      }
+      const data: Startup[] = await res.json();
+      return data.sort((a, b) => b.id.localeCompare(a.id));
+    } catch (err) {
+      console.warn('Network error fetching investigations from backend, falling back to mock:', err);
+      return MockInvestigationService.getAllInvestigations();
+    }
   },
 
   async getInvestigationById(id: string): Promise<Startup | null> {
+    try {
+      const list = await BackendInvestigationService.getInvestigations();
+      return list.find((s) => s.id === id) || null;
+    } catch (e) {
+      console.warn(e);
+    }
     return MockInvestigationService.getInvestigationById(id);
   },
 
   async getRiskBreakdown(name: string): Promise<any> {
+    try {
+      const list = await BackendInvestigationService.getInvestigations();
+      const startup = list.find((s) => s.name === name);
+      if (startup) {
+        return {
+          score: 100 - startup.investmentScore,
+          level: startup.riskLevel,
+        };
+      }
+    } catch (e) {
+      console.warn(e);
+    }
     return MockInvestigationService.getRiskBreakdown(name);
   },
-
+  
   async getEvidence(name: string): Promise<string[]> {
+    try {
+      const list = await BackendInvestigationService.getInvestigations();
+      const startup = list.find((s) => s.name === name);
+      if (startup && startup.details.evidenceList) {
+        return startup.details.evidenceList.map((e: any) => e.reason);
+      }
+    } catch (e) {
+      console.warn(e);
+    }
     return MockInvestigationService.getEvidence(name);
   },
 
   async getRecommendation(name: string): Promise<GeneratedScores> {
+    try {
+      const list = await BackendInvestigationService.getInvestigations();
+      const startup = list.find((s) => s.name === name);
+      if (startup) {
+        return {
+          investmentScore: startup.investmentScore,
+          founder: startup.metrics.team,
+          technology: startup.metrics.product,
+          market: startup.metrics.marketSize,
+          finance: startup.metrics.financials,
+          competition: (startup.metrics as any).competition || 80,
+          risk: startup.riskLevel === 'High' ? 30 : startup.riskLevel === 'Medium' ? 20 : 10,
+          recommendation: startup.status === 'Approved' ? 'INVEST' : startup.status === 'Flagged' ? 'PASS' : 'UNDER REVIEW',
+        };
+      }
+    } catch (e) {
+      console.warn(e);
+    }
     return MockInvestigationService.getRecommendation(name);
   },
 

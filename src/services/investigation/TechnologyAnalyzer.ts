@@ -2,7 +2,7 @@ import type { Evidence } from './investigationTypes';
 import { getStringHash } from './mockGenerator';
 
 export const TechnologyAnalyzer = {
-  async analyze(name: string, _description: string): Promise<{
+  async analyze(name: string, description: string): Promise<{
     score: number;
     techStackRisk: string;
     strengths: string[];
@@ -10,7 +10,10 @@ export const TechnologyAnalyzer = {
     evidence: Evidence[];
   }> {
     const seed = getStringHash(name);
-    const score = 75 + ((seed >> 2) % 21); // 75 - 95
+    let score = 75 + ((seed >> 2) % 21); // 75 - 95
+    if (description && (description.toLowerCase().includes('pitch deck') || description.toLowerCase().includes('.pdf') || description.length > 200)) {
+      score = Math.min(98, score + 3);
+    }
     
     const techStackRisk = 'Low. Deep learning models run on custom optimized CUDA hardware. Secured IP patent for neural network architecture.';
     const strengths = [

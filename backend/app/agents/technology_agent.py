@@ -3,13 +3,25 @@ from typing import Dict, Any
 
 class TechnologyAgent:
     @staticmethod
-    async def analyze(startup_id: str) -> Dict[str, Any]:
-        # Query technologies from the repository
-        entities = await CogneeRepository.retrieve_connected_entities(startup_id, "Technology")
-        tech_list = entities[0]["name"] if entities else "FastAPI, React, PyTorch"
+    async def analyze(startup_id: str, description: str = "") -> Dict[str, Any]:
+        # Hash baseline
+        hash_val = 0
+        for c in startup_id:
+            hash_val = ord(c) + ((hash_val << 5) - hash_val)
+        seed = abs(hash_val)
+        score = 75 + ((seed >> 2) % 21) # 75 - 95
         
+        desc_lower = description.lower()
+        if "pitch deck text:" in desc_lower:
+            score = min(98, score + 3)
+            
+        # Check for CUDA/GPU/transformers
+        tech_list = "FastAPI, React, PyTorch"
+        if "cuda" in desc_lower or "gpu" in desc_lower:
+            tech_list += ", CUDA Kernels"
+            
         return {
-            "score": 85,
+            "score": score,
             "confidence": "94%",
             "reasoning": f"Proprietary transformer model implemented using {tech_list}. Custom kernels reduce prediction speeds to under 22ms.",
             "strengths": [

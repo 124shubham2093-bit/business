@@ -2,14 +2,17 @@ import type { Evidence } from './investigationTypes';
 import { getStringHash } from './mockGenerator';
 
 export const LegalAnalyzer = {
-  async analyze(name: string, _description: string): Promise<{
+  async analyze(name: string, description: string): Promise<{
     score: number;
     strengths: string[];
     risks: string[];
     evidence: Evidence[];
   }> {
     const seed = getStringHash(name);
-    const score = 65 + ((seed >> 10) % 24); // 65 - 88
+    let score = 65 + ((seed >> 10) % 24); // 65 - 88
+    if (description && (description.toLowerCase().includes('pitch deck') || description.toLowerCase().includes('.pdf') || description.length > 200)) {
+      score = Math.min(98, score + 2);
+    }
     
     const strengths = [
       'Corporate state filings are active and validated.',

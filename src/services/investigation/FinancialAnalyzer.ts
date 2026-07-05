@@ -2,7 +2,7 @@ import type { Evidence, FinancialSnapshot } from './investigationTypes';
 import { getStringHash } from './mockGenerator';
 
 export const FinancialAnalyzer = {
-  async analyze(name: string, fundingStage: string): Promise<{
+  async analyze(name: string, fundingStage: string, description?: string): Promise<{
     score: number;
     snapshot: FinancialSnapshot;
     strengths: string[];
@@ -10,7 +10,10 @@ export const FinancialAnalyzer = {
     evidence: Evidence[];
   }> {
     const seed = getStringHash(name);
-    const score = 70 + ((seed >> 6) % 26); // 70 - 95
+    let score = 70 + ((seed >> 6) % 26); // 70 - 95
+    if (description && (description.toLowerCase().includes('financial') || description.toLowerCase().includes('.xlsx') || description.toLowerCase().includes('.pdf') || description.length > 200)) {
+      score = Math.min(98, score + 4);
+    }
     
     const snapshot: FinancialSnapshot = {
       revenue: '$1.2M ARR',

@@ -18,6 +18,14 @@ export const StartupDrawer: React.FC<StartupDrawerProps> = ({
 }) => {
   const [newNote, setNewNote] = useState('');
   const [localNotes, setLocalNotes] = useState<string[]>([]);
+  const [toastMessage, setToastMessage] = useState<string | null>(null);
+
+  const showToast = (msg: string) => {
+    setToastMessage(msg);
+    setTimeout(() => {
+      setToastMessage(null);
+    }, 3000);
+  };
 
   if (!startup) return null;
 
@@ -25,13 +33,6 @@ export const StartupDrawer: React.FC<StartupDrawerProps> = ({
     onUpdateStartup({
       ...startup,
       status,
-    });
-  };
-
-  const handleRiskChange = (riskLevel: Startup['riskLevel']) => {
-    onUpdateStartup({
-      ...startup,
-      riskLevel,
     });
   };
 
@@ -110,27 +111,44 @@ export const StartupDrawer: React.FC<StartupDrawerProps> = ({
                 </div>
 
                 {/* Risk Level Selector */}
-                <div className="flex items-center space-x-2">
-                  <span className="text-[var(--text-secondary)]">Audit Risk Tier:</span>
-                  <div className="flex rounded-lg overflow-hidden border border-[var(--border-color)]">
-                    {(['Low', 'Medium', 'High'] as Startup['riskLevel'][]).map((rk) => (
-                      <button
-                        key={rk}
-                        onClick={() => handleRiskChange(rk)}
-                        className={`px-3 py-1.5 font-medium transition-colors cursor-pointer ${
-                          startup.riskLevel === rk
-                            ? rk === 'Low'
-                              ? 'bg-emerald-600 text-white'
-                              : rk === 'Medium'
-                              ? 'bg-amber-600 text-white'
-                              : 'bg-rose-600 text-white'
-                            : 'bg-[var(--bg-subtle)] text-[var(--text-secondary)] hover:bg-[var(--bg-subtle)]/80 hover:text-[var(--text-primary)]'
-                        }`}
+                <div className="flex flex-col space-y-1">
+                  <div className="flex items-center space-x-2">
+                    <span className="text-[var(--text-secondary)]">Audit Risk Tier:</span>
+                    <div className="relative">
+                      <div
+                        onClick={() => showToast("Risk Tier is AI-generated and cannot be edited.")}
+                        className="flex rounded-lg overflow-hidden border border-[var(--border-color)] cursor-not-allowed"
                       >
-                        {rk}
-                      </button>
-                    ))}
+                        {(['Low', 'Medium', 'High'] as Startup['riskLevel'][]).map((rk) => (
+                          <button
+                            key={rk}
+                            disabled
+                            type="button"
+                            className={`px-3 py-1.5 font-medium transition-colors pointer-events-none ${
+                              startup.riskLevel === rk
+                                ? rk === 'Low'
+                                  ? 'bg-emerald-600 text-white'
+                                  : rk === 'Medium'
+                                  ? 'bg-amber-600 text-white'
+                                  : 'bg-rose-600 text-white'
+                                : 'bg-[var(--bg-subtle)] text-[var(--text-secondary)]'
+                            }`}
+                          >
+                            {rk}
+                          </button>
+                        ))}
+                      </div>
+                      {toastMessage && (
+                        <div className="absolute left-1/2 -translate-x-1/2 bottom-full mb-2 px-2.5 py-1.5 bg-slate-900 text-white text-[10px] rounded shadow-md z-50 whitespace-nowrap transition-opacity">
+                          {toastMessage}
+                          <div className="absolute top-full left-1/2 -translate-x-1/2 border-4 border-transparent border-t-slate-900" />
+                        </div>
+                      )}
+                    </div>
                   </div>
+                  <span className="text-[9px] text-[var(--text-secondary)] font-medium block">
+                    AI Generated • Read Only
+                  </span>
                 </div>
               </div>
             </div>

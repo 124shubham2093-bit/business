@@ -175,12 +175,40 @@ export const CogneeVerifyPage: React.FC = () => {
       const memoryRes = await fetch(`${BACKEND_API_BASE}/debug/memory`);
       if (!memoryRes.ok) throw new Error('Memory API failed');
       const memoryData = await memoryRes.json();
-      const hasRahul = memoryData.entities.some((e: any) => e.name === 'Rahul Sharma');
-      const hasStartup = memoryData.entities.some((e: any) => e.name === 'NeuroVision AI');
-      if (hasRahul && hasStartup) {
-        updateStep(1, 'success', 'Found Rahul Sharma and NeuroVision AI in Cognee entities index.', memoryData.entities);
+      
+      const entities = memoryData.entities || [];
+      const requiredEntityNames = ['neurovision ai', 'rahul sharma', 'tensorflow', 'peak ventures'];
+      const requiredEntityTypes = ['startup', 'founder', 'technology', 'investor'];
+
+      const missingEntities = requiredEntityNames.filter(name => 
+        !entities.some((e: any) => e.type === 'Entity' && e.name.toLowerCase() === name)
+      );
+
+      const missingTypes = requiredEntityTypes.filter(type => 
+        !entities.some((e: any) => e.type === 'EntityType' && e.name.toLowerCase() === type)
+      );
+
+      const totalEntityCount = entities.filter((e: any) => e.type === 'Entity').length;
+      const totalEntityTypeCount = entities.filter((e: any) => e.type === 'EntityType').length;
+      const totalDocuments = entities.filter((e: any) => e.type === 'TextDocument').length;
+      const totalDocumentChunks = entities.filter((e: any) => e.type === 'DocumentChunk').length;
+      const totalSummaries = entities.filter((e: any) => e.type === 'TextSummary').length;
+
+      const details = {
+        verificationBadge: '🟢 VERIFIED',
+        totalEntityCount,
+        totalEntityTypeCount,
+        totalDocuments,
+        totalDocumentChunks,
+        totalSummaries,
+        entities
+      };
+
+      if (missingEntities.length === 0 && missingTypes.length === 0) {
+        updateStep(1, 'success', '✅ Cognee Memory API Verified', details);
       } else {
-        updateStep(1, 'failed', 'Missing expected entities in memory API index.', memoryData.entities);
+        const errorMsg = `Missing expected entities: ${[...missingEntities, ...missingTypes].join(', ')} in memory API index.`;
+        updateStep(1, 'failed', errorMsg, details);
       }
 
       // Step 3: Restart Persistence Test
@@ -466,6 +494,42 @@ export const CogneeVerifyPage: React.FC = () => {
                     {step.status === 'running' && <div className="w-4 h-4 border-2 border-indigo-600 dark:border-indigo-400 border-t-transparent rounded-full animate-spin" />}
                   </div>
                 </div>
+
+                {/* Step 2 visual verification counts panel */}
+                {step.step === 2 && step.status === 'success' && step.details && (
+                  <div className="mt-3 bg-[var(--bg-subtle)] border border-emerald-500/20 p-3.5 rounded-xl text-xs space-y-3">
+                    <div className="flex items-center justify-between border-b border-emerald-500/10 pb-2 text-[10px]">
+                      <span className="text-emerald-600 dark:text-emerald-400 font-bold flex items-center gap-1.5">
+                        <CheckSquare className="w-4 h-4" /> Cognee Memory Schema Verified
+                      </span>
+                      <span className="px-2 py-0.5 rounded bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20 text-[9px] font-mono font-bold">
+                        {step.details.verificationBadge || '🟢 VERIFIED'}
+                      </span>
+                    </div>
+                    <div className="grid grid-cols-2 sm:grid-cols-5 gap-2.5">
+                      <div className="flex flex-col items-center justify-center p-2.5 bg-[var(--bg-surface)] border border-[var(--border-color)] hover:border-emerald-500/30 transition-colors rounded-lg text-center">
+                        <span className="text-[var(--text-secondary)] text-[9px] uppercase tracking-wider font-semibold">Entities</span>
+                        <span className="text-base font-bold text-emerald-600 dark:text-emerald-400 mt-1">{step.details.totalEntityCount}</span>
+                      </div>
+                      <div className="flex flex-col items-center justify-center p-2.5 bg-[var(--bg-surface)] border border-[var(--border-color)] hover:border-emerald-500/30 transition-colors rounded-lg text-center">
+                        <span className="text-[var(--text-secondary)] text-[9px] uppercase tracking-wider font-semibold">EntityTypes</span>
+                        <span className="text-base font-bold text-emerald-600 dark:text-emerald-400 mt-1">{step.details.totalEntityTypeCount}</span>
+                      </div>
+                      <div className="flex flex-col items-center justify-center p-2.5 bg-[var(--bg-surface)] border border-[var(--border-color)] hover:border-emerald-500/30 transition-colors rounded-lg text-center">
+                        <span className="text-[var(--text-secondary)] text-[9px] uppercase tracking-wider font-semibold">Documents</span>
+                        <span className="text-base font-bold text-emerald-600 dark:text-emerald-400 mt-1">{step.details.totalDocuments}</span>
+                      </div>
+                      <div className="flex flex-col items-center justify-center p-2.5 bg-[var(--bg-surface)] border border-[var(--border-color)] hover:border-emerald-500/30 transition-colors rounded-lg text-center">
+                        <span className="text-[var(--text-secondary)] text-[9px] uppercase tracking-wider font-semibold">Chunks</span>
+                        <span className="text-base font-bold text-emerald-600 dark:text-emerald-400 mt-1">{step.details.totalDocumentChunks}</span>
+                      </div>
+                      <div className="flex flex-col items-center justify-center p-2.5 bg-[var(--bg-surface)] border border-[var(--border-color)] hover:border-emerald-500/30 transition-colors rounded-lg text-center col-span-2 sm:col-span-1">
+                        <span className="text-[var(--text-secondary)] text-[9px] uppercase tracking-wider font-semibold">Summaries</span>
+                        <span className="text-base font-bold text-emerald-600 dark:text-emerald-400 mt-1">{step.details.totalSummaries}</span>
+                      </div>
+                    </div>
+                  </div>
+                )}
 
                 {/* Render nested JSON detail outputs */}
                 {step.details && (

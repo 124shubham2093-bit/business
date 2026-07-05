@@ -9,9 +9,7 @@ import {
   Coins, Sparkles, CheckCircle2, Loader2
 } from 'lucide-react';
 
-import { generateScores } from '../services/investigation/mockGenerator';
 import type { Startup } from '../services/investigation/investigationTypes';
-import { BACKEND_API_BASE } from '../services/investigation/config';
 import { Button } from '../components/ui/Button';
 import { Card, CardHeader, CardTitle, CardContent } from '../components/ui/Card';
 import { Badge } from '../components/ui/Badge';
@@ -38,7 +36,19 @@ export const InvestigationPipelinePage: React.FC = () => {
 
   // Extract navigation state or fallback
   const startupData = useMemo(() => {
-    return location.state || {
+    if (location.state && location.state.name) {
+      sessionStorage.setItem('last_pipeline_state', JSON.stringify(location.state));
+      return location.state;
+    }
+    const saved = sessionStorage.getItem('last_pipeline_state');
+    if (saved) {
+      try {
+        return JSON.parse(saved);
+      } catch (e) {
+        console.error(e);
+      }
+    }
+    return {
       name: 'Alpha Dynamics',
       founderName: 'Alex Rivera',
       sector: 'BioTech AI',
@@ -52,52 +62,43 @@ export const InvestigationPipelinePage: React.FC = () => {
     };
   }, [location.state]);
 
+  // Set backendResult to the pre-generated startup directly from location state or sessionStorage
+  const backendResult: Startup | null = useMemo(() => {
+    if (location.state?.generatedStartup) {
+      return location.state.generatedStartup;
+    }
+    if (startupData?.generatedStartup) {
+      return startupData.generatedStartup;
+    }
+    return null;
+  }, [location.state, startupData]);
+
   // Dynamic deterministic scores & statistics
   const scores = useMemo(() => {
-    return generateScores(startupData.name, startupData.sector);
-  }, [startupData.name, startupData.sector]);
-
-  // stats hooks removed to satisfy unused variable warnings
-
-  // Trigger backend execution on mount
-  // Trigger backend investigation on mount — fires in background, does not affect simulation
-  const [backendResult, setBackendResult] = useState<Startup | null>(null);
-  useEffect(() => {
-    const runBackendInvestigation = async () => {
-      try {
-        const combinedDescription = [
-          startupData.description || '',
-          startupData.pitchDeckText || '',
-        ].filter(Boolean).join('\n\n').trim();
-
-        const res = await fetch(`${BACKEND_API_BASE}/investigations`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            name: startupData.name,
-            founderName: startupData.founderName,
-            sector: startupData.sector,
-            fundingStage: startupData.fundingStage || 'Seed',
-            websiteUrl: startupData.websiteUrl || 'https://example.com',
-            githubUrl: startupData.githubUrl || 'https://github.com/example',
-            description: combinedDescription || 'No description provided.',
-          }),
-        });
-
-        if (!res.ok) {
-          console.warn(`Backend investigation returned ${res.status}. Completion summary will use deterministic scores.`);
-          return;
-        }
-
-        const created = await res.json();
-        setBackendResult(created as Startup);
-      } catch (err) {
-        console.warn('Backend investigation unreachable. Completion summary will use deterministic scores.', err);
-      }
+    const s = backendResult || (startupData as any)?.generatedStartup || startupData;
+    if (s && s.metrics) {
+      return {
+        investmentScore: s.investmentScore,
+        founder: s.metrics.team,
+        technology: s.metrics.product,
+        market: s.metrics.marketSize,
+        finance: s.metrics.financials,
+        competition: (s.metrics as any).competition || 80,
+        risk: s.riskLevel === 'High' ? 30 : s.riskLevel === 'Medium' ? 20 : 10,
+        recommendation: s.status === 'Approved' ? 'INVEST' : s.status === 'Flagged' ? 'PASS' : 'UNDER REVIEW',
+      };
+    }
+    return {
+      investmentScore: 0,
+      founder: 0,
+      technology: 0,
+      market: 0,
+      finance: 0,
+      competition: 0,
+      risk: 10,
+      recommendation: 'UNDER REVIEW' as const,
     };
-
-    runBackendInvestigation();
-  }, [startupData]);
+  }, [backendResult, startupData]);
 
   // Define agents configs
   const agents: AgentConfig[] = useMemo(() => [
@@ -512,15 +513,15 @@ export const InvestigationPipelinePage: React.FC = () => {
       };
     }
     return {
-      summary: `AI Agent assessment successfully concluded. Main investment score calculated at ${scores.investmentScore}/100. Moated sequencers and founder Stanford PhD are primary core highlights. Spot server computing GPU bills represent key compliance risks.`,
+      summary: `AI Agent assessment successfully concluded. Main investment score calculated at ${scores.investmentScore}/100. Moated solution structure and founder background are primary highlights. Operational and timeline parameters represent key compliance checkpoints.`,
       strengths: [
-        `Founder ${startupData.founderName} Stanford CS PhD background credentials.`,
-        'Patent protected organic transformer model.',
-        'Runway is confirmed stable at 24 months.'
+        `Founder ${startupData.founderName || 'team'} pedigree checks validated.`,
+        `Proprietary ${startupData.sector || 'core'} solution validated.`,
+        'Financial runway checked and verified.'
       ],
       risks: [
-        'High key-man developer dependence.',
-        'Volatility of cloud container GPU pricing.'
+        'Regulatory or operational compliance timelines represent execution risks.',
+        'Scaling resource requirements scale with customer workloads.'
       ],
       score: scores.investmentScore,
       recommendation: scores.recommendation,

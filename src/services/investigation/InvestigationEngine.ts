@@ -19,11 +19,11 @@ export const InvestigationEngine = {
   }): Promise<{ startup: Startup }> {
     // Run all analyzers in parallel
     const [founder, tech, finance, market, competition, legal] = await Promise.all([
-      FounderAnalyzer.analyze(formData.name, formData.founderName),
+      FounderAnalyzer.analyze(formData.name, formData.founderName, formData.description),
       TechnologyAnalyzer.analyze(formData.name, formData.description),
-      FinancialAnalyzer.analyze(formData.name, formData.fundingStage),
-      MarketAnalyzer.analyze(formData.name, formData.sector),
-      CompetitionAnalyzer.analyze(formData.name, formData.sector),
+      FinancialAnalyzer.analyze(formData.name, formData.fundingStage, formData.description),
+      MarketAnalyzer.analyze(formData.name, formData.sector, formData.description),
+      CompetitionAnalyzer.analyze(formData.name, formData.sector, formData.description),
       LegalAnalyzer.analyze(formData.name, formData.description),
     ]);
 

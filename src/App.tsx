@@ -29,7 +29,7 @@ function App() {
   useEffect(() => {
     setIsLoading(true);
     Promise.all([
-      MockInvestigationService.getAllInvestigations(),
+      MockInvestigationService.getInvestigations(),
       MockInvestigationService.getRecentActivity()
     ]).then(([loadedStartups, loadedActivities]) => {
       setStartups(loadedStartups);
@@ -50,16 +50,13 @@ function App() {
       // Prevent duplicate appends
       if (!startups.some((s) => s.id === newStartup.id)) {
         setIsLoading(true);
-        MockInvestigationService.createInvestigation(newStartup).then(() => {
-          // Re-load list and activities
-          Promise.all([
-            MockInvestigationService.getAllInvestigations(),
-            MockInvestigationService.getRecentActivity()
-          ]).then(([loadedStartups, loadedActivities]) => {
-            setStartups(loadedStartups);
-            setActivities(loadedActivities);
-            setIsLoading(false);
-          });
+        Promise.all([
+          MockInvestigationService.getInvestigations(),
+          MockInvestigationService.getRecentActivity()
+        ]).then(([loadedStartups, loadedActivities]) => {
+          setStartups(loadedStartups);
+          setActivities(loadedActivities);
+          setIsLoading(false);
         }).catch((err) => {
           console.error(err);
           setIsLoading(false);

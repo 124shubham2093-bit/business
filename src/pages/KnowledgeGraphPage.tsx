@@ -492,7 +492,19 @@ const KnowledgeGraphPageContent: React.FC = () => {
 
   // Extract navigation state details or default to HelixBio AI
   const startupData = useMemo(() => {
-    return location.state?.startup || {
+    if (location.state?.startup) {
+      sessionStorage.setItem('last_graph_startup', JSON.stringify(location.state.startup));
+      return location.state.startup;
+    }
+    const saved = sessionStorage.getItem('last_graph_startup');
+    if (saved) {
+      try {
+        return JSON.parse(saved);
+      } catch (e) {
+        console.error(e);
+      }
+    }
+    return {
       name: 'HelixBio AI',
       sector: 'BioTech AI',
       investmentScore: 88,

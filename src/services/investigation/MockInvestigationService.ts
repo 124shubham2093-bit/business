@@ -8,9 +8,44 @@ import { InvestigationEngine } from './InvestigationEngine';
 import { ACTIVE_SERVICE_MODE } from './config';
 import { BackendInvestigationService } from './BackendInvestigationService';
 
-// In-memory mutable database instances
-let startups: Startup[] = [...initialStartups];
-let activities: Activity[] = [...initialActivities];
+// In-memory mutable database instances with local storage fallback persistence to prevent data loss on refresh
+const LOCAL_STORAGE_KEY = 'investiq_startups';
+const LOCAL_STORAGE_ACTIVITIES_KEY = 'investiq_activities';
+
+const loadStartups = (): Startup[] => {
+  const data = localStorage.getItem(LOCAL_STORAGE_KEY);
+  if (data) {
+    try {
+      return JSON.parse(data);
+    } catch (e) {
+      console.error(e);
+    }
+  }
+  return [...initialStartups];
+};
+
+const saveStartups = (list: Startup[]) => {
+  localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(list));
+};
+
+const loadActivities = (): Activity[] => {
+  const data = localStorage.getItem(LOCAL_STORAGE_ACTIVITIES_KEY);
+  if (data) {
+    try {
+      return JSON.parse(data);
+    } catch (e) {
+      console.error(e);
+    }
+  }
+  return [...initialActivities];
+};
+
+const saveActivities = (list: Activity[]) => {
+  localStorage.setItem(LOCAL_STORAGE_ACTIVITIES_KEY, JSON.stringify(list));
+};
+
+let startups: Startup[] = loadStartups();
+let activities: Activity[] = loadActivities();
 let notifications: Notification[] = [...initialNotifications];
 
 // Utility helper to simulate network latency delay
@@ -24,7 +59,19 @@ function delay<T>(value: T, min = 300, max = 1200): Promise<T> {
 export const MockInvestigationService = {
   async createInvestigation(startup: Startup): Promise<Startup> {
     if (ACTIVE_SERVICE_MODE === 'backend') {
-      return BackendInvestigationService.createInvestigation(startup);
+      const result = await BackendInvestigationService.createInvestigation(startup);
+      const newAct: Activity = {
+        id: `act-${Date.now()}`,
+        type: 'investigation',
+        user: 'Sarah Jenkins',
+        avatarUrl: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=facearea&facepad=2&w=256&h=256&q=80',
+        startupName: result.name,
+        action: 'completed due diligence pipeline assessment',
+        timestamp: 'Just now',
+      };
+      activities = [newAct, ...activities];
+      saveActivities(activities);
+      return result;
     }
     return (MockInvestigationService as any).createInvestigationLocal(startup);
   },
@@ -35,22 +82,36 @@ export const MockInvestigationService = {
       name: startup.name,
       founderName: startup.details.founderBackground.split(' (')[0] || 'Unknown Founder',
       sector: startup.sector,
-      fundingStage: 'Seed',
-      websiteUrl: 'https://example.com',
-      githubUrl: 'https://github.com/example',
-      description: startup.elevatorPitch,
+      fundingStage: (startup as any).fundingStage || 'Seed',
+      websiteUrl: (startup as any).websiteUrl || 'https://example.com',
+      githubUrl: (startup as any).githubUrl || 'https://github.com/example',
+      description: startup.elevatorPitch + '\n\n' + ((startup as any).pitchDeckText || '') + '\n\n' + ((startup as any).financialsText || ''),
     });
 
     const startupWithDecision: Startup = {
       ...startup,
+      id: engineResult.startup.id,
+      investmentScore: engineResult.startup.investmentScore,
+      riskLevel: engineResult.startup.riskLevel,
+      status: engineResult.startup.status,
+      dateInvestigated: engineResult.startup.dateInvestigated,
+      metrics: engineResult.startup.metrics,
       details: {
         ...startup.details,
+        summary: engineResult.startup.details.summary,
+        strengths: engineResult.startup.details.strengths,
+        risks: engineResult.startup.details.risks,
+        founderBackground: engineResult.startup.details.founderBackground,
+        financialSnapshot: engineResult.startup.details.financialSnapshot,
+        marketOpportunity: engineResult.startup.details.marketOpportunity,
+        techStackRisk: engineResult.startup.details.techStackRisk,
         decision: engineResult.startup.details.decision,
         evidenceList: engineResult.startup.details.evidenceList,
       },
     };
 
     startups = [startupWithDecision, ...startups];
+    saveStartups(startups);
     
     // Log the corresponding activity log
     const newAct: Activity = {
@@ -63,6 +124,7 @@ export const MockInvestigationService = {
       timestamp: 'Just now',
     };
     activities = [newAct, ...activities];
+    saveActivities(activities);
     
     return delay(startupWithDecision);
   },
@@ -92,14 +154,23 @@ export const MockInvestigationService = {
           timestamp: 'Just now',
         };
         activities = [newAct, ...activities];
+        saveActivities(activities);
       }
     }
     
     startups = startups.map((s) => (s.id === updated.id ? updated : s));
+    saveStartups(startups);
     return delay(updated);
   },
 
   async getAllInvestigations(): Promise<Startup[]> {
+    return delay(startups);
+  },
+
+  async getInvestigations(): Promise<Startup[]> {
+    if (ACTIVE_SERVICE_MODE === 'backend') {
+      return BackendInvestigationService.getInvestigations();
+    }
     return delay(startups);
   },
 
@@ -143,6 +214,13 @@ export const MockInvestigationService = {
   },
 
   async getRiskBreakdown(name: string): Promise<any> {
+    const startup = startups.find(s => s.name === name);
+    if (startup) {
+      return delay({
+        score: 100 - startup.investmentScore,
+        level: startup.riskLevel,
+      });
+    }
     const scores = generateScores(name, '');
     return delay({
       score: scores.risk,
@@ -150,7 +228,11 @@ export const MockInvestigationService = {
     });
   },
 
-  async getEvidence(_name: string): Promise<string[]> {
+  async getEvidence(name: string): Promise<string[]> {
+    const startup = startups.find(s => s.name === name);
+    if (startup && startup.details.evidenceList) {
+      return delay(startup.details.evidenceList.map((e: any) => e.reason));
+    }
     return delay([
       'Pitch deck details verified',
       'State corporate filings matched',
@@ -159,6 +241,19 @@ export const MockInvestigationService = {
   },
 
   async getRecommendation(name: string): Promise<GeneratedScores> {
+    const startup = startups.find(s => s.name === name);
+    if (startup) {
+      return delay({
+        investmentScore: startup.investmentScore,
+        founder: startup.metrics.team,
+        technology: startup.metrics.product,
+        market: startup.metrics.marketSize,
+        finance: startup.metrics.financials,
+        competition: (startup.metrics as any).competition || 80,
+        risk: startup.riskLevel === 'High' ? 30 : startup.riskLevel === 'Medium' ? 20 : 10,
+        recommendation: startup.status === 'Approved' ? 'INVEST' : startup.status === 'Flagged' ? 'PASS' : 'UNDER REVIEW',
+      });
+    }
     return delay(generateScores(name, ''));
   },
 

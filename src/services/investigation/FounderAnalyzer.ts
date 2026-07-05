@@ -2,7 +2,7 @@ import type { Evidence } from './investigationTypes';
 import { getStringHash } from './mockGenerator';
 
 export const FounderAnalyzer = {
-  async analyze(name: string, founderName: string): Promise<{
+  async analyze(name: string, founderName: string, description?: string): Promise<{
     score: number;
     background: string;
     strengths: string[];
@@ -10,7 +10,10 @@ export const FounderAnalyzer = {
     evidence: Evidence[];
   }> {
     const seed = getStringHash(name);
-    const score = 80 + (seed % 16); // 80 - 95
+    let score = 80 + (seed % 16); // 80 - 95
+    if (description && (description.toLowerCase().includes('pitch deck') || description.toLowerCase().includes('.pdf') || description.length > 200)) {
+      score = Math.min(98, score + 2);
+    }
     
     const background = `${founderName} is the lead visionary, holding a Stanford Computer Science PhD and has compiled over 10 publications in sequencing networks.`;
     const strengths = [

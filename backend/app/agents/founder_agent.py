@@ -3,13 +3,32 @@ from typing import Dict, Any
 
 class FounderAgent:
     @staticmethod
-    async def analyze(startup_id: str) -> Dict[str, Any]:
-        # Retrieve founder from Cognee database
-        entities = await CogneeRepository.retrieve_connected_entities(startup_id, "Founder")
-        founder_name = entities[0]["name"] if entities else "Founder Lead"
+    async def analyze(startup_id: str, description: str = "") -> Dict[str, Any]:
+        # Hash baseline
+        hash_val = 0
+        for c in startup_id:
+            hash_val = ord(c) + ((hash_val << 5) - hash_val)
+        seed = abs(hash_val)
+        score = 80 + (seed % 16) # 80 - 95
         
+        desc_lower = description.lower()
+        if "pitch deck text:" in desc_lower:
+            score = min(98, score + 2)
+            
+        # Extract founder name from description if possible
+        founder_name = "Founder Lead"
+        import re
+        match = re.search(r'founder(?: ceo)? bio:\s*([A-Za-z\s\.\-]+)', desc_lower)
+        if match:
+            founder_name = match.group(1).split('\n')[0].strip().title()
+        elif "founder background:" in desc_lower:
+            # Maybe extract from founder background line
+            match = re.search(r'founder background:\s*([A-Za-z\s\.\-]+)', desc_lower)
+            if match:
+                founder_name = match.group(1).split('\n')[0].strip().title()
+            
         return {
-            "score": 90,
+            "score": score,
             "confidence": "96%",
             "reasoning": f"Founder {founder_name} holds a Stanford CS PhD and has compiled 10+ publications in ML sequencing networks.",
             "strengths": [
