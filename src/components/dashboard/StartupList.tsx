@@ -120,8 +120,8 @@ export const StartupList: React.FC<StartupListProps> = ({
     <Card className="w-full">
       <CardHeader className="pb-4 flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-[var(--border-color)]">
         <div>
-          <CardTitle>Portfolio Due Diligence Audits</CardTitle>
-          <p className="text-xs text-[var(--text-secondary)] mt-0.5">Database of comprehensive startup security assessments & AI scores</p>
+          <CardTitle>Portfolio Due Diligence Evaluations</CardTitle>
+          <p className="text-xs text-[var(--text-secondary)] mt-0.5">Institutional startup evaluations and investment scoring.</p>
         </div>
 
         {/* Linear-Style Filter Toolbar */}
@@ -197,7 +197,7 @@ export const StartupList: React.FC<StartupListProps> = ({
                 </div>
               </th>
               <th className="py-3.5 px-6 text-center">Risk Level</th>
-              <th className="py-3.5 px-6 text-center">Committee Status</th>
+              <th className="py-3.5 px-6 text-center">Investment Committee Status</th>
               <th
                 onClick={() => handleSort('dateInvestigated')}
                 className="py-3.5 px-6 cursor-pointer hover:text-[var(--text-primary)] transition-colors text-right"
@@ -207,7 +207,7 @@ export const StartupList: React.FC<StartupListProps> = ({
                   <ArrowUpDown className="w-3 h-3 text-[var(--text-secondary)]" />
                 </div>
               </th>
-              <th className="py-3.5 px-6 text-center">Audit Actions</th>
+              <th className="py-3.5 px-6 text-center">Evaluation Actions</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-[var(--border-color)] text-sm text-[var(--text-primary)]">
@@ -280,7 +280,7 @@ export const StartupList: React.FC<StartupListProps> = ({
                       className="opacity-70 group-hover:opacity-100 hover:text-indigo-600 dark:hover:text-indigo-400 hover:bg-[var(--bg-subtle)]"
                     >
                       <Eye className="w-4 h-4 mr-1.5" />
-                      View Audit
+                      View Evaluation Report
                     </Button>
                   </td>
                 </tr>

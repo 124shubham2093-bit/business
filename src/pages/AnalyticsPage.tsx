@@ -24,9 +24,9 @@ export const AnalyticsPage: React.FC<AnalyticsPageProps> = ({ startups }) => {
   const avgFinancials = startups.length ? Math.round(startups.reduce((acc, c) => acc + c.metrics.financials, 0) / startups.length) : 0;
 
   const cardStats = [
-    { name: 'Average Founder Index', value: `${avgTeam}/100`, desc: 'Leadership experience & patent power', icon: BrainCircuit },
-    { name: 'Average Tech Moat Strength', value: `${avgProduct}/100`, desc: 'Product quality & architecture stability', icon: ShieldCheck },
-    { name: 'Average Financial Health', value: `${avgFinancials}/100`, desc: 'Runway efficiency & burn-rate scores', icon: Landmark },
+    { name: 'Founder Assessment', value: `${avgTeam}/100`, desc: 'Leadership experience & patent power', icon: BrainCircuit },
+    { name: 'Technical Moat Rating', value: `${avgProduct}/100`, desc: 'Product quality & architecture stability', icon: ShieldCheck },
+    { name: 'Financial Health Rating', value: `${avgFinancials}/100`, desc: 'Runway efficiency & burn-rate scores', icon: Landmark },
   ];
 
   return (
@@ -39,10 +39,10 @@ export const AnalyticsPage: React.FC<AnalyticsPageProps> = ({ startups }) => {
       {/* Title */}
       <div>
         <h1 className="text-3xl font-bold font-display tracking-tight text-[var(--text-primary)] m-0">
-          Diligence & Risk Analytics
+          Portfolio Risk & Diligence Analytics
         </h1>
         <p className="text-sm text-[var(--text-secondary)] mt-1">
-          Deep-dive portfolio comparisons, scoring distributions, and audit health indices.
+          Portfolio benchmarking, risk distributions, and due diligence performance metrics.
         </p>
       </div>
 

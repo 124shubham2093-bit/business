@@ -536,7 +536,7 @@ export const DecisionCenterPage: React.FC = () => {
           </Button>
           <div className="h-4 w-px bg-[var(--border-color)]" />
           <span className="text-sm font-bold text-[var(--text-primary)] tracking-wide">
-            Explainable Decision Center (XAI)
+            Investment Decision Center
           </span>
         </div>
 

@@ -74,10 +74,10 @@ export const NewInvestigationPage: React.FC = () => {
         </div>
         <div>
           <h1 className="text-3xl font-bold font-display tracking-tight text-[var(--text-primary)] m-0">
-            Initiate New Due Diligence
+            Initiate Due Diligence Investigation
           </h1>
           <p className="text-sm text-[var(--text-secondary)] mt-1">
-            Feed pitch deck files and financials into Cognee Knowledge Graph parsing nodes.
+            Upload pitch decks and financial documents to begin due diligence.
           </p>
         </div>
       </div>
@@ -85,8 +85,8 @@ export const NewInvestigationPage: React.FC = () => {
       <form onSubmit={handleSubmit} className="space-y-6">
         <Card glow className="border border-[var(--border-color)]">
           <CardHeader>
-            <CardTitle>Startup Information</CardTitle>
-            <p className="text-xs text-[var(--text-secondary)]">Core parameters required for seed analysis</p>
+            <CardTitle>Startup Overview</CardTitle>
+            <p className="text-xs text-[var(--text-secondary)]">Core startup information required for evaluation.</p>
           </CardHeader>
           <CardContent className="space-y-4">
             {/* Grid 1 */}
@@ -273,7 +273,7 @@ export const NewInvestigationPage: React.FC = () => {
         <div className="flex items-center justify-between p-4 bg-slate-100 border border-slate-300 dark:bg-indigo-950/20 dark:border-indigo-500/20 rounded-xl">
           <div className="flex items-center space-x-2 text-xs text-slate-700 dark:text-indigo-300 font-medium">
             <ShieldAlert className="w-4 h-4 flex-shrink-0 text-[var(--text-primary)] dark:text-indigo-300" />
-            <p>InvestIQ will generate a due diligence knowledge graph on the next page.</p>
+            <p>InvestIQ will compile a due diligence knowledge graph on the next page.</p>
           </div>
           <Button type="submit" variant="primary" disabled={isUploading}>
             {isUploading ? (
@@ -283,7 +283,7 @@ export const NewInvestigationPage: React.FC = () => {
               </>
             ) : (
               <>
-                Start Diligence Investigation
+                Launch Investigation
                 <Sparkles className="w-4 h-4 ml-1.5" />
               </>
             )}

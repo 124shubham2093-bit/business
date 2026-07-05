@@ -104,7 +104,7 @@ export const InvestigationPipelinePage: React.FC = () => {
     {
       id: 'founder',
       name: 'Founder Agent',
-      role: 'Biographical Audits',
+      role: 'Founder Assessment',
       icon: User,
       color: 'text-blue-400 border-blue-500/20 bg-blue-500/5',
       tasks: {
@@ -122,7 +122,7 @@ export const InvestigationPipelinePage: React.FC = () => {
     {
       id: 'tech',
       name: 'Technology Agent',
-      role: 'Code Moat Validation',
+      role: 'Technical Moat Analysis',
       icon: Cpu,
       color: 'text-purple-400 border-purple-500/20 bg-purple-500/5',
       tasks: {
@@ -140,7 +140,7 @@ export const InvestigationPipelinePage: React.FC = () => {
     {
       id: 'finance',
       name: 'Financial Agent',
-      role: 'Runway Balance Review',
+      role: 'Financial Health Review',
       icon: Landmark,
       color: 'text-emerald-400 border-emerald-500/20 bg-emerald-500/5',
       tasks: {

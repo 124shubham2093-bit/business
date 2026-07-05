@@ -946,7 +946,7 @@ const KnowledgeGraphPageContent: React.FC = () => {
       <div className="min-h-screen bg-[#030014] flex items-center justify-center text-white font-mono">
         <div className="flex flex-col items-center space-y-3">
           <Loader2 className="w-8 h-8 text-brand-purple-light animate-spin" />
-          <span className="text-xs text-gray-500">Querying semantic due diligence graph...</span>
+          <span className="text-xs text-gray-500">Querying due diligence knowledge graph...</span>
         </div>
       </div>
     );
@@ -971,7 +971,7 @@ const KnowledgeGraphPageContent: React.FC = () => {
           <div className="flex items-center space-x-2">
             <Database className="w-5 h-5 text-brand-purple-light animate-pulse" />
             <span className="text-sm font-bold font-display text-white">
-              InvestIQ Semantic Auditor
+              Knowledge Graph Intelligence
             </span>
           </div>
         </div>
@@ -992,7 +992,7 @@ const KnowledgeGraphPageContent: React.FC = () => {
           {/* Audit summary */}
           <div className="space-y-4">
             <h3 className="text-xs font-bold uppercase tracking-wider text-brand-purple-light">
-              Audit Summary Card
+              Investment Committee Briefing
             </h3>
             
             <div className="bg-white/2 border border-white/5 p-4 rounded-xl space-y-3 text-xs">
@@ -1009,7 +1009,7 @@ const KnowledgeGraphPageContent: React.FC = () => {
                 <span className="font-bold text-emerald-400">{startupData.investmentScore}/100</span>
               </div>
               <div className="flex justify-between">
-                <span className="text-gray-500">Verdict Recommendation</span>
+                <span className="text-gray-500">Evidence-Based Verdict</span>
                 <Badge
                   variant={startupData.recommendation === 'INVEST' ? 'success' : 'warning'}
                   glow={startupData.recommendation === 'INVEST'}

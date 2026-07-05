@@ -59,10 +59,10 @@ export const InvestigationsPage: React.FC<InvestigationsPageProps> = ({
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
           <h1 className="text-3xl font-bold font-display tracking-tight text-[var(--text-primary)] m-0">
-            Due Diligence Explorer
+            Due Diligence Investigations
           </h1>
           <p className="text-sm text-[var(--text-secondary)] mt-1">
-            Browse corporate filings, founder background checks, and automated tech audits.
+            Browse due diligence investigations, founder assessments, and technical reviews.
           </p>
         </div>
       </div>
@@ -122,7 +122,7 @@ export const InvestigationsPage: React.FC<InvestigationsPageProps> = ({
       >
         {filtered.length === 0 ? (
           <div className="col-span-full text-center py-16 text-gray-500">
-            No audits matched your exploration filters.
+            No investigations match the selected filters.
           </div>
         ) : (
           filtered.map((startup) => (
@@ -180,7 +180,7 @@ export const InvestigationsPage: React.FC<InvestigationsPageProps> = ({
                   {/* Summary progress metric indicators */}
                   <div className="space-y-2 mt-4 pt-3 border-t border-[var(--border-color)]">
                     <div className="flex justify-between text-[10px] text-[var(--text-secondary)]">
-                      <span>Evaluation Index Rating</span>
+                      <span>Due Diligence Score</span>
                       <span className="font-bold text-[var(--text-primary)]">{startup.investmentScore}/100</span>
                     </div>
                     <div className="w-full bg-[var(--bg-subtle)] h-1.5 rounded-full overflow-hidden">
@@ -201,7 +201,7 @@ export const InvestigationsPage: React.FC<InvestigationsPageProps> = ({
                     onClick={() => onSelectStartup(startup)}
                     className="h-8 py-1 px-3 text-xs"
                   >
-                    Explore Audit
+                    View Diligence Report
                     <ArrowUpRight className="w-3.5 h-3.5 ml-1.5" />
                   </Button>
                 </div>

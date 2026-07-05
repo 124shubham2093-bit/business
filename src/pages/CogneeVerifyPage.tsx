@@ -363,10 +363,10 @@ export const CogneeVerifyPage: React.FC = () => {
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-[var(--border-color)] pb-5">
         <div>
           <h1 className="text-3xl font-bold tracking-tight text-[var(--text-primary)] m-0">
-            Cognee Graph Verification Suite
+            Knowledge Graph Verification Console
           </h1>
           <p className="text-sm text-[var(--text-secondary)] mt-1">
-            Validate Cognee semantic memory, graph growth, duplicate merging, and semantic search directly in the database.
+            Validate knowledge graph integrity, cross-investigation entity matching, and semantic retrieval.
           </p>
         </div>
         <div className="flex items-center gap-2">

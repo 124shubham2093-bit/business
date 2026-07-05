@@ -42,9 +42,9 @@ export const RecentActivity: React.FC<RecentActivityProps> = ({ activities }) =>
     <Card className="h-full">
       <CardHeader className="pb-3 border-b border-[var(--border-color)]">
         <CardTitle className="flex items-center space-x-2">
-          <span>Live Investigation Feed</span>
+          <span>Recent Investigation Activity</span>
         </CardTitle>
-        <p className="text-xs text-[var(--text-secondary)]">Real-time AI agent findings and audit logs</p>
+        <p className="text-xs text-[var(--text-secondary)]">Recent due diligence findings and investigation updates.</p>
       </CardHeader>
       <CardContent className="px-6 py-4">
         {activities.length === 0 ? (

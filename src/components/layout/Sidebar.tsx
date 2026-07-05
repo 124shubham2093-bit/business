@@ -39,8 +39,8 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
     { name: 'New Investigation', path: '/new-investigation', icon: Sparkles },
     { name: 'Dashboard', path: '/', icon: LayoutDashboard },
     { name: 'Investigations', path: '/investigations', icon: Briefcase },
-    { name: 'Analytics Trend', path: '/analytics', icon: BarChart3 },
-    { name: 'Cognee Verify', path: '/cognee-verify', icon: ShieldCheck },
+    { name: 'Portfolio Analytics', path: '/analytics', icon: BarChart3 },
+    { name: 'Knowledge Graph Verification', path: '/cognee-verify', icon: ShieldCheck },
   ];
   return (
     <>
