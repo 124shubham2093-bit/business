@@ -1,7 +1,6 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { NavLink } from 'react-router-dom';
 import { LayoutDashboard, Briefcase, BarChart3, ShieldAlert, X, Sparkles, ShieldCheck } from 'lucide-react';
-import { ACTIVE_SERVICE_MODE } from '../../services/investigation/config';
 
 interface SidebarProps {
   isOpen: boolean;
@@ -9,6 +8,33 @@ interface SidebarProps {
 }
 
 export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
+  const [backendStatus, setBackendStatus] = useState<'checking' | 'online' | 'offline'>('checking');
+
+  useEffect(() => {
+    const checkBackend = async () => {
+      try {
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 3000);
+        const res = await fetch('http://localhost:8000/health', {
+          signal: controller.signal
+        });
+        clearTimeout(timeoutId);
+        
+        if (res.ok) {
+          setBackendStatus('online');
+        } else {
+          setBackendStatus('offline');
+        }
+      } catch (err) {
+        setBackendStatus('offline');
+      }
+    };
+
+    checkBackend();
+    const interval = setInterval(checkBackend, 20000);
+    return () => clearInterval(interval);
+  }, []);
+
   const menuItems = [
     { name: 'New Investigation', path: '/new-investigation', icon: Sparkles },
     { name: 'Dashboard', path: '/', icon: LayoutDashboard },
@@ -82,13 +108,16 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
           <div className="flex items-center justify-between px-2 text-xs text-[var(--text-secondary)]">
             <span className="font-mono text-[11px]">Diligence v1.2</span>
             <div className="flex items-center space-x-1.5 px-2 py-0.5 rounded bg-[var(--bg-surface)] border border-[var(--border-color)] shadow-sm">
-              <span className={`w-1.5 h-1.5 rounded-full animate-pulse ${
-                ACTIVE_SERVICE_MODE === 'backend' ? 'bg-emerald-500' : 'bg-amber-500'
+              <span className={`w-1.5 h-1.5 rounded-full ${
+                backendStatus === 'online' ? 'bg-emerald-500 animate-pulse' : 
+                backendStatus === 'checking' ? 'bg-slate-400 animate-pulse' : 'bg-amber-500'
               }`}></span>
               <span className={`${
-                ACTIVE_SERVICE_MODE === 'backend' ? 'text-emerald-600 dark:text-emerald-400' : 'text-amber-600 dark:text-amber-400'
+                backendStatus === 'online' ? 'text-emerald-600 dark:text-emerald-400' :
+                backendStatus === 'checking' ? 'text-slate-500' : 'text-amber-600 dark:text-amber-400'
               } font-medium text-[10px]`}>
-                {ACTIVE_SERVICE_MODE === 'backend' ? 'Live Backend' : 'Mock Demo'}
+                {backendStatus === 'online' ? 'Live Backend' : 
+                 backendStatus === 'checking' ? 'Checking...' : 'Local Demo Mode'}
               </span>
             </div>
           </div>
