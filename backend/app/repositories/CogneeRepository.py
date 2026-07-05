@@ -448,3 +448,44 @@ class CogneeRepository:
             "confidence": "94%",
             "reason": "Semantic link verified."
         }
+
+    @staticmethod
+    async def get_cross_memory_insights() -> List[Dict[str, Any]]:
+        try:
+            import os
+            db_path = CogneeRepository.DB_PATH
+            if not os.path.exists(db_path):
+                alt_path = os.path.join(os.path.dirname(__file__), "../../venv/Lib/site-packages/cognee/.cognee_system/databases/cognee_db")
+                if os.path.exists(alt_path):
+                    db_path = alt_path
+
+            if not os.path.exists(db_path):
+                return []
+
+            conn = sqlite3.connect(db_path, timeout=30.0)
+            cursor = conn.cursor()
+            cursor.execute("""
+                SELECT n.label, n.type, e.relationship_name, count(DISTINCT e.source_node_id) as source_count
+                FROM edges e
+                JOIN nodes n ON e.destination_node_id = n.slug
+                GROUP BY n.slug
+                HAVING source_count > 1
+                ORDER BY source_count DESC
+                LIMIT 10
+            """)
+            rows = cursor.fetchall()
+            conn.close()
+
+            results = []
+            for r in rows:
+                results.append({
+                    "label": str(r[0]) if r[0] else "Unknown Entity",
+                    "type": str(r[1]) if r[1] else "Entity",
+                    "relationship": str(r[2]) if r[2] else "linked_to",
+                    "sourceCount": int(r[3]) if r[3] else 0
+                })
+            return results
+        except Exception as e:
+            print("Error getting cross memory insights:", e)
+            return []
+

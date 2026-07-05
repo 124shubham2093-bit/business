@@ -125,6 +125,10 @@ async def create_investigation(req: InvestigationRequestSchema):
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Diligence analysis execution failed: {str(e)}")
 
+@router.get("/investigations/cross-memory")
+async def get_cross_memory():
+    return await CogneeRepository.get_cross_memory_insights()
+
 @router.get("/investigations/{id}/graph")
 async def get_investigation_graph(id: str):
     return await CogneeRepository.retrieve_graph(id)

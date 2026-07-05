@@ -167,5 +167,23 @@ export async function uploadPitchDeck(file: File): Promise<string> {
   }
 }
 
+export interface CrossMemoryInsight {
+  label: string;
+  type: string;
+  relationship: string;
+  sourceCount: number;
+}
+
+export async function getCrossMemoryInsights(): Promise<CrossMemoryInsight[]> {
+  try {
+    const res = await fetch(`${BACKEND_API_BASE}/investigations/cross-memory`);
+    if (!res.ok) return [];
+    const data = await res.json();
+    return Array.isArray(data) ? data : [];
+  } catch (err) {
+    return [];
+  }
+}
+
 export default BackendInvestigationService;
 

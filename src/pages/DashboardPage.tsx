@@ -4,6 +4,7 @@ import { MetricCards } from '../components/dashboard/MetricCards';
 import { ScoreChart } from '../components/dashboard/ScoreChart';
 import { StartupList } from '../components/dashboard/StartupList';
 import { RecentActivity } from '../components/dashboard/RecentActivity';
+import { CrossMemoryInsights } from '../components/dashboard/CrossMemoryInsights';
 import type { Startup, Activity } from '../types';
 
 interface DashboardPageProps {
@@ -48,6 +49,9 @@ export const DashboardPage: React.FC<DashboardPageProps> = ({
 
       {/* Metric Summaries */}
       <MetricCards startups={startups} />
+
+      {/* Cognee Cross-Investigation Memory Signals */}
+      <CrossMemoryInsights />
 
       {/* Analytics Visualization charts */}
       <ScoreChart startups={startups} />
