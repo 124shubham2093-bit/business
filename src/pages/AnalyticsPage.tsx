@@ -38,10 +38,10 @@ export const AnalyticsPage: React.FC<AnalyticsPageProps> = ({ startups }) => {
     >
       {/* Title */}
       <div>
-        <h1 className="text-3xl font-bold font-display tracking-tight text-white m-0">
+        <h1 className="text-3xl font-bold font-display tracking-tight text-[var(--text-primary)] m-0">
           Diligence & Risk Analytics
         </h1>
-        <p className="text-sm text-gray-400 mt-1">
+        <p className="text-sm text-[var(--text-secondary)] mt-1">
           Deep-dive portfolio comparisons, scoring distributions, and audit health indices.
         </p>
       </div>
@@ -51,15 +51,15 @@ export const AnalyticsPage: React.FC<AnalyticsPageProps> = ({ startups }) => {
         {cardStats.map((item, idx) => (
           <Card key={idx}>
             <CardContent className="p-6 flex items-center space-x-4">
-              <div className="p-3 bg-brand-purple/10 border border-brand-purple/20 rounded-xl">
-                <item.icon className="w-6 h-6 text-brand-purple-light" />
+              <div className="p-3 bg-indigo-50 dark:bg-indigo-950/20 border border-indigo-200 dark:border-indigo-500/20 rounded-xl">
+                <item.icon className="w-6 h-6 text-indigo-600 dark:text-indigo-400" />
               </div>
               <div>
-                <span className="text-[10px] text-gray-500 font-semibold uppercase tracking-wider block">
+                <span className="text-[10px] text-[var(--text-secondary)] font-semibold uppercase tracking-wider block">
                   {item.name}
                 </span>
-                <span className="text-2xl font-bold text-white block mt-0.5">{item.value}</span>
-                <span className="text-xs text-gray-400 block mt-0.5">{item.desc}</span>
+                <span className="text-2xl font-bold text-[var(--text-primary)] block mt-0.5">{item.value}</span>
+                <span className="text-xs text-[var(--text-secondary)] block mt-0.5">{item.desc}</span>
               </div>
             </CardContent>
           </Card>
@@ -72,11 +72,11 @@ export const AnalyticsPage: React.FC<AnalyticsPageProps> = ({ startups }) => {
         <Card className="lg:col-span-2">
           <CardHeader>
             <CardTitle>Founder Index vs Tech Moat Strength</CardTitle>
-            <p className="text-xs text-gray-400">Comparing core leadership index against technological maturity rating</p>
+            <p className="text-xs text-[var(--text-secondary)]">Comparing core leadership index against technological maturity rating</p>
           </CardHeader>
           <CardContent className="h-80 pt-4">
             {startups.length === 0 ? (
-              <div className="w-full h-full flex items-center justify-center text-gray-500">
+              <div className="w-full h-full flex items-center justify-center text-[var(--text-secondary)]">
                 No data loaded
               </div>
             ) : (
@@ -106,40 +106,40 @@ export const AnalyticsPage: React.FC<AnalyticsPageProps> = ({ startups }) => {
         <Card>
           <CardHeader>
             <CardTitle>Evaluation Criteria Framework</CardTitle>
-            <p className="text-xs text-gray-400">InvestIQ auditing scorecard benchmarks</p>
+            <p className="text-xs text-[var(--text-secondary)]">InvestIQ auditing scorecard benchmarks</p>
           </CardHeader>
-          <CardContent className="space-y-4 text-xs text-gray-300">
-            <div className="flex items-start space-x-3 bg-white/2 p-3 rounded-lg border border-white/5">
-              <BrainCircuit className="w-5 h-5 text-brand-purple-light flex-shrink-0 mt-0.5" />
+          <CardContent className="space-y-4 text-xs text-[var(--text-primary)]">
+            <div className="flex items-start space-x-3 bg-[var(--bg-subtle)] p-3 rounded-lg border border-[var(--border-color)]">
+              <BrainCircuit className="w-5 h-5 text-indigo-600 dark:text-indigo-400 flex-shrink-0 mt-0.5" />
               <div>
-                <h5 className="font-semibold text-white">Founders Index (30% Weight)</h5>
-                <p className="text-[10px] text-gray-400 mt-0.5 leading-relaxed">
+                <h5 className="font-semibold text-[var(--text-primary)]">Founders Index (30% Weight)</h5>
+                <p className="text-[10px] text-[var(--text-secondary)] mt-0.5 leading-relaxed">
                   Measures prior startup exits, patent filings, educational pedigree, and leadership references.
                 </p>
               </div>
             </div>
 
-            <div className="flex items-start space-x-3 bg-white/2 p-3 rounded-lg border border-white/5">
-              <ShieldCheck className="w-5 h-5 text-cyan-400 flex-shrink-0 mt-0.5" />
+            <div className="flex items-start space-x-3 bg-[var(--bg-subtle)] p-3 rounded-lg border border-[var(--border-color)]">
+              <ShieldCheck className="w-5 h-5 text-cyan-600 dark:text-cyan-400 flex-shrink-0 mt-0.5" />
               <div>
-                <h5 className="font-semibold text-white">Tech Moat Strength (30% Weight)</h5>
-                <p className="text-[10px] text-gray-400 mt-0.5 leading-relaxed">
+                <h5 className="font-semibold text-[var(--text-primary)]">Tech Moat Strength (30% Weight)</h5>
+                <p className="text-[10px] text-[var(--text-secondary)] mt-0.5 leading-relaxed">
                   Evaluates algorithm patents, cybersecurity frameworks, compute efficiency, and container stability.
                 </p>
               </div>
             </div>
 
-            <div className="flex items-start space-x-3 bg-white/2 p-3 rounded-lg border border-white/5">
-              <Landmark className="w-5 h-5 text-emerald-400 flex-shrink-0 mt-0.5" />
+            <div className="flex items-start space-x-3 bg-[var(--bg-subtle)] p-3 rounded-lg border border-[var(--border-color)]">
+              <Landmark className="w-5 h-5 text-emerald-600 dark:text-emerald-400 flex-shrink-0 mt-0.5" />
               <div>
-                <h5 className="font-semibold text-white">Financial Auditing (40% Weight)</h5>
-                <p className="text-[10px] text-gray-400 mt-0.5 leading-relaxed">
+                <h5 className="font-semibold text-[var(--text-primary)]">Financial Auditing (40% Weight)</h5>
+                <p className="text-[10px] text-[var(--text-secondary)] mt-0.5 leading-relaxed">
                   Computes ARR quality, burn efficiency factor, capital runway margins, and valuation credibility.
                 </p>
               </div>
             </div>
 
-            <div className="p-3 bg-rose-950/20 border border-rose-500/20 rounded-lg text-rose-300 flex items-start space-x-2">
+            <div className="p-3 bg-rose-50 dark:bg-rose-950/20 border border-rose-200 dark:border-rose-500/20 rounded-lg text-rose-700 dark:text-rose-300 flex items-start space-x-2">
               <AlertCircle className="w-4 h-4 flex-shrink-0 mt-0.5" />
               <p className="text-[10px] leading-relaxed">
                 <strong>Attention:</strong> Tiers are flagged as "High Risk" automatically if the runway index falls below 6 months, regardless of overall scores.

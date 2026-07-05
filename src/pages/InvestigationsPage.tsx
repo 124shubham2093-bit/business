@@ -58,56 +58,56 @@ export const InvestigationsPage: React.FC<InvestigationsPageProps> = ({
       {/* Page Title */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
-          <h1 className="text-3xl font-bold font-display tracking-tight text-white m-0">
+          <h1 className="text-3xl font-bold font-display tracking-tight text-[var(--text-primary)] m-0">
             Due Diligence Explorer
           </h1>
-          <p className="text-sm text-gray-400 mt-1">
+          <p className="text-sm text-[var(--text-secondary)] mt-1">
             Browse corporate filings, founder background checks, and automated tech audits.
           </p>
         </div>
       </div>
 
       {/* Filter Toolbar */}
-      <div className="flex flex-col md:flex-row gap-4 p-4 rounded-xl border border-white/5 bg-white/2">
+      <div className="flex flex-col md:flex-row gap-4 p-4 rounded-xl border border-[var(--border-color)] bg-[var(--bg-surface)]">
         <div className="relative flex-1">
-          <Search className="absolute left-3 top-2.5 h-4 w-4 text-gray-500" />
+          <Search className="absolute left-3 top-2.5 h-4 w-4 text-[var(--text-secondary)]" />
           <input
             type="text"
             placeholder="Search startup investigations..."
             value={localSearch}
             onChange={(e) => setLocalSearch(e.target.value)}
-            className="w-full pl-10 pr-4 py-2 text-xs bg-white/5 border border-white/5 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:border-brand-purple/50 focus:ring-1 focus:ring-brand-purple/50 transition-colors"
+            className="w-full pl-10 pr-4 py-2 text-xs bg-[var(--bg-subtle)] border border-[var(--border-color)] rounded-lg text-[var(--text-primary)] placeholder-[var(--text-secondary)] focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition-colors"
           />
         </div>
 
         <div className="flex flex-wrap gap-2 text-xs">
           {/* Risk Dropdown */}
-          <div className="flex items-center space-x-1.5 bg-white/5 border border-white/5 rounded-lg px-2.5 py-1.5">
-            <span className="text-gray-400">Risk Tier:</span>
+          <div className="flex items-center space-x-1.5 bg-[var(--bg-subtle)] border border-[var(--border-color)] rounded-lg px-2.5 py-1.5">
+            <span className="text-[var(--text-secondary)]">Risk Tier:</span>
             <select
               value={selectedRisk}
               onChange={(e) => setSelectedRisk(e.target.value as any)}
-              className="bg-transparent text-white outline-none cursor-pointer"
+              className="bg-transparent text-[var(--text-primary)] outline-none cursor-pointer"
             >
-              <option value="All" className="bg-dark-bg text-white">All Tiers</option>
-              <option value="Low" className="bg-dark-bg text-white">Low Risk</option>
-              <option value="Medium" className="bg-dark-bg text-white">Medium Risk</option>
-              <option value="High" className="bg-dark-bg text-white">High Risk</option>
+              <option value="All" className="bg-[var(--bg-surface)] text-[var(--text-primary)]">All Tiers</option>
+              <option value="Low" className="bg-[var(--bg-surface)] text-[var(--text-primary)]">Low Risk</option>
+              <option value="Medium" className="bg-[var(--bg-surface)] text-[var(--text-primary)]">Medium Risk</option>
+              <option value="High" className="bg-[var(--bg-surface)] text-[var(--text-primary)]">High Risk</option>
             </select>
           </div>
 
           {/* Status Dropdown */}
-          <div className="flex items-center space-x-1.5 bg-white/5 border border-white/5 rounded-lg px-2.5 py-1.5">
-            <span className="text-gray-400">Status:</span>
+          <div className="flex items-center space-x-1.5 bg-[var(--bg-subtle)] border border-[var(--border-color)] rounded-lg px-2.5 py-1.5">
+            <span className="text-[var(--text-secondary)]">Status:</span>
             <select
               value={selectedStatus}
               onChange={(e) => setSelectedStatus(e.target.value as any)}
-              className="bg-transparent text-white outline-none cursor-pointer"
+              className="bg-transparent text-[var(--text-primary)] outline-none cursor-pointer"
             >
-              <option value="All" className="bg-dark-bg text-white">All Statuses</option>
-              <option value="Approved" className="bg-dark-bg text-white">Approved</option>
-              <option value="Under Review" className="bg-dark-bg text-white">Under Review</option>
-              <option value="Flagged" className="bg-dark-bg text-white">Flagged</option>
+              <option value="All" className="bg-[var(--bg-surface)] text-[var(--text-primary)]">All Statuses</option>
+              <option value="Approved" className="bg-[var(--bg-surface)] text-[var(--text-primary)]">Approved</option>
+              <option value="Under Review" className="bg-[var(--bg-surface)] text-[var(--text-primary)]">Under Review</option>
+              <option value="Flagged" className="bg-[var(--bg-surface)] text-[var(--text-primary)]">Flagged</option>
             </select>
           </div>
         </div>
@@ -131,7 +131,7 @@ export const InvestigationsPage: React.FC<InvestigationsPageProps> = ({
                 {/* Header */}
                 <CardHeader className="relative p-5">
                   <div className="flex items-center justify-between">
-                    <span className="text-2xl flex-shrink-0 w-10 h-10 flex items-center justify-center rounded-lg bg-white/5 border border-white/5">
+                    <span className="text-2xl flex-shrink-0 w-10 h-10 flex items-center justify-center rounded-lg bg-[var(--bg-subtle)] border border-[var(--border-color)]">
                       {startup.logo}
                     </span>
                     <div className="flex space-x-1.5">
@@ -162,10 +162,10 @@ export const InvestigationsPage: React.FC<InvestigationsPageProps> = ({
                   </div>
 
                   <div className="mt-4">
-                    <CardTitle className="text-base group-hover:text-brand-purple-light transition-colors duration-200">
+                    <CardTitle className="text-base group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors duration-200">
                       {startup.name}
                     </CardTitle>
-                    <p className="text-[10px] text-gray-500 font-semibold uppercase tracking-wider mt-1">
+                    <p className="text-[10px] text-[var(--text-secondary)] font-semibold uppercase tracking-wider mt-1">
                       {startup.sector}
                     </p>
                   </div>
@@ -173,19 +173,19 @@ export const InvestigationsPage: React.FC<InvestigationsPageProps> = ({
 
                 {/* Content */}
                 <CardContent className="px-5 py-2 flex-1 flex flex-col justify-between">
-                  <p className="text-xs text-gray-400 line-clamp-3 leading-relaxed">
+                  <p className="text-xs text-[var(--text-secondary)] line-clamp-3 leading-relaxed">
                     {startup.elevatorPitch}
                   </p>
 
                   {/* Summary progress metric indicators */}
-                  <div className="space-y-2 mt-4 pt-3 border-t border-white/5">
-                    <div className="flex justify-between text-[10px] text-gray-400">
+                  <div className="space-y-2 mt-4 pt-3 border-t border-[var(--border-color)]">
+                    <div className="flex justify-between text-[10px] text-[var(--text-secondary)]">
                       <span>Evaluation Index Rating</span>
-                      <span className="font-bold text-white">{startup.investmentScore}/100</span>
+                      <span className="font-bold text-[var(--text-primary)]">{startup.investmentScore}/100</span>
                     </div>
-                    <div className="w-full bg-white/5 h-1.5 rounded-full overflow-hidden">
+                    <div className="w-full bg-[var(--bg-subtle)] h-1.5 rounded-full overflow-hidden">
                       <div
-                        className="bg-brand-purple-light h-full rounded-full"
+                        className="bg-indigo-600 dark:bg-indigo-500 h-full rounded-full"
                         style={{ width: `${startup.investmentScore}%` }}
                       />
                     </div>
@@ -193,8 +193,8 @@ export const InvestigationsPage: React.FC<InvestigationsPageProps> = ({
                 </CardContent>
 
                 {/* Footer action */}
-                <div className="p-5 pt-0 mt-4 flex items-center justify-between border-t border-white/5 bg-white/1">
-                  <span className="text-[10px] text-gray-500">Runway: {startup.details.financialSnapshot.runway}</span>
+                <div className="p-5 pt-0 mt-4 flex items-center justify-between border-t border-[var(--border-color)] bg-[var(--bg-subtle)]/50">
+                  <span className="text-[10px] text-[var(--text-secondary)]">Runway: {startup.details.financialSnapshot.runway}</span>
                   <Button
                     variant="primary"
                     size="sm"

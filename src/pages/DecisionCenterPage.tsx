@@ -132,31 +132,31 @@ export const DecisionCenterPage: React.FC = () => {
     // Q1 — always generated: cross-document Cognee contradiction
     questions.push({
       category: 'COGNEE MEMORY',
-      categoryColor: 'text-brand-purple-light bg-brand-purple/10 border-brand-purple/20',
+      categoryColor: 'text-indigo-600 dark:text-indigo-400 bg-indigo-50 dark:bg-indigo-950/20 border-indigo-200 dark:border-indigo-500/20',
       question: `Cognee detected a contradiction between the pitch deck narrative and GitHub commit activity for ${startupData.name}. How does the team explain this gap?`,
       reasoning: `Cognee's knowledge graph linked pitch deck claims to repository evidence across ${finalSummary.entities} extracted entities. A semantic conflict was flagged between stated engineering velocity and actual commit frequency — a cross-document pattern only detectable with persistent memory.`,
       icon: AlertTriangle,
-      iconColor: 'text-brand-purple-light',
+      iconColor: 'text-indigo-600 dark:text-indigo-400',
     });
 
     // Q2 — technology score driven
     if (scores.technology < 80) {
       questions.push({
         category: 'GITHUB',
-        categoryColor: 'text-cyan-400 bg-cyan-950/20 border-cyan-500/20',
+        categoryColor: 'text-cyan-700 dark:text-cyan-400 bg-cyan-50 dark:bg-cyan-950/20 border-cyan-500/20',
         question: `GitHub repository activity has shown a ${Math.round(100 - scores.technology)}% deviation from stated engineering benchmarks. What is driving this slowdown?`,
         reasoning: `Technology Agent scanned ${finalSummary.documents} documents and found that recent commit velocity does not match the product roadmap milestones described in the pitch deck. Cognee surfaced this discrepancy by linking repository nodes to milestone claim nodes across sessions.`,
         icon: AlertTriangle,
-        iconColor: 'text-cyan-400',
+        iconColor: 'text-cyan-600 dark:text-cyan-400',
       });
     } else {
       questions.push({
         category: 'GITHUB',
-        categoryColor: 'text-cyan-400 bg-cyan-950/20 border-cyan-500/20',
+        categoryColor: 'text-cyan-700 dark:text-cyan-400 bg-cyan-50 dark:bg-cyan-950/20 border-cyan-500/20',
         question: `The codebase shows strong engineering benchmarks, but what is the team's technical hiring plan to sustain this velocity as the product scales?`,
         reasoning: `Technology Agent confirmed high code quality and low redundancy. However, Cognee's memory graph shows no hiring-related entities in the pitch deck, creating an unresolved dependency between current engineering output and future team capacity.`,
         icon: HelpCircle,
-        iconColor: 'text-cyan-400',
+        iconColor: 'text-cyan-600 dark:text-cyan-400',
       });
     }
 
@@ -164,20 +164,20 @@ export const DecisionCenterPage: React.FC = () => {
     if (scores.finance < 80) {
       questions.push({
         category: 'FINANCIALS',
-        categoryColor: 'text-amber-400 bg-amber-950/20 border-amber-500/20',
+        categoryColor: 'text-amber-700 dark:text-amber-400 bg-amber-50 dark:bg-amber-950/20 border-amber-500/20',
         question: `ARR appears concentrated in a small number of enterprise clients. What is the churn mitigation strategy if a top-tier client exits?`,
         reasoning: `Financial Agent identified client concentration risk during ledger analysis. Cognee's persistent graph shows no documented churn response protocol in any ingested document — a gap that compounds the financial risk score of ${scores.finance}/100.`,
         icon: AlertTriangle,
-        iconColor: 'text-amber-400',
+        iconColor: 'text-amber-600 dark:text-amber-400',
       });
     } else {
       questions.push({
         category: 'FINANCIALS',
-        categoryColor: 'text-amber-400 bg-amber-950/20 border-amber-500/20',
+        categoryColor: 'text-amber-700 dark:text-amber-400 bg-amber-50 dark:bg-amber-950/20 border-amber-500/20',
         question: `With a ${finalSummary.riskLevel.toLowerCase()} risk financial profile, what is the planned use of the next funding round and how does that affect runway projections?`,
         reasoning: `Financial Agent confirmed stable burn rate and runway. Cognee's cross-session memory found no allocation breakdown for the target raise in the pitch deck, leaving post-funding runway unverifiable from ingested documents.`,
         icon: HelpCircle,
-        iconColor: 'text-amber-400',
+        iconColor: 'text-amber-600 dark:text-amber-400',
       });
     }
 
@@ -185,20 +185,20 @@ export const DecisionCenterPage: React.FC = () => {
     if (scores.founder < 82) {
       questions.push({
         category: 'FOUNDER',
-        categoryColor: 'text-blue-400 bg-blue-950/20 border-blue-500/20',
+        categoryColor: 'text-blue-700 dark:text-blue-400 bg-blue-50 dark:bg-blue-950/20 border-blue-500/20',
         question: `${founderName}'s background shows a gap between technical expertise and enterprise sales experience. Who on the team owns enterprise GTM execution?`,
         reasoning: `Founder Agent verified academic and technical credentials but flagged an absence of commercial sales leadership history. Cognee linked founder entity nodes to prior company records and found no direct B2B enterprise sales exits in the knowledge graph.`,
         icon: AlertTriangle,
-        iconColor: 'text-blue-400',
+        iconColor: 'text-blue-600 dark:text-blue-400',
       });
     } else {
       questions.push({
         category: 'FOUNDER',
-        categoryColor: 'text-blue-400 bg-blue-950/20 border-blue-500/20',
+        categoryColor: 'text-blue-700 dark:text-blue-400 bg-blue-50 dark:bg-blue-950/20 border-blue-500/20',
         question: `${founderName} has strong credentials, but what is the succession plan if a key-person dependency creates operational risk at scale?`,
         reasoning: `Founder Agent confirmed high pedigree score. However, Cognee's memory graph found no co-founder or VP-level entity nodes linked to the company in any ingested document — a structural concentration risk at the leadership layer.`,
         icon: HelpCircle,
-        iconColor: 'text-blue-400',
+        iconColor: 'text-blue-600 dark:text-blue-400',
       });
     }
 
@@ -206,20 +206,20 @@ export const DecisionCenterPage: React.FC = () => {
     if (finalSummary.riskLevel === 'High' || scores.market < 78) {
       questions.push({
         category: 'MARKET',
-        categoryColor: 'text-rose-400 bg-rose-950/20 border-rose-500/20',
+        categoryColor: 'text-rose-700 dark:text-rose-400 bg-rose-50 dark:bg-rose-950/20 border-rose-500/20',
         question: `The TAM figure cited in the pitch deck does not match third-party market reports ingested by Cognee. Which source methodology does the team endorse?`,
         reasoning: `Market Agent cross-referenced ${startupData.sector} market data across ${finalSummary.documents} documents. Cognee's knowledge graph detected a numeric inconsistency between the deck's TAM claim and the Gartner segment data — a contradiction only surfaced because both sources were stored in the same persistent graph.`,
         icon: AlertTriangle,
-        iconColor: 'text-rose-400',
+        iconColor: 'text-rose-600 dark:text-rose-400',
       });
     } else {
       questions.push({
         category: 'COMPETITION',
-        categoryColor: 'text-rose-400 bg-rose-950/20 border-rose-500/20',
+        categoryColor: 'text-rose-700 dark:text-rose-400 bg-rose-50 dark:bg-rose-950/20 border-rose-500/20',
         question: `Competitors with larger distribution networks are targeting the same ${startupData.sector} segment. What is the defensive moat strategy if a tier-1 rival replicates the core IP?`,
         reasoning: `Competition Agent confirmed patent protections are in place. However, Cognee's graph links competitor entity nodes to acquisition history records — indicating well-resourced rivals have historically cloned IP through talent acquisition rather than patent infringement.`,
         icon: HelpCircle,
-        iconColor: 'text-rose-400',
+        iconColor: 'text-rose-600 dark:text-rose-400',
       });
     }
 
@@ -516,26 +516,26 @@ export const DecisionCenterPage: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-[#030014] text-gray-200 font-sans flex flex-col relative overflow-x-hidden">
+    <div className="min-h-screen bg-[var(--bg-dark)] text-[var(--text-primary)] font-sans flex flex-col relative overflow-x-hidden">
       
       {/* Background neon glows */}
       <div className="absolute top-1/4 left-1/4 w-[500px] h-[500px] bg-brand-purple/5 rounded-full blur-[160px] pointer-events-none -z-10 animate-pulse" />
       <div className="absolute bottom-1/4 right-1/4 w-[500px] h-[500px] bg-brand-purple-light/5 rounded-full blur-[160px] pointer-events-none -z-10 animate-pulse" />
 
       {/* Top Header Navigation */}
-      <header className="h-16 border-b border-white/5 bg-dark-bg/40 backdrop-blur-md px-6 flex items-center justify-between z-30 flex-shrink-0">
+      <header className="h-16 border-b border-[var(--border-color)] bg-[var(--bg-surface)]/80 backdrop-blur-md px-6 flex items-center justify-between z-30 flex-shrink-0">
         <div className="flex items-center space-x-4">
           <Button
             variant="ghost"
             size="sm"
             onClick={() => navigate('/')}
-            className="text-gray-400 hover:text-white cursor-pointer"
+            className="text-[var(--text-secondary)] hover:text-[var(--text-primary)] cursor-pointer"
           >
             <ArrowLeft className="w-4.5 h-4.5 mr-1.5" />
             Back to Dashboard
           </Button>
-          <div className="h-4 w-px bg-white/10" />
-          <span className="text-sm font-bold text-white tracking-wide">
+          <div className="h-4 w-px bg-[var(--border-color)]" />
+          <span className="text-sm font-bold text-[var(--text-primary)] tracking-wide">
             Explainable Decision Center (XAI)
           </span>
         </div>
@@ -546,7 +546,7 @@ export const DecisionCenterPage: React.FC = () => {
             variant="outline"
             size="sm"
             onClick={handleShare}
-            className="border-white/5 text-gray-300 hover:text-white h-9 px-3 cursor-pointer"
+            className="border-[var(--border-color)] text-[var(--text-secondary)] hover:text-[var(--text-primary)] h-9 px-3 cursor-pointer"
           >
             <Share2 className="w-4 h-4 mr-1.5" />
             Share
@@ -555,7 +555,7 @@ export const DecisionCenterPage: React.FC = () => {
             variant="outline"
             size="sm"
             onClick={handleCopyReport}
-            className="border-white/5 text-gray-300 hover:text-white h-9 px-3 cursor-pointer"
+            className="border-[var(--border-color)] text-[var(--text-secondary)] hover:text-[var(--text-primary)] h-9 px-3 cursor-pointer"
           >
             <Copy className="w-4 h-4 mr-1.5" />
             Copy Report
@@ -564,7 +564,7 @@ export const DecisionCenterPage: React.FC = () => {
             variant="outline"
             size="sm"
             onClick={handleDownloadPDF}
-            className="border-white/5 text-gray-300 hover:text-white h-9 px-3 cursor-pointer"
+            className="border-[var(--border-color)] text-[var(--text-secondary)] hover:text-[var(--text-primary)] h-9 px-3 cursor-pointer"
           >
             <FileDown className="w-4 h-4 mr-1.5" />
             Download PDF
@@ -584,8 +584,8 @@ export const DecisionCenterPage: React.FC = () => {
       {isLoading ? (
         <div className="flex-1 flex items-center justify-center">
           <div className="flex flex-col items-center space-y-3 font-mono">
-            <Loader2 className="w-8 h-8 text-brand-purple-light animate-spin" />
-            <span className="text-xs text-gray-500">Querying Explainable Decision database...</span>
+            <Loader2 className="w-8 h-8 text-indigo-600 dark:text-indigo-400 animate-spin" />
+            <span className="text-xs text-[var(--text-secondary)]">Querying Explainable Decision database...</span>
           </div>
         </div>
       ) : (
@@ -593,44 +593,44 @@ export const DecisionCenterPage: React.FC = () => {
           
           {/* Column 1: Startup Summary Sidebar */}
           <div className="xl:col-span-1 flex flex-col space-y-5 h-full">
-            <Card className="border border-white/5 bg-black/40 p-5 flex flex-col space-y-4">
+            <Card className="border border-[var(--border-color)] bg-[var(--bg-subtle)] p-5 flex flex-col space-y-4">
               <div>
-                <span className="text-[9px] text-cyan-400 font-bold uppercase tracking-widest font-mono">Audit Profile</span>
-                <h2 className="text-xl font-bold text-white mt-1">{startupData.name}</h2>
-                <span className="text-[10px] text-gray-400 block mt-0.5">{startupData.sector} • {startupData.fundingStage} stage</span>
+                <span className="text-[9px] text-cyan-600 dark:text-cyan-400 font-bold uppercase tracking-widest font-mono">Audit Profile</span>
+                <h2 className="text-xl font-bold text-[var(--text-primary)] mt-1">{startupData.name}</h2>
+                <span className="text-[10px] text-[var(--text-secondary)] block mt-0.5">{startupData.sector} • {startupData.fundingStage} stage</span>
               </div>
 
-              <div className="h-px bg-white/5" />
+              <div className="h-px bg-[var(--border-color)]" />
 
               {/* Diligence Scores metrics */}
               <div className="space-y-3.5 text-xs">
                 <div className="flex justify-between">
-                  <span className="text-gray-500">Diligence Status</span>
+                  <span className="text-[var(--text-secondary)]">Diligence Status</span>
                   <Badge variant={finalSummary.recommendation === 'INVEST' ? 'success' : 'warning'} className="font-bold text-[10px]">
                     {finalSummary.recommendation}
                   </Badge>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-gray-500">Investment Index</span>
-                  <span className="font-bold text-white font-mono text-sm">{finalSummary.score}/100</span>
+                  <span className="text-[var(--text-secondary)]">Investment Index</span>
+                  <span className="font-bold text-[var(--text-primary)] font-mono text-sm">{finalSummary.score}/100</span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-gray-500">Risk Profile</span>
-                  <span className={`font-bold font-mono ${finalSummary.riskLevel === 'Low' ? 'text-emerald-400' : finalSummary.riskLevel === 'Medium' ? 'text-amber-400' : 'text-rose-400'}`}>
+                  <span className="text-[var(--text-secondary)]">Risk Profile</span>
+                  <span className={`font-bold font-mono ${finalSummary.riskLevel === 'Low' ? 'text-emerald-600 dark:text-emerald-400' : finalSummary.riskLevel === 'Medium' ? 'text-amber-600 dark:text-amber-400' : 'text-rose-600 dark:text-rose-400'}`}>
                     {finalSummary.riskLevel} Risk
                   </span>
                 </div>
                 <div className="flex justify-between font-mono">
-                  <span className="text-gray-500">Confidence Margin</span>
-                  <span className="font-bold text-emerald-400">94%</span>
+                  <span className="text-[var(--text-secondary)]">Confidence Margin</span>
+                  <span className="font-bold text-emerald-600 dark:text-emerald-400">94%</span>
                 </div>
               </div>
 
-              <div className="h-px bg-white/5" />
+              <div className="h-px bg-[var(--border-color)]" />
 
               {/* Quick stats counter */}
               <div className="space-y-2.5">
-                <span className="text-[9px] text-gray-500 block uppercase tracking-widest font-bold font-mono">Cognee Memory Logs</span>
+                <span className="text-[9px] text-[var(--text-secondary)] block uppercase tracking-widest font-bold font-mono">Cognee Memory Logs</span>
                 <div className="grid grid-cols-2 gap-3 text-center font-mono">
                   {[
                     { label: 'Documents', val: finalSummary.documents },
@@ -638,9 +638,9 @@ export const DecisionCenterPage: React.FC = () => {
                     { label: 'Relations', val: finalSummary.relationships },
                     { label: 'Queries', val: finalSummary.queries }
                   ].map((s, idx) => (
-                    <div key={idx} className="bg-white/2 border border-white/5 p-2 rounded-xl">
-                      <span className="text-[8px] text-gray-500 block uppercase font-medium">{s.label}</span>
-                      <span className="text-xs font-bold text-white mt-0.5 block">{s.val}</span>
+                    <div key={idx} className="bg-[var(--bg-surface)] border border-[var(--border-color)] p-2 rounded-xl">
+                      <span className="text-[8px] text-[var(--text-secondary)] block uppercase font-medium">{s.label}</span>
+                      <span className="text-xs font-bold text-[var(--text-primary)] mt-0.5 block">{s.val}</span>
                     </div>
                   ))}
                 </div>
@@ -648,28 +648,28 @@ export const DecisionCenterPage: React.FC = () => {
             </Card>
 
             {/* Ingestion Rich Timeline panel */}
-            <Card className="border border-white/5 bg-black/40 p-4 flex-1 flex flex-col overflow-hidden">
-              <span className="text-[9px] font-bold text-gray-400 block uppercase tracking-widest pb-1.5 border-b border-white/5 mb-3 font-mono">Investigation Roadmap</span>
+            <Card className="border border-[var(--border-color)] bg-[var(--bg-subtle)] p-4 flex-1 flex flex-col overflow-hidden">
+              <span className="text-[9px] font-bold text-[var(--text-secondary)] block uppercase tracking-widest pb-1.5 border-b border-[var(--border-color)] mb-3 font-mono">Investigation Roadmap</span>
               <div className="flex-1 overflow-y-auto space-y-3 pr-1 scrollbar-none font-mono">
                 {agents.map((ag) => (
-                  <div key={ag.id} className="relative pl-5 border-l border-white/5 text-left text-xs">
-                    <span className="absolute -left-1.5 top-0.5 w-3.5 h-3.5 rounded-full bg-emerald-950 border border-emerald-500/30 flex items-center justify-center">
-                      <Check className="w-2 h-2 text-emerald-400" />
+                  <div key={ag.id} className="relative pl-5 border-l border-[var(--border-color)] text-left text-xs">
+                    <span className="absolute -left-1.5 top-0.5 w-3.5 h-3.5 rounded-full bg-emerald-100 dark:bg-emerald-950 border border-emerald-500/30 flex items-center justify-center">
+                      <Check className="w-2 h-2 text-emerald-600 dark:text-emerald-400" />
                     </span>
                     
                     {/* Rich Timeline contents */}
                     <div
-                      className="flex flex-col cursor-pointer bg-white/2 border border-white/5 rounded-xl p-2.5 hover:bg-white/5 transition-colors duration-200"
+                      className="flex flex-col cursor-pointer bg-[var(--bg-surface)] border border-[var(--border-color)] rounded-xl p-2.5 hover:bg-[var(--bg-subtle)] transition-colors duration-200"
                       onClick={() => setExpandedTimelineItem(expandedTimelineItem === ag.id ? null : ag.id)}
                     >
                       <div className="flex justify-between items-center text-[10px] font-bold">
-                        <span className="text-white">{ag.name}</span>
-                        <span className="text-[9px] text-emerald-400">Completed</span>
+                        <span className="text-[var(--text-primary)]">{ag.name}</span>
+                        <span className="text-[9px] text-emerald-600 dark:text-emerald-400">Completed</span>
                       </div>
                       
-                      <div className="flex justify-between items-center text-[9px] text-gray-500 mt-1.5">
+                      <div className="flex justify-between items-center text-[9px] text-[var(--text-secondary)] mt-1.5">
                         <span>Evidences: {ag.evidence.length}</span>
-                        <span className="text-brand-purple-light font-bold">Conf: {ag.confidence}%</span>
+                        <span className="text-indigo-600 dark:text-indigo-400 font-bold">Conf: {ag.confidence}%</span>
                       </div>
                     </div>
 
@@ -679,7 +679,7 @@ export const DecisionCenterPage: React.FC = () => {
                           initial={{ opacity: 0, height: 0 }}
                           animate={{ opacity: 1, height: 'auto' }}
                           exit={{ opacity: 0, height: 0 }}
-                          className="text-[10px] text-gray-400 mt-1 leading-normal overflow-hidden italic pl-1"
+                          className="text-[10px] text-[var(--text-secondary)] mt-1 leading-normal overflow-hidden italic pl-1"
                         >
                           {ag.summary}
                         </motion.div>
@@ -695,33 +695,33 @@ export const DecisionCenterPage: React.FC = () => {
           <div className="xl:col-span-2 flex flex-col space-y-4 overflow-y-auto pr-1">
             
             {/* Agent Consensus Agreement Meter */}
-            <Card className="border border-white/5 bg-black/40 p-4 flex flex-col space-y-3.5 flex-shrink-0 text-left">
-              <div className="flex justify-between items-center pb-2 border-b border-white/5">
-                <span className="text-[10px] font-bold text-brand-purple-light uppercase tracking-widest font-mono">Agent Consensus Meter</span>
-                <span className="flex items-center text-[9px] text-emerald-400 font-bold bg-emerald-950/30 px-2 py-0.5 rounded border border-emerald-500/20 font-mono">
+            <Card className="border border-[var(--border-color)] bg-[var(--bg-subtle)] p-4 flex flex-col space-y-3.5 flex-shrink-0 text-left">
+              <div className="flex justify-between items-center pb-2 border-b border-[var(--border-color)]">
+                <span className="text-[10px] font-bold text-indigo-600 dark:text-indigo-400 uppercase tracking-widest font-mono">Agent Consensus Meter</span>
+                <span className="flex items-center text-[9px] text-emerald-700 dark:text-emerald-400 font-bold bg-emerald-100 dark:bg-emerald-950/30 px-2 py-0.5 rounded border border-emerald-500/20 font-mono">
                   83% AGENT AGREEMENT
                 </span>
               </div>
 
               <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-2 text-center text-xs">
                 {[
-                  { name: 'Founder Agent', vote: 'INVEST', color: 'text-emerald-400 border-emerald-500/10 bg-emerald-500/5' },
-                  { name: 'Tech Agent', vote: 'INVEST', color: 'text-emerald-400 border-emerald-500/10 bg-emerald-500/5' },
-                  { name: 'Finance Agent', vote: 'CONDITIONAL', color: 'text-amber-400 border-amber-500/10 bg-amber-500/5' },
-                  { name: 'Market Agent', vote: 'INVEST', color: 'text-emerald-400 border-emerald-500/10 bg-emerald-500/5' },
-                  { name: 'Competition Agent', vote: 'PASS', color: 'text-rose-400 border-rose-500/10 bg-rose-500/5' },
-                  { name: 'Legal Agent', vote: 'INVEST', color: 'text-emerald-400 border-emerald-500/10 bg-emerald-500/5' }
+                  { name: 'Founder Agent', vote: 'INVEST', color: 'text-emerald-700 dark:text-emerald-400 border-emerald-500/10 bg-emerald-500/5' },
+                  { name: 'Tech Agent', vote: 'INVEST', color: 'text-emerald-700 dark:text-emerald-400 border-emerald-500/10 bg-emerald-500/5' },
+                  { name: 'Finance Agent', vote: 'CONDITIONAL', color: 'text-amber-700 dark:text-amber-400 border-amber-500/10 bg-amber-500/5' },
+                  { name: 'Market Agent', vote: 'INVEST', color: 'text-emerald-700 dark:text-emerald-400 border-emerald-500/10 bg-emerald-500/5' },
+                  { name: 'Competition Agent', vote: 'PASS', color: 'text-rose-700 dark:text-rose-400 border-rose-500/10 bg-rose-500/5' },
+                  { name: 'Legal Agent', vote: 'INVEST', color: 'text-emerald-700 dark:text-emerald-400 border-emerald-500/10 bg-emerald-500/5' }
                 ].map((v, idx) => (
                   <div key={idx} className={`border p-2 rounded-xl flex flex-col justify-between ${v.color}`}>
-                    <span className="text-[8px] text-gray-400 font-mono font-medium block truncate">{v.name}</span>
+                    <span className="text-[8px] text-[var(--text-secondary)] font-mono font-medium block truncate">{v.name}</span>
                     <span className="font-bold font-mono text-[9px] uppercase block mt-1">{v.vote}</span>
                   </div>
                 ))}
               </div>
 
-              <div className="flex justify-between items-center bg-white/2 border border-white/5 px-4 py-2 rounded-xl text-[10px] font-mono mt-1">
-                <span className="text-gray-400">Consensus Vote: <strong className="text-white">5 / 6 YES</strong></span>
-                <span className="text-gray-400">Recommendation: <strong className="text-emerald-400">INVEST</strong></span>
+              <div className="flex justify-between items-center bg-[var(--bg-surface)] border border-[var(--border-color)] px-4 py-2 rounded-xl text-[10px] font-mono mt-1">
+                <span className="text-[var(--text-secondary)]">Consensus Vote: <strong className="text-[var(--text-primary)]">5 / 6 YES</strong></span>
+                <span className="text-[var(--text-secondary)]">Recommendation: <strong className="text-emerald-600 dark:text-emerald-400">INVEST</strong></span>
               </div>
             </Card>
 
@@ -729,32 +729,32 @@ export const DecisionCenterPage: React.FC = () => {
             <Card className="border border-amber-500/30 bg-amber-500/5 p-4 flex flex-col space-y-2 relative overflow-hidden flex-shrink-0 text-left">
               <div className="absolute top-0 right-0 w-24 h-24 bg-amber-500/5 rounded-full blur-xl pointer-events-none" />
               <div className="flex items-center space-x-2.5 text-xs">
-                <AlertTriangle className="w-4.5 h-4.5 text-amber-400 animate-pulse" />
-                <span className="font-bold text-amber-400 font-mono uppercase tracking-wider">Multi-Agent Conflict Detected</span>
+                <AlertTriangle className="w-4.5 h-4.5 text-amber-600 dark:text-amber-400 animate-pulse" />
+                <span className="font-bold text-amber-600 dark:text-amber-400 font-mono uppercase tracking-wider">Multi-Agent Conflict Detected</span>
               </div>
-              <p className="text-[11px] text-gray-300 leading-normal text-left font-mono">
-                ⚠️ <strong className="text-white">Technology Agent</strong> reports deep IP custom kernel moats, while <strong className="text-white">Competition Agent</strong> reports high risk of larger market rivals replicating neural blocks.
+              <p className="text-[11px] text-[var(--text-primary)] leading-normal text-left font-mono">
+                ⚠️ <strong className="text-[var(--text-primary)]">Technology Agent</strong> reports deep IP custom kernel moats, while <strong className="text-[var(--text-primary)]">Competition Agent</strong> reports high risk of larger market rivals replicating neural blocks.
               </p>
-              <div className="text-[10px] text-gray-500 font-mono italic">
+              <div className="text-[10px] text-[var(--text-secondary)] font-mono italic">
                 Decision Builder consolidated consensus weights, adjusting rating confidence bounds from 91% to 84%.
               </div>
             </Card>
 
             {/* Decision Builder animated progress card */}
             {!isBuilderDone ? (
-              <Card className="border border-brand-purple/20 bg-brand-purple/5 p-5 relative overflow-hidden flex-shrink-0">
-                <div className="absolute top-0 right-0 w-32 h-32 bg-brand-purple-light/5 rounded-full blur-2xl" />
+              <Card className="border border-indigo-200 dark:border-indigo-500/20 bg-indigo-50 dark:bg-indigo-950/20 p-5 relative overflow-hidden flex-shrink-0">
+                <div className="absolute top-0 right-0 w-32 h-32 bg-indigo-500/5 rounded-full blur-2xl" />
                 <div className="flex flex-col space-y-4">
                   <div className="flex justify-between items-center text-xs font-mono">
-                    <span className="text-brand-purple-light font-bold flex items-center">
+                    <span className="text-indigo-600 dark:text-indigo-400 font-bold flex items-center">
                       <Layers className="w-3.5 h-3.5 mr-1.5 animate-spin" />
                       Consolidating Decision Engine Verdict...
                     </span>
-                    <span className="text-gray-500">Phase {builderStep + 1} / 6</span>
+                    <span className="text-[var(--text-secondary)]">Phase {builderStep + 1} / 6</span>
                   </div>
 
-                  <div className="w-full bg-white/5 h-2 rounded-full overflow-hidden">
-                    <div className="h-full bg-brand-purple-light" style={{ width: `${(builderStep + 1) * 16.66}%` }} />
+                  <div className="w-full bg-[var(--border-color)] h-2 rounded-full overflow-hidden">
+                    <div className="h-full bg-indigo-600 dark:bg-indigo-400" style={{ width: `${(builderStep + 1) * 16.66}%` }} />
                   </div>
 
                   <div className="grid grid-cols-2 gap-2 text-xs font-mono text-left">
@@ -769,8 +769,8 @@ export const DecisionCenterPage: React.FC = () => {
                       const isActive = idx === builderStep;
                       const isPast = idx < builderStep;
                       return (
-                        <div key={idx} className={`flex items-center space-x-2 ${isActive ? 'text-white font-bold' : isPast ? 'text-emerald-400' : 'text-gray-600'}`}>
-                          {isPast ? <Check className="w-3.5 h-3.5" /> : isActive ? <Loader2 className="w-3.5 h-3.5 animate-spin text-brand-purple-light" /> : <div className="w-3.5 h-3.5" />}
+                        <div key={idx} className={`flex items-center space-x-2 ${isActive ? 'text-[var(--text-primary)] font-bold' : isPast ? 'text-emerald-600 dark:text-emerald-400' : 'text-[var(--text-secondary)]'}`}>
+                          {isPast ? <Check className="w-3.5 h-3.5" /> : isActive ? <Loader2 className="w-3.5 h-3.5 animate-spin text-indigo-600 dark:text-indigo-400" /> : <div className="w-3.5 h-3.5" />}
                           <span>{step}</span>
                         </div>
                       );
@@ -779,22 +779,22 @@ export const DecisionCenterPage: React.FC = () => {
                 </div>
               </Card>
             ) : (
-              <Card glow className="border border-brand-purple/30 bg-brand-purple/5 p-5 flex flex-col space-y-4 relative overflow-hidden flex-shrink-0 text-left">
+              <Card glow className="border border-indigo-200 dark:border-indigo-500/30 bg-indigo-50 dark:bg-indigo-950/20 p-5 flex flex-col space-y-4 relative overflow-hidden flex-shrink-0 text-left">
                 {/* Background glows */}
-                <div className="absolute top-0 right-0 w-40 h-40 bg-brand-purple-light/5 rounded-full blur-3xl pointer-events-none" />
+                <div className="absolute top-0 right-0 w-40 h-40 bg-indigo-500/5 rounded-full blur-3xl pointer-events-none" />
                 <div className="absolute bottom-0 left-0 w-32 h-32 bg-emerald-500/5 rounded-full blur-2xl pointer-events-none" />
 
                 {/* ── A. Verdict Header ── */}
-                <div className="flex items-center justify-between pb-3 border-b border-white/5">
+                <div className="flex items-center justify-between pb-3 border-b border-[var(--border-color)]">
                   <div className="flex items-center space-x-3">
                     <div className={`p-2.5 rounded-xl border ${finalSummary.recommendation === 'INVEST' ? 'bg-emerald-500/10 border-emerald-500/20' : finalSummary.recommendation === 'PASS' ? 'bg-rose-500/10 border-rose-500/20' : 'bg-amber-500/10 border-amber-500/20'}`}>
-                      <ShieldCheck className={`w-5 h-5 ${finalSummary.recommendation === 'INVEST' ? 'text-emerald-400' : finalSummary.recommendation === 'PASS' ? 'text-rose-400' : 'text-amber-400'}`} />
+                      <ShieldCheck className={`w-5 h-5 ${finalSummary.recommendation === 'INVEST' ? 'text-emerald-600 dark:text-emerald-400' : finalSummary.recommendation === 'PASS' ? 'text-rose-600 dark:text-rose-400' : 'text-amber-600 dark:text-amber-400'}`} />
                     </div>
                     <div>
-                      <span className="text-[10px] font-bold text-brand-purple-light uppercase tracking-widest font-mono block">
+                      <span className="text-[10px] font-bold text-indigo-600 dark:text-indigo-400 uppercase tracking-widest font-mono block">
                         Evidence-Based Investment Verdict
                       </span>
-                      <span className="text-[9px] text-gray-500 font-mono">
+                      <span className="text-[9px] text-[var(--text-secondary)] font-mono">
                         Compiled from {agents.length} AI agents across {finalSummary.documents} documents
                       </span>
                     </div>
@@ -810,24 +810,24 @@ export const DecisionCenterPage: React.FC = () => {
 
                 {/* ── B. Score / Confidence / Risk metric strip ── */}
                 <div className="grid grid-cols-3 gap-3">
-                  <div className="bg-white/2 border border-white/5 p-3 rounded-xl text-center">
-                    <span className="text-[8px] text-gray-500 block uppercase font-mono font-medium">Investment Score</span>
+                  <div className="bg-[var(--bg-surface)] border border-[var(--border-color)] p-3 rounded-xl text-center">
+                    <span className="text-[8px] text-[var(--text-secondary)] block uppercase font-mono font-medium">Investment Score</span>
                     <div className="mt-1">
-                      <span className="text-2xl font-bold text-white font-mono">{finalSummary.score}</span>
-                      <span className="text-[10px] text-gray-500 font-mono">/100</span>
+                      <span className="text-2xl font-bold text-[var(--text-primary)] font-mono">{finalSummary.score}</span>
+                      <span className="text-[10px] text-[var(--text-secondary)] font-mono">/100</span>
                     </div>
                   </div>
-                  <div className="bg-white/2 border border-white/5 p-3 rounded-xl text-center">
-                    <span className="text-[8px] text-gray-500 block uppercase font-mono font-medium">AI Confidence</span>
+                  <div className="bg-[var(--bg-surface)] border border-[var(--border-color)] p-3 rounded-xl text-center">
+                    <span className="text-[8px] text-[var(--text-secondary)] block uppercase font-mono font-medium">AI Confidence</span>
                     <div className="mt-1">
-                      <span className="text-2xl font-bold text-emerald-400 font-mono">{averageConfidence}</span>
-                      <span className="text-[10px] text-gray-500 font-mono">%</span>
+                      <span className="text-2xl font-bold text-emerald-600 dark:text-emerald-400 font-mono">{averageConfidence}</span>
+                      <span className="text-[10px] text-[var(--text-secondary)] font-mono">%</span>
                     </div>
                   </div>
-                  <div className="bg-white/2 border border-white/5 p-3 rounded-xl text-center">
-                    <span className="text-[8px] text-gray-500 block uppercase font-mono font-medium">Risk Level</span>
+                  <div className="bg-[var(--bg-surface)] border border-[var(--border-color)] p-3 rounded-xl text-center">
+                    <span className="text-[8px] text-[var(--text-secondary)] block uppercase font-mono font-medium">Risk Level</span>
                     <div className="mt-1">
-                      <span className={`text-lg font-bold font-mono ${finalSummary.riskLevel === 'Low' ? 'text-emerald-400' : finalSummary.riskLevel === 'Medium' ? 'text-amber-400' : 'text-rose-400'}`}>
+                      <span className={`text-lg font-bold font-mono ${finalSummary.riskLevel === 'Low' ? 'text-emerald-600 dark:text-emerald-400' : finalSummary.riskLevel === 'Medium' ? 'text-amber-600 dark:text-amber-400' : 'text-rose-600 dark:text-rose-400'}`}>
                         {finalSummary.riskLevel}
                       </span>
                     </div>
@@ -835,32 +835,32 @@ export const DecisionCenterPage: React.FC = () => {
                 </div>
 
                 {/* Verdict reasoning summary */}
-                <p className="text-[11px] text-gray-300 leading-relaxed">
+                <p className="text-[11px] text-[var(--text-primary)] leading-relaxed">
                   {finalSummary.reasoning}
                 </p>
 
                 {/* ── C. Strongest Evidence Points ── */}
                 <div className="space-y-2">
-                  <span className="text-[9px] font-bold text-cyan-400 uppercase tracking-widest font-mono block">
+                  <span className="text-[9px] font-bold text-cyan-600 dark:text-cyan-400 uppercase tracking-widest font-mono block">
                     Strongest Evidence ({topEvidence.length} verified sources)
                   </span>
                   <div className="space-y-1.5">
                     {topEvidence.map((ev) => (
                       <div
                         key={ev.id}
-                        className="bg-white/2 border border-white/5 hover:border-brand-purple/30 p-2.5 rounded-xl flex items-center justify-between gap-3 cursor-pointer transition-colors duration-200 group"
+                        className="bg-[var(--bg-surface)] border border-[var(--border-color)] hover:border-indigo-500/30 p-2.5 rounded-xl flex items-center justify-between gap-3 cursor-pointer transition-colors duration-200 group"
                         onClick={() => setSelectedEvidence(ev)}
                       >
                         <div className="flex items-center space-x-2.5">
-                          <FileText className="w-3.5 h-3.5 text-cyan-400 flex-shrink-0" />
+                          <FileText className="w-3.5 h-3.5 text-cyan-600 dark:text-cyan-400 flex-shrink-0" />
                           <div>
-                            <span className="text-[10px] font-bold text-white block group-hover:text-brand-purple-light transition-colors">{ev.title}</span>
-                            <span className="text-[8px] text-gray-500 font-mono">{ev.source}</span>
+                            <span className="text-[10px] font-bold text-[var(--text-primary)] block group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors">{ev.title}</span>
+                            <span className="text-[8px] text-[var(--text-secondary)] font-mono">{ev.source}</span>
                           </div>
                         </div>
                         <div className="flex items-center space-x-2 flex-shrink-0">
-                          <span className="text-[9px] text-emerald-400 font-mono font-bold">{ev.confidence}</span>
-                          <ChevronRight className="w-3 h-3 text-gray-600 group-hover:text-brand-purple-light transition-colors" />
+                          <span className="text-[9px] text-emerald-600 dark:text-emerald-400 font-mono font-bold">{ev.confidence}</span>
+                          <ChevronRight className="w-3 h-3 text-[var(--text-secondary)] group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors" />
                         </div>
                       </div>
                     ))}
@@ -869,49 +869,49 @@ export const DecisionCenterPage: React.FC = () => {
 
                 {/* ── D. Key Risk Factors ── */}
                 <div className="space-y-2">
-                  <span className="text-[9px] font-bold text-rose-400 uppercase tracking-widest font-mono block">
+                  <span className="text-[9px] font-bold text-rose-600 dark:text-rose-400 uppercase tracking-widest font-mono block">
                     Key Risk Factors
                   </span>
                   <div className="space-y-1.5">
                     {keyRisks.map((risk, idx) => (
                       <div key={idx} className="flex items-start space-x-2.5 bg-rose-500/5 border border-rose-500/10 p-2.5 rounded-xl">
-                        <AlertTriangle className="w-3.5 h-3.5 text-rose-400 flex-shrink-0 mt-0.5" />
-                        <span className="text-[10px] text-gray-300 leading-relaxed">{risk}</span>
+                        <AlertTriangle className="w-3.5 h-3.5 text-rose-600 dark:text-rose-400 flex-shrink-0 mt-0.5" />
+                        <span className="text-[10px] text-[var(--text-primary)] leading-relaxed">{risk}</span>
                       </div>
                     ))}
                   </div>
                 </div>
 
                 {/* ── E. Why This Matters ── */}
-                <div className="bg-white/2 border border-white/5 p-3 rounded-xl">
-                  <span className="text-[9px] font-bold text-brand-purple-light uppercase tracking-widest font-mono block mb-1.5">
+                <div className="bg-[var(--bg-surface)] border border-[var(--border-color)] p-3 rounded-xl">
+                  <span className="text-[9px] font-bold text-indigo-600 dark:text-indigo-400 uppercase tracking-widest font-mono block mb-1.5">
                     Why This Matters
                   </span>
-                  <p className="text-[10px] text-gray-400 leading-relaxed font-mono italic">
+                  <p className="text-[10px] text-[var(--text-secondary)] leading-relaxed font-mono italic">
                     Based on {finalSummary.entities} entities extracted across {finalSummary.documents} documents, InvestIQ&apos;s {agents.length} AI agents mapped {finalSummary.relationships} entity relationships in the Cognee knowledge graph. {startupData.name} operating in {startupData.sector} at {startupData.fundingStage} stage {finalSummary.recommendation === 'INVEST' ? 'demonstrates strong fundamentals with defensible positioning' : finalSummary.recommendation === 'PASS' ? 'presents significant structural concerns that warrant caution' : 'shows mixed signals requiring further investigation'}. This verdict is backed by cross-document evidence that only a persistent knowledge graph can surface — connecting founder history, technical moats, and financial patterns across multiple ingested sources.
                   </p>
                 </div>
 
                 {/* ── F. Suggested Next Actions ── */}
-                <div className="flex items-center gap-2 pt-2 border-t border-white/5">
+                <div className="flex items-center gap-2 pt-2 border-t border-[var(--border-color)]">
                   {finalSummary.recommendation === 'INVEST' ? (
                     <>
                       <Button variant="primary" size="sm" onClick={handleExportJSON} className="flex-1 text-[10px] cursor-pointer hover:shadow-[0_0_12px_rgba(139,92,246,0.35)]">
                         <Download className="w-3.5 h-3.5 mr-1.5" />
                         Export Due Diligence Report
                       </Button>
-                      <Button variant="outline" size="sm" onClick={() => handleDeepLinkGraph('Founder')} className="flex-1 border-white/5 text-gray-300 hover:text-white text-[10px] cursor-pointer">
+                      <Button variant="outline" size="sm" onClick={() => handleDeepLinkGraph('Founder')} className="flex-1 border-[var(--border-color)] text-[var(--text-secondary)] hover:text-[var(--text-primary)] text-[10px] cursor-pointer">
                         <ExternalLink className="w-3.5 h-3.5 mr-1.5" />
                         Explore Knowledge Graph
                       </Button>
                     </>
                   ) : finalSummary.recommendation === 'PASS' ? (
                     <>
-                      <Button variant="outline" size="sm" onClick={() => navigate('/')} className="flex-1 border-white/5 text-gray-300 hover:text-white text-[10px] cursor-pointer">
+                      <Button variant="outline" size="sm" onClick={() => navigate('/')} className="flex-1 border-[var(--border-color)] text-[var(--text-secondary)] hover:text-[var(--text-primary)] text-[10px] cursor-pointer">
                         <ArrowLeft className="w-3.5 h-3.5 mr-1.5" />
                         Archive Investigation
                       </Button>
-                      <Button variant="outline" size="sm" onClick={() => handleDeepLinkGraph('Risk')} className="flex-1 border-rose-500/20 text-rose-400 hover:text-rose-300 text-[10px] cursor-pointer">
+                      <Button variant="outline" size="sm" onClick={() => handleDeepLinkGraph('Risk')} className="flex-1 border-rose-500/20 text-rose-600 dark:text-rose-400 hover:text-rose-500 text-[10px] cursor-pointer">
                         <AlertTriangle className="w-3.5 h-3.5 mr-1.5" />
                         Review Risk Graph
                       </Button>
@@ -922,7 +922,7 @@ export const DecisionCenterPage: React.FC = () => {
                         <Layers className="w-3.5 h-3.5 mr-1.5" />
                         Deep Dive Knowledge Graph
                       </Button>
-                      <Button variant="outline" size="sm" onClick={handleExportJSON} className="flex-1 border-white/5 text-gray-300 hover:text-white text-[10px] cursor-pointer">
+                      <Button variant="outline" size="sm" onClick={handleExportJSON} className="flex-1 border-[var(--border-color)] text-[var(--text-secondary)] hover:text-[var(--text-primary)] text-[10px] cursor-pointer">
                         <Download className="w-3.5 h-3.5 mr-1.5" />
                         Export for Partner Review
                       </Button>
@@ -932,23 +932,23 @@ export const DecisionCenterPage: React.FC = () => {
               </Card>
             )}
             {/* AI Investment Partner — 5 Questions to Ask Before Investing */}
-            <Card className="border border-white/5 bg-black/40 p-4 flex flex-col space-y-3 flex-shrink-0 text-left">
+            <Card className="border border-[var(--border-color)] bg-[var(--bg-subtle)] p-4 flex flex-col space-y-3 flex-shrink-0 text-left">
               {/* Section header */}
-              <div className="flex items-center justify-between pb-2.5 border-b border-white/5">
+              <div className="flex items-center justify-between pb-2.5 border-b border-[var(--border-color)]">
                 <div className="flex items-center space-x-2">
-                  <div className="p-1.5 bg-brand-purple/10 border border-brand-purple/20 rounded-lg">
-                    <HelpCircle className="w-3.5 h-3.5 text-brand-purple-light" />
+                  <div className="p-1.5 bg-indigo-50 dark:bg-indigo-950/20 border border-indigo-200 dark:border-indigo-500/20 rounded-lg">
+                    <HelpCircle className="w-3.5 h-3.5 text-indigo-600 dark:text-indigo-400" />
                   </div>
                   <div>
-                    <span className="text-[10px] font-bold text-brand-purple-light uppercase tracking-widest font-mono block">
+                    <span className="text-[10px] font-bold text-indigo-600 dark:text-indigo-400 uppercase tracking-widest font-mono block">
                       AI Investment Partner
                     </span>
-                    <span className="text-[9px] text-gray-500 font-mono">
+                    <span className="text-[9px] text-[var(--text-secondary)] font-mono">
                       5 questions generated from Cognee cross-document memory graph
                     </span>
                   </div>
                 </div>
-                <span className="text-[9px] font-mono font-bold text-brand-purple-light bg-brand-purple/10 border border-brand-purple/20 px-2 py-0.5 rounded">
+                <span className="text-[9px] font-mono font-bold text-indigo-600 dark:text-indigo-400 bg-indigo-50 dark:bg-indigo-950/20 border border-indigo-200 dark:border-indigo-500/20 px-2 py-0.5 rounded">
                   {investorQuestions.length} FLAGGED
                 </span>
               </div>
@@ -963,8 +963,8 @@ export const DecisionCenterPage: React.FC = () => {
                       key={idx}
                       className={`border rounded-xl transition-all duration-200 overflow-hidden ${
                         isOpen
-                          ? 'border-brand-purple/30 bg-white/2 shadow-[0_0_12px_rgba(139,92,246,0.08)]'
-                          : 'border-white/5 bg-black/20 hover:border-white/10 hover:bg-white/2'
+                          ? 'border-indigo-500/30 bg-[var(--bg-surface)] shadow-[0_0_12px_rgba(139,92,246,0.08)]'
+                          : 'border-[var(--border-color)] bg-[var(--bg-subtle)] hover:border-[var(--border-color)] hover:bg-[var(--bg-surface)]'
                       }`}
                     >
                       {/* Question header row — clickable */}
@@ -974,7 +974,7 @@ export const DecisionCenterPage: React.FC = () => {
                       >
                         <div className="flex items-start space-x-2.5 flex-1 min-w-0">
                           <IconComponent className={`w-3.5 h-3.5 mt-0.5 flex-shrink-0 ${q.iconColor}`} />
-                          <p className="text-[11px] text-gray-200 leading-relaxed font-sans">
+                          <p className="text-[11px] text-[var(--text-primary)] leading-relaxed font-sans">
                             {q.question}
                           </p>
                         </div>
@@ -983,8 +983,8 @@ export const DecisionCenterPage: React.FC = () => {
                             {q.category}
                           </span>
                           {isOpen
-                            ? <ChevronUp className="w-3.5 h-3.5 text-gray-500" />
-                            : <ChevronDown className="w-3.5 h-3.5 text-gray-500" />
+                            ? <ChevronUp className="w-3.5 h-3.5 text-[var(--text-secondary)]" />
+                            : <ChevronDown className="w-3.5 h-3.5 text-[var(--text-secondary)]" />
                           }
                         </div>
                       </div>
@@ -998,11 +998,11 @@ export const DecisionCenterPage: React.FC = () => {
                             exit={{ opacity: 0, height: 0 }}
                             className="overflow-hidden"
                           >
-                            <div className="px-3 pb-3 border-t border-white/5 pt-2.5">
-                              <span className="text-[9px] font-bold text-cyan-400 uppercase tracking-wider font-mono block mb-1.5">
+                            <div className="px-3 pb-3 border-t border-[var(--border-color)] pt-2.5">
+                              <span className="text-[9px] font-bold text-cyan-600 dark:text-cyan-400 uppercase tracking-wider font-mono block mb-1.5">
                                 Cognee Memory Reasoning
                               </span>
-                              <p className="text-[10px] text-gray-400 leading-relaxed font-mono italic">
+                              <p className="text-[10px] text-[var(--text-secondary)] leading-relaxed font-mono italic">
                                 {q.reasoning}
                               </p>
                             </div>
@@ -1025,8 +1025,8 @@ export const DecisionCenterPage: React.FC = () => {
                     key={agent.id}
                     className={`border transition-all duration-300 ${
                       isExpanded
-                        ? 'border-brand-purple/40 bg-white/2 shadow-[0_0_15px_rgba(139,92,246,0.1)]'
-                        : 'border-white/5 bg-black/40 hover:border-white/10'
+                        ? 'border-indigo-500/40 bg-[var(--bg-surface)] shadow-[0_0_15px_rgba(139,92,246,0.1)]'
+                        : 'border-[var(--border-color)] bg-[var(--bg-subtle)] hover:border-[var(--border-color)]'
                     }`}
                   >
                     <CardHeader
@@ -1034,21 +1034,21 @@ export const DecisionCenterPage: React.FC = () => {
                       onClick={() => setExpandedAgent(isExpanded ? null : agent.id)}
                     >
                       <div className="flex items-center space-x-3.5">
-                        <div className="p-2.5 bg-white/2 border border-white/5 rounded-xl">
-                          <agent.icon className="w-5 h-5 text-gray-300" />
+                        <div className="p-2.5 bg-[var(--bg-surface)] border border-[var(--border-color)] rounded-xl">
+                          <agent.icon className="w-5 h-5 text-[var(--text-primary)]" />
                         </div>
                         <div>
-                          <span className="text-[9px] text-gray-500 uppercase tracking-widest font-mono">AI Diligence Agent</span>
-                          <h3 className="text-sm font-bold text-white leading-tight">{agent.name}</h3>
-                          <span className="text-[10px] text-gray-400 font-mono block mt-0.5">{agent.role}</span>
+                          <span className="text-[9px] text-[var(--text-secondary)] uppercase tracking-widest font-mono">AI Diligence Agent</span>
+                          <h3 className="text-sm font-bold text-[var(--text-primary)] leading-tight">{agent.name}</h3>
+                          <span className="text-[10px] text-[var(--text-secondary)] font-mono block mt-0.5">{agent.role}</span>
                         </div>
                       </div>
 
                       {/* Right values gauges */}
                       <div className="flex items-center space-x-6 text-xs font-mono">
                         <div className="hidden sm:block text-right">
-                          <span className="text-[8px] text-gray-500 block">SCORE</span>
-                          <span className="font-bold text-white text-sm">{agent.score}/100</span>
+                          <span className="text-[8px] text-[var(--text-secondary)] block">SCORE</span>
+                          <span className="font-bold text-[var(--text-primary)] text-sm">{agent.score}/100</span>
                         </div>
                         
                         {/* Circular animated progress indicator */}
@@ -1057,10 +1057,10 @@ export const DecisionCenterPage: React.FC = () => {
                             <circle cx="16" cy="16" r="13" stroke="rgba(255,255,255,0.03)" strokeWidth="2.5" fill="transparent" />
                             <circle cx="16" cy="16" r="13" stroke="#8b5cf6" strokeWidth="2.5" fill="transparent" strokeDasharray="81.68" strokeDashoffset={81.68 - (81.68 * agent.confidence) / 100} />
                           </svg>
-                          <span className="text-[8px] font-bold text-brand-purple-light">{agent.confidence}%</span>
+                          <span className="text-[8px] font-bold text-indigo-600 dark:text-indigo-400">{agent.confidence}%</span>
                         </div>
 
-                        {isExpanded ? <ChevronUp className="w-4 h-4 text-gray-400" /> : <ChevronDown className="w-4 h-4 text-gray-400" />}
+                        {isExpanded ? <ChevronUp className="w-4 h-4 text-[var(--text-secondary)]" /> : <ChevronDown className="w-4 h-4 text-[var(--text-secondary)]" />}
                       </div>
                     </CardHeader>
 
@@ -1071,29 +1071,29 @@ export const DecisionCenterPage: React.FC = () => {
                           initial={{ opacity: 0, height: 0 }}
                           animate={{ opacity: 1, height: 'auto' }}
                           exit={{ opacity: 0, height: 0 }}
-                          className="overflow-hidden border-t border-white/5 bg-black/10"
+                          className="overflow-hidden border-t border-[var(--border-color)] bg-[var(--bg-subtle)]/50"
                         >
                           <div className="p-4 space-y-4 text-xs">
                             
                             {/* Summary & Reasoning narrative */}
                             <div className="space-y-1.5">
-                              <span className="text-[9px] font-bold text-brand-purple-light uppercase tracking-wider block font-mono">Reasoning Narrative</span>
-                              <p className="text-gray-300 leading-relaxed">{agent.reasoning}</p>
+                              <span className="text-[9px] font-bold text-indigo-600 dark:text-indigo-400 uppercase tracking-wider block font-mono">Reasoning Narrative</span>
+                              <p className="text-[var(--text-primary)] leading-relaxed">{agent.reasoning}</p>
                             </div>
 
                             {/* Strengths & Weaknesses blocks */}
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                              <div className="bg-white/2 border border-white/5 p-3 rounded-xl space-y-1">
-                                <span className="text-[9px] font-bold text-emerald-400 uppercase tracking-wider block font-mono">Strengths</span>
-                                <ul className="space-y-1 list-disc pl-4 text-gray-300">
+                              <div className="bg-[var(--bg-surface)] border border-[var(--border-color)] p-3 rounded-xl space-y-1">
+                                <span className="text-[9px] font-bold text-emerald-600 dark:text-emerald-400 uppercase tracking-wider block font-mono">Strengths</span>
+                                <ul className="space-y-1 list-disc pl-4 text-[var(--text-primary)]">
                                   {agent.strengths.map((str, idx) => (
                                     <li key={idx} className="leading-normal">{str}</li>
                                   ))}
                                 </ul>
                               </div>
-                              <div className="bg-white/2 border border-white/5 p-3 rounded-xl space-y-1">
-                                <span className="text-[9px] font-bold text-rose-400 uppercase tracking-wider block font-mono">Risks & Weaknesses</span>
-                                <ul className="space-y-1 list-disc pl-4 text-gray-300">
+                              <div className="bg-[var(--bg-surface)] border border-[var(--border-color)] p-3 rounded-xl space-y-1">
+                                <span className="text-[9px] font-bold text-rose-600 dark:text-rose-400 uppercase tracking-wider block font-mono">Risks & Weaknesses</span>
+                                <ul className="space-y-1 list-disc pl-4 text-[var(--text-primary)]">
                                   {[...agent.weaknesses, ...agent.risks].map((wk, idx) => (
                                     <li key={idx} className="leading-normal">{wk}</li>
                                   ))}
@@ -1103,24 +1103,24 @@ export const DecisionCenterPage: React.FC = () => {
 
                             {/* Evidences list checklist */}
                             <div className="space-y-2">
-                              <span className="text-[9px] font-bold text-cyan-400 uppercase tracking-wider block font-mono">Evidence Used</span>
+                              <span className="text-[9px] font-bold text-cyan-600 dark:text-cyan-400 uppercase tracking-wider block font-mono">Evidence Used</span>
                               <div className="space-y-2">
                                 {agent.evidence.map((ev) => (
                                   <div
                                     key={ev.id}
-                                    className="bg-white/2 border border-white/5 hover:border-brand-purple/30 p-3 rounded-xl flex items-center justify-between gap-4 cursor-pointer transition-colors duration-200"
+                                    className="bg-[var(--bg-surface)] border border-[var(--border-color)] hover:border-indigo-500/30 p-3 rounded-xl flex items-center justify-between gap-4 cursor-pointer transition-colors duration-200"
                                     onClick={() => setSelectedEvidence(ev)}
                                   >
                                     <div className="flex items-center space-x-3">
-                                      <FileText className="w-4 h-4 text-cyan-400" />
+                                      <FileText className="w-4 h-4 text-cyan-600 dark:text-cyan-400" />
                                       <div className="text-left">
-                                        <span className="font-bold text-white block">{ev.title}</span>
-                                        <span className="text-[9px] text-gray-500 font-mono">Source: {ev.source}</span>
+                                        <span className="font-bold text-[var(--text-primary)] block">{ev.title}</span>
+                                        <span className="text-[9px] text-[var(--text-secondary)] font-mono">Source: {ev.source}</span>
                                       </div>
                                     </div>
                                     <div className="flex items-center space-x-3 text-[10px] font-mono">
-                                      <span className="text-emerald-400">Conf: {ev.confidence}</span>
-                                      <ChevronRight className="w-3.5 h-3.5 text-gray-500" />
+                                      <span className="text-emerald-600 dark:text-emerald-400">Conf: {ev.confidence}</span>
+                                      <ChevronRight className="w-3.5 h-3.5 text-[var(--text-secondary)]" />
                                     </div>
                                   </div>
                                 ))}
@@ -1128,13 +1128,13 @@ export const DecisionCenterPage: React.FC = () => {
                             </div>
 
                             {/* Related graph node tags linking */}
-                            <div className="flex flex-wrap items-center gap-2 pt-2 border-t border-white/5">
-                              <span className="text-[8px] font-bold text-gray-500 uppercase tracking-wider font-mono mr-1">Semantic Node Links:</span>
+                            <div className="flex flex-wrap items-center gap-2 pt-2 border-t border-[var(--border-color)]">
+                              <span className="text-[8px] font-bold text-[var(--text-secondary)] uppercase tracking-wider font-mono mr-1">Semantic Node Links:</span>
                               {agent.graphNodes.map((node) => (
                                 <button
                                   key={node}
                                   onClick={() => handleDeepLinkGraph(node)}
-                                  className="text-[9px] font-bold font-mono text-cyan-400 bg-cyan-950/20 hover:bg-cyan-950/40 border border-cyan-500/20 px-2 py-0.5 rounded flex items-center gap-1 cursor-pointer transition-all duration-200"
+                                  className="text-[9px] font-bold font-mono text-cyan-700 dark:text-cyan-400 bg-cyan-50 dark:bg-cyan-950/20 hover:bg-cyan-100 dark:hover:bg-cyan-950/40 border border-cyan-500/20 px-2 py-0.5 rounded flex items-center gap-1 cursor-pointer transition-all duration-200"
                                 >
                                   {node}
                                   <ExternalLink className="w-2.5 h-2.5" />
@@ -1153,48 +1153,48 @@ export const DecisionCenterPage: React.FC = () => {
 
           {/* Column 4: Document Evidence Viewer & slide drawers */}
           <div className="xl:col-span-1 flex flex-col space-y-5 h-full">
-            <Card className="border border-white/5 bg-black/40 p-5 flex flex-col justify-between h-full text-left">
+            <Card className="border border-[var(--border-color)] bg-[var(--bg-subtle)] p-5 flex flex-col justify-between h-full text-left">
               <div className="space-y-4">
-                <span className="text-[9px] text-gray-500 font-bold uppercase tracking-widest block font-mono">Evidence Inspector</span>
+                <span className="text-[9px] text-[var(--text-secondary)] font-bold uppercase tracking-widest block font-mono">Evidence Inspector</span>
                 
                 {selectedEvidence ? (
                   <div className="space-y-4">
                     <div>
-                      <h3 className="text-sm font-bold text-white leading-snug">{selectedEvidence.title}</h3>
-                      <span className="text-[9px] text-brand-purple-light font-mono block mt-1 uppercase bg-brand-purple/10 px-2 py-0.5 rounded border border-brand-purple/20 w-fit">
+                      <h3 className="text-sm font-bold text-[var(--text-primary)] leading-snug">{selectedEvidence.title}</h3>
+                      <span className="text-[9px] text-indigo-600 dark:text-indigo-400 font-mono block mt-1 uppercase bg-indigo-50 dark:bg-indigo-950/20 px-2 py-0.5 rounded border border-indigo-200 dark:border-indigo-500/20 w-fit">
                         {selectedEvidence.docType}
                       </span>
                     </div>
 
-                    <div className="h-px bg-white/5" />
+                    <div className="h-px bg-[var(--border-color)]" />
 
                     <div className="space-y-1">
-                      <span className="text-[9px] text-gray-500 block uppercase font-mono">Highlighted Text Quote</span>
-                      <blockquote className="bg-black/30 border-l border-brand-purple/40 p-3 rounded text-[11px] text-gray-300 leading-relaxed italic">
+                      <span className="text-[9px] text-[var(--text-secondary)] block uppercase font-mono">Highlighted Text Quote</span>
+                      <blockquote className="bg-[var(--bg-surface)] border-l border-indigo-500/40 p-3 rounded text-[11px] text-[var(--text-primary)] leading-relaxed italic">
                         "{selectedEvidence.text}"
                       </blockquote>
                     </div>
 
                     <div className="space-y-1 font-mono text-[10px]">
                       <div className="flex justify-between">
-                        <span className="text-gray-500">Source Database</span>
-                        <span className="text-white">{selectedEvidence.source}</span>
+                        <span className="text-[var(--text-secondary)]">Source Database</span>
+                        <span className="text-[var(--text-primary)]">{selectedEvidence.source}</span>
                       </div>
                       <div className="flex justify-between mt-1">
-                        <span className="text-gray-500">AI Confidence</span>
-                        <span className="text-emerald-400 font-bold">{selectedEvidence.confidence}</span>
+                        <span className="text-[var(--text-secondary)]">AI Confidence</span>
+                        <span className="text-emerald-600 dark:text-emerald-400 font-bold">{selectedEvidence.confidence}</span>
                       </div>
                       <div className="flex justify-between mt-1">
-                        <span className="text-gray-500">Source Reliability</span>
-                        <span className="text-cyan-400 font-bold">{selectedEvidence.sourceReliability}</span>
+                        <span className="text-[var(--text-secondary)]">Source Reliability</span>
+                        <span className="text-cyan-600 dark:text-cyan-400 font-bold">{selectedEvidence.sourceReliability}</span>
                       </div>
                     </div>
 
                     <div className="space-y-2">
-                      <span className="text-[9px] text-gray-500 block uppercase font-mono">Entities Connected</span>
+                      <span className="text-[9px] text-[var(--text-secondary)] block uppercase font-mono">Entities Connected</span>
                       <div className="flex flex-wrap gap-1.5">
                         {selectedEvidence.entities.map((ent: string) => (
-                          <span key={ent} className="text-[9px] font-mono text-gray-300 bg-white/5 px-2 py-0.5 rounded">
+                          <span key={ent} className="text-[9px] font-mono text-[var(--text-primary)] bg-[var(--border-color)] px-2 py-0.5 rounded">
                             {ent}
                           </span>
                         ))}
@@ -1214,8 +1214,8 @@ export const DecisionCenterPage: React.FC = () => {
                     </div>
                   </div>
                 ) : (
-                  <div className="flex flex-col items-center justify-center py-16 text-center space-y-2 text-gray-500">
-                    <Info className="w-8 h-8 text-gray-600" />
+                  <div className="flex flex-col items-center justify-center py-16 text-center space-y-2 text-[var(--text-secondary)]">
+                    <Info className="w-8 h-8 text-[var(--text-secondary)]" />
                     <p className="text-xs italic">
                       Select an evidence item from any agent's expandable card to inspect the text source.
                     </p>
@@ -1224,12 +1224,12 @@ export const DecisionCenterPage: React.FC = () => {
               </div>
 
               {/* Committee report share button */}
-              <div className="space-y-2 border-t border-white/5 pt-4">
+              <div className="space-y-2 border-t border-[var(--border-color)] pt-4">
                 <Button
                   variant="outline"
                   size="sm"
                   onClick={handleShare}
-                  className="w-full border-white/5 text-gray-400 hover:text-white justify-center cursor-pointer"
+                  className="w-full border-[var(--border-color)] text-[var(--text-secondary)] hover:text-[var(--text-primary)] justify-center cursor-pointer"
                 >
                   <Share2 className="w-4 h-4 mr-1.5" />
                   Share Investigation Link
@@ -1248,7 +1248,7 @@ export const DecisionCenterPage: React.FC = () => {
             initial={{ opacity: 0, y: 50, scale: 0.95 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 20, scale: 0.95 }}
-            className="fixed bottom-6 left-1/2 transform -translate-x-1/2 z-50 bg-brand-purple border border-brand-purple-light/20 text-white font-mono text-xs px-5 py-3 rounded-xl shadow-[0_0_20px_rgba(139,92,246,0.35)] flex items-center space-x-2"
+            className="fixed bottom-6 left-1/2 transform -translate-x-1/2 z-50 bg-indigo-600 border border-indigo-400/20 text-white font-mono text-xs px-5 py-3 rounded-xl shadow-[0_0_20px_rgba(139,92,246,0.35)] flex items-center space-x-2"
           >
             <ShieldCheck className="w-4 h-4 text-emerald-400" />
             <span>{toastMsg}</span>

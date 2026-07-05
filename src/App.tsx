@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Routes, Route, useLocation, useNavigate } from 'react-router-dom';
+import { ThemeProvider } from './context/ThemeContext';
 import { DashboardLayout } from './layouts/DashboardLayout';
 import { DashboardPage } from './pages/DashboardPage';
 import { InvestigationsPage } from './pages/InvestigationsPage';
@@ -97,70 +98,70 @@ function App() {
     });
   };
 
-  if (isLoading && startups.length === 0) {
-    return (
-      <div className="min-h-screen bg-[#030014] flex items-center justify-center text-white">
-        <div className="flex flex-col items-center space-y-3">
-          <div className="w-10 h-10 border-4 border-brand-purple border-t-transparent rounded-full animate-spin" />
-          <span className="text-xs text-gray-400 font-mono">Loading InvestIQ Telemetry...</span>
-        </div>
-      </div>
-    );
-  }
-
   return (
-    <>
-      <Routes>
-        <Route
-          path="/"
-          element={
-            <DashboardLayout searchQuery={searchQuery} setSearchQuery={setSearchQuery} />
-          }
-        >
-          <Route
-            index
-            element={
-              <DashboardPage
-                startups={startups}
-                activities={activities}
-                searchQuery={searchQuery}
-                onSelectStartup={setSelectedStartup}
-                newlyCreatedId={newlyCreatedId}
+    <ThemeProvider>
+      {isLoading && startups.length === 0 ? (
+        <div className="min-h-screen bg-[var(--bg-page)] flex items-center justify-center text-[var(--text-primary)] transition-colors duration-200">
+          <div className="flex flex-col items-center space-y-3">
+            <div className="w-10 h-10 border-4 border-indigo-600 border-t-transparent rounded-full animate-spin" />
+            <span className="text-xs text-[var(--text-secondary)] font-mono">Loading InvestIQ Telemetry...</span>
+          </div>
+        </div>
+      ) : (
+        <>
+          <Routes>
+            <Route
+              path="/"
+              element={
+                <DashboardLayout searchQuery={searchQuery} setSearchQuery={setSearchQuery} />
+              }
+            >
+              <Route
+                index
+                element={
+                  <DashboardPage
+                    startups={startups}
+                    activities={activities}
+                    searchQuery={searchQuery}
+                    onSelectStartup={setSelectedStartup}
+                    newlyCreatedId={newlyCreatedId}
+                  />
+                }
               />
-            }
-          />
-          <Route
-            path="investigations"
-            element={
-              <InvestigationsPage
-                startups={startups}
-                searchQuery={searchQuery}
-                onSelectStartup={setSelectedStartup}
+              <Route
+                path="investigations"
+                element={
+                  <InvestigationsPage
+                    startups={startups}
+                    searchQuery={searchQuery}
+                    onSelectStartup={setSelectedStartup}
+                  />
+                }
               />
-            }
+              <Route path="analytics" element={<AnalyticsPage startups={startups} />} />
+              <Route path="new-investigation" element={<NewInvestigationPage />} />
+              <Route path="cognee-verify" element={<CogneeVerifyPage />} />
+            </Route>
+            
+            {/* Immersive full-screen pipeline screen */}
+            <Route path="/investigations/pipeline" element={<InvestigationPipelinePage />} />
+            
+            {/* Full-screen knowledge graph page */}
+            <Route path="/knowledge-graph" element={<KnowledgeGraphPage />} />
+
+            {/* Explainable Decision Center page */}
+            <Route path="/decision-center" element={<DecisionCenterPage />} />
+          </Routes>
+
+          {/* Slide-over diligence details drawer */}
+          <StartupDrawer
+            startup={selectedStartup}
+            onClose={() => setSelectedStartup(null)}
+            onUpdateStartup={handleUpdateStartup}
           />
-          <Route path="analytics" element={<AnalyticsPage startups={startups} />} />
-          <Route path="new-investigation" element={<NewInvestigationPage />} />
-          <Route path="cognee-verify" element={<CogneeVerifyPage />} />
-        </Route>
-        
-        {/* Immersive full-screen pipeline screen */}
-        <Route path="/investigations/pipeline" element={<InvestigationPipelinePage />} />
-        
-        {/* Full-screen knowledge graph page */}
-        <Route path="/knowledge-graph" element={<KnowledgeGraphPage />} />
-
-        {/* Explainable Decision Center page */}
-        <Route path="/decision-center" element={<DecisionCenterPage />} />
-      </Routes>
-
-      {/* Slide-over diligence details drawer */}
-      <StartupDrawer
-        startup={selectedStartup}
-        onClose={() => setSelectedStartup(null)}
-        onUpdateStartup={handleUpdateStartup}
-      />
-    </>
+        </>
+      )}
+    </ThemeProvider>
   );
 }
 

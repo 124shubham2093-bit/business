@@ -28,44 +28,46 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
 
       {/* Sidebar Panel */}
       <aside
-        className={`fixed inset-y-0 left-0 z-50 flex flex-col w-64 border-r border-white/5 bg-dark-bg/95 backdrop-blur-md transition-transform duration-300 ease-in-out lg:static lg:translate-x-0 ${
+        className={`fixed inset-y-0 left-0 z-50 flex flex-col w-64 border-r border-[var(--border-color)] bg-[var(--bg-sidebar)] backdrop-blur-md transition-all duration-200 ease-in-out lg:static lg:translate-x-0 ${
           isOpen ? 'translate-x-0' : '-translate-x-full'
         }`}
       >
         {/* Header */}
-        <div className="flex h-16 items-center justify-between px-6 border-b border-white/5 bg-white/2">
-          <div className="flex items-center space-x-2">
-            <ShieldAlert className="h-6 w-6 text-brand-purple" />
-            <span className="text-sm font-bold tracking-wider text-white">INVESTIQ</span>
+        <div className="flex h-16 items-center justify-between px-6 border-b border-[var(--border-color)] bg-[var(--bg-subtle)]">
+          <div className="flex items-center space-x-2.5">
+            <div className="p-1.5 rounded-lg bg-indigo-500/10 border border-indigo-500/20">
+              <ShieldAlert className="h-5 w-5 text-indigo-600 dark:text-indigo-400" />
+            </div>
+            <span className="text-sm font-bold tracking-wider text-[var(--text-primary)] font-display">INVESTIQ</span>
           </div>
           <button
             onClick={onClose}
-            className="lg:hidden text-gray-400 hover:text-white"
+            className="lg:hidden text-[var(--text-secondary)] hover:text-[var(--text-primary)]"
           >
             <X className="h-5 w-5" />
           </button>
         </div>
 
         {/* Navigation Items */}
-        <nav className="flex-1 space-y-1.5 px-3 py-6 overflow-y-auto">
+        <nav className="flex-1 space-y-1 px-3 py-6 overflow-y-auto">
           {menuItems.map((item) => (
             <NavLink
               key={item.name}
               to={item.path}
               onClick={onClose}
               className={({ isActive }) =>
-                `group flex items-center gap-3 px-3 py-2 text-xs font-semibold rounded-lg transition-colors border border-transparent ${
+                `group flex items-center gap-3 px-3 py-2 text-xs font-medium rounded-lg transition-all duration-200 ${
                   isActive
-                    ? 'bg-brand-purple/10 text-brand-purple-light border-brand-purple/20'
-                    : 'text-gray-400 hover:bg-white/5 hover:text-white'
+                    ? 'border-l-4 border-l-indigo-600 dark:border-l-2 dark:border-l-indigo-500 bg-indigo-100 dark:bg-[var(--bg-subtle)] text-slate-950 dark:text-white font-bold dark:font-semibold shadow-sm'
+                    : 'border-l-2 border-l-transparent text-[var(--text-secondary)] hover:bg-[var(--bg-subtle)] hover:text-[var(--text-primary)]'
                 }`
               }
             >
               {({ isActive }) => (
                 <>
                   <item.icon
-                    className={`w-5 h-5 transition-transform duration-200 group-hover:scale-110 ${
-                      isActive ? 'text-brand-purple-light' : 'text-gray-400 group-hover:text-gray-300'
+                    className={`w-4 h-4 transition-transform duration-200 group-hover:scale-110 ${
+                      isActive ? 'text-indigo-700 dark:text-indigo-400' : 'text-[var(--text-secondary)] group-hover:text-[var(--text-primary)]'
                     }`}
                   />
                   <span>{item.name}</span>
@@ -76,16 +78,16 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
         </nav>
 
         {/* Sidebar Footer */}
-        <div className="p-4 border-t border-white/5 bg-white/2">
-          <div className="flex items-center justify-between px-2 text-xs text-gray-500">
-            <span>Diligence Version 1.2.0</span>
-            <div className="flex items-center space-x-1">
+        <div className="p-4 border-t border-[var(--border-color)] bg-[var(--bg-subtle)]">
+          <div className="flex items-center justify-between px-2 text-xs text-[var(--text-secondary)]">
+            <span className="font-mono text-[11px]">Diligence v1.2</span>
+            <div className="flex items-center space-x-1.5 px-2 py-0.5 rounded bg-[var(--bg-surface)] border border-[var(--border-color)] shadow-sm">
               <span className={`w-1.5 h-1.5 rounded-full animate-pulse ${
                 ACTIVE_SERVICE_MODE === 'backend' ? 'bg-emerald-500' : 'bg-amber-500'
               }`}></span>
               <span className={`${
-                ACTIVE_SERVICE_MODE === 'backend' ? 'text-emerald-400' : 'text-amber-400'
-              } font-semibold`}>
+                ACTIVE_SERVICE_MODE === 'backend' ? 'text-emerald-600 dark:text-emerald-400' : 'text-amber-600 dark:text-amber-400'
+              } font-medium text-[10px]`}>
                 {ACTIVE_SERVICE_MODE === 'backend' ? 'Live Backend' : 'Mock Demo'}
               </span>
             </div>

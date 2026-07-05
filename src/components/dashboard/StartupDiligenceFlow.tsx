@@ -11,21 +11,21 @@ export const StartupDiligenceFlow: React.FC<StartupDiligenceFlowProps> = ({ star
   const { metrics, riskLevel, status, name } = startup;
 
   const nodeColor = (score: number) => {
-    if (score >= 80) return 'border-emerald-500 text-emerald-400 bg-emerald-950/20';
-    if (score >= 60) return 'border-amber-500 text-amber-400 bg-amber-950/20';
-    return 'border-rose-500 text-rose-400 bg-rose-950/20';
+    if (score >= 80) return 'border-emerald-500 text-emerald-700 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950/20';
+    if (score >= 60) return 'border-amber-500 text-amber-700 dark:text-amber-400 bg-amber-50 dark:bg-amber-950/20';
+    return 'border-rose-500 text-rose-700 dark:text-rose-400 bg-rose-50 dark:bg-rose-950/20';
   };
 
   const riskColor = (level: string) => {
-    if (level === 'Low') return 'border-emerald-500 text-emerald-400 bg-emerald-950/20';
-    if (level === 'Medium') return 'border-amber-500 text-amber-400 bg-amber-950/20';
-    return 'border-rose-500 text-rose-400 bg-rose-950/20 shadow-[0_0_15px_rgba(244,63,94,0.2)] animate-pulse';
+    if (level === 'Low') return 'border-emerald-500 text-emerald-700 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950/20';
+    if (level === 'Medium') return 'border-amber-500 text-amber-700 dark:text-amber-400 bg-amber-50 dark:bg-amber-950/20';
+    return 'border-rose-500 text-rose-700 dark:text-rose-400 bg-rose-50 dark:bg-rose-950/20 shadow-[0_0_15px_rgba(244,63,94,0.2)] animate-pulse';
   };
 
   const statusColor = (val: string) => {
-    if (val === 'Approved') return 'border-emerald-500 text-emerald-400 bg-emerald-950/35 shadow-[0_0_15px_rgba(16,185,129,0.3)]';
-    if (val === 'Under Review') return 'border-amber-500 text-amber-400 bg-amber-950/35';
-    return 'border-rose-500 text-rose-400 bg-rose-950/35';
+    if (val === 'Approved') return 'border-emerald-500 text-emerald-700 dark:text-emerald-400 bg-emerald-100 dark:bg-emerald-950/35 shadow-[0_0_15px_rgba(16,185,129,0.3)]';
+    if (val === 'Under Review') return 'border-amber-500 text-amber-700 dark:text-amber-400 bg-amber-100 dark:bg-amber-950/35';
+    return 'border-rose-500 text-rose-700 dark:text-rose-400 bg-rose-100 dark:bg-rose-950/35';
   };
 
   const { nodes, edges } = useMemo(() => {
@@ -36,8 +36,8 @@ export const StartupDiligenceFlow: React.FC<StartupDiligenceFlowProps> = ({ star
         data: {
           label: (
             <div className="flex flex-col items-center">
-              <span className="text-[10px] text-gray-400 uppercase tracking-wider">Founders</span>
-              <span className="font-semibold">{metrics.team}/100</span>
+              <span className="text-[10px] text-[var(--text-secondary)] uppercase tracking-wider">Founders</span>
+              <span className="font-semibold text-[var(--text-primary)]">{metrics.team}/100</span>
             </div>
           ),
         },
@@ -51,8 +51,8 @@ export const StartupDiligenceFlow: React.FC<StartupDiligenceFlowProps> = ({ star
         data: {
           label: (
             <div className="flex flex-col items-center">
-              <span className="text-[10px] text-gray-400 uppercase tracking-wider">Market TAM</span>
-              <span className="font-semibold">{metrics.marketSize}/100</span>
+              <span className="text-[10px] text-[var(--text-secondary)] uppercase tracking-wider">Market TAM</span>
+              <span className="font-semibold text-[var(--text-primary)]">{metrics.marketSize}/100</span>
             </div>
           ),
         },
@@ -65,8 +65,8 @@ export const StartupDiligenceFlow: React.FC<StartupDiligenceFlowProps> = ({ star
         data: {
           label: (
             <div className="flex flex-col items-center">
-              <span className="text-[10px] text-gray-400 uppercase tracking-wider">Product & Tech</span>
-              <span className="font-semibold">{metrics.product}/100</span>
+              <span className="text-[10px] text-[var(--text-secondary)] uppercase tracking-wider">Product & Tech</span>
+              <span className="font-semibold text-[var(--text-primary)]">{metrics.product}/100</span>
             </div>
           ),
         },
@@ -80,8 +80,8 @@ export const StartupDiligenceFlow: React.FC<StartupDiligenceFlowProps> = ({ star
         data: {
           label: (
             <div className="flex flex-col items-center">
-              <span className="text-[10px] text-gray-400 uppercase tracking-wider">Financial Health</span>
-              <span className="font-semibold">{metrics.financials}/100</span>
+              <span className="text-[10px] text-[var(--text-secondary)] uppercase tracking-wider">Financial Health</span>
+              <span className="font-semibold text-[var(--text-primary)]">{metrics.financials}/100</span>
             </div>
           ),
         },
@@ -95,8 +95,8 @@ export const StartupDiligenceFlow: React.FC<StartupDiligenceFlowProps> = ({ star
         data: {
           label: (
             <div className="flex flex-col items-center">
-              <span className="text-[10px] text-gray-400 uppercase tracking-wider">Diligence Risk</span>
-              <span className="font-bold">{riskLevel} Risk</span>
+              <span className="text-[10px] text-[var(--text-secondary)] uppercase tracking-wider">Diligence Risk</span>
+              <span className="font-bold text-[var(--text-primary)]">{riskLevel} Risk</span>
             </div>
           ),
         },
@@ -111,8 +111,8 @@ export const StartupDiligenceFlow: React.FC<StartupDiligenceFlowProps> = ({ star
         data: {
           label: (
             <div className="flex flex-col items-center">
-              <span className="text-[10px] text-gray-400 uppercase tracking-wider">Committee Decision</span>
-              <span className="font-bold text-white tracking-wide">{status}</span>
+              <span className="text-[10px] text-[var(--text-secondary)] uppercase tracking-wider">Committee Decision</span>
+              <span className="font-bold text-[var(--text-primary)] tracking-wide">{status}</span>
             </div>
           ),
         },
@@ -134,10 +134,10 @@ export const StartupDiligenceFlow: React.FC<StartupDiligenceFlowProps> = ({ star
   }, [metrics, riskLevel, status]);
 
   return (
-    <div className="w-full h-[240px] rounded-xl border border-white/5 bg-black/40 overflow-hidden relative">
+    <div className="w-full h-[240px] rounded-xl border border-[var(--border-color)] bg-[var(--bg-subtle)] overflow-hidden relative">
       <div className="absolute top-3 left-4 z-10">
-        <h4 className="text-xs font-semibold text-gray-200">Diligence Evaluation Graph: {name}</h4>
-        <p className="text-[10px] text-gray-500">Visual dependency pipeline of investigation nodes</p>
+        <h4 className="text-xs font-semibold text-[var(--text-primary)]">Diligence Evaluation Graph: {name}</h4>
+        <p className="text-[10px] text-[var(--text-secondary)]">Visual dependency pipeline of investigation nodes</p>
       </div>
 
       <ReactFlow

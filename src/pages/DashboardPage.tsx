@@ -29,13 +29,21 @@ export const DashboardPage: React.FC<DashboardPageProps> = ({
       className="space-y-8"
     >
       {/* Page Header */}
-      <div>
-        <h1 className="text-3xl font-bold font-display tracking-tight text-white m-0">
-          Diligence Dashboard
-        </h1>
-        <p className="text-sm text-gray-400 mt-1">
-          Review automated risk assessments, investment criteria, and portfolio auditing.
-        </p>
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-[var(--border-color)] pb-6">
+        <div>
+          <div className="flex items-center space-x-2.5 mb-2">
+            <span className="px-2 py-0.5 rounded text-[10px] font-mono font-semibold bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 border border-indigo-500/20 uppercase tracking-wider">
+              Cognee Graph Active
+            </span>
+            <span className="text-[var(--text-secondary)] text-xs font-mono">• Live Portfolio Engine</span>
+          </div>
+          <h1 className="text-3xl font-bold font-display tracking-tight text-[var(--text-primary)] m-0">
+            AI Due Diligence Command Center
+          </h1>
+          <p className="text-sm text-[var(--text-secondary)] mt-1">
+            Monitor startup investigations, portfolio risk, AI evidence, and Cognee memory signals.
+          </p>
+        </div>
       </div>
 
       {/* Metric Summaries */}
