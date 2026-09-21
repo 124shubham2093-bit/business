@@ -14,6 +14,7 @@ import type { Startup } from '../services/investigation/investigationTypes';
 import { Button } from '../components/ui/Button';
 import { Card, CardHeader } from '../components/ui/Card';
 import { Badge } from '../components/ui/Badge';
+import { MLRiskAssessmentCard } from '../components/decision/MLRiskAssessmentCard';
 
 interface EvidenceItem {
   id: string;
@@ -877,7 +878,7 @@ export const DecisionCenterPage: React.FC = () => {
                         Evidence-Based Investment Verdict
                       </span>
                       <span className="text-[9px] text-[var(--text-secondary)] font-mono">
-                        Compiled from {agents.length} AI agents across {finalSummary.documents} documents
+                        Heuristic Diligence Synthesis &bull; Compiled from {agents.length} AI agents across {finalSummary.documents} documents
                       </span>
                     </div>
                   </div>
@@ -893,21 +894,21 @@ export const DecisionCenterPage: React.FC = () => {
                 {/* ── B. Score / Confidence / Risk metric strip ── */}
                 <div className="grid grid-cols-3 gap-3">
                   <div className="bg-[var(--bg-surface)] border border-[var(--border-color)] p-3 rounded-xl text-center">
-                    <span className="text-[8px] text-[var(--text-secondary)] block uppercase font-mono font-medium">Investment Score</span>
+                    <span className="text-[8px] text-[var(--text-secondary)] block uppercase font-mono font-medium">Heuristic Diligence Score</span>
                     <div className="mt-1">
                       <span className="text-2xl font-bold text-[var(--text-primary)] font-mono">{finalSummary.score}</span>
                       <span className="text-[10px] text-[var(--text-secondary)] font-mono">/100</span>
                     </div>
                   </div>
                   <div className="bg-[var(--bg-surface)] border border-[var(--border-color)] p-3 rounded-xl text-center">
-                    <span className="text-[8px] text-[var(--text-secondary)] block uppercase font-mono font-medium">AI Confidence</span>
+                    <span className="text-[8px] text-[var(--text-secondary)] block uppercase font-mono font-medium">Agent Agreement</span>
                     <div className="mt-1">
                       <span className="text-2xl font-bold text-emerald-600 dark:text-emerald-400 font-mono">{averageConfidence}</span>
                       <span className="text-[10px] text-[var(--text-secondary)] font-mono">%</span>
                     </div>
                   </div>
                   <div className="bg-[var(--bg-surface)] border border-[var(--border-color)] p-3 rounded-xl text-center">
-                    <span className="text-[8px] text-[var(--text-secondary)] block uppercase font-mono font-medium">Risk Level</span>
+                    <span className="text-[8px] text-[var(--text-secondary)] block uppercase font-mono font-medium">Heuristic Risk Level</span>
                     <div className="mt-1">
                       <span className={`text-lg font-bold font-mono ${finalSummary.riskLevel === 'Low' ? 'text-emerald-600 dark:text-emerald-400' : finalSummary.riskLevel === 'Medium' ? 'text-amber-600 dark:text-amber-400' : 'text-rose-600 dark:text-rose-400'}`}>
                         {finalSummary.riskLevel}
@@ -978,13 +979,13 @@ export const DecisionCenterPage: React.FC = () => {
                 <div className="flex items-center gap-2 pt-2 border-t border-[var(--border-color)]">
                   {finalSummary.recommendation === 'INVEST' ? (
                     <>
-                      <Button variant="primary" size="sm" onClick={handleExportJSON} className="flex-1 text-[10px] cursor-pointer hover:shadow-[0_0_12px_rgba(139,92,246,0.35)]">
-                        <Download className="w-3.5 h-3.5 mr-1.5" />
-                        Export Due Diligence Report
+                      <Button variant="outline" size="sm" onClick={() => navigate('/')} className="flex-1 border-[var(--border-color)] text-[var(--text-secondary)] hover:text-[var(--text-primary)] text-[10px] cursor-pointer">
+                        <ArrowLeft className="w-3.5 h-3.5 mr-1.5" />
+                        Return to Portfolio
                       </Button>
-                      <Button variant="outline" size="sm" onClick={() => handleDeepLinkGraph('Founder')} className="flex-1 border-[var(--border-color)] text-[var(--text-secondary)] hover:text-[var(--text-primary)] text-[10px] cursor-pointer">
-                        <ExternalLink className="w-3.5 h-3.5 mr-1.5" />
-                        Explore Knowledge Graph
+                      <Button variant="primary" size="sm" onClick={() => handleDeepLinkGraph('Tech')} className="flex-1 text-[10px] cursor-pointer hover:shadow-[0_0_12px_rgba(139,92,246,0.35)]">
+                        <Layers className="w-3.5 h-3.5 mr-1.5" />
+                        Inspect Tech Moat Graph
                       </Button>
                     </>
                   ) : finalSummary.recommendation === 'PASS' ? (
@@ -1012,6 +1013,15 @@ export const DecisionCenterPage: React.FC = () => {
                   )}
                 </div>
               </Card>
+            )}
+
+            {/* ── ML Failure Intelligence Prediction Seam ── */}
+            {isBuilderDone && (
+              <MLRiskAssessmentCard
+                startupName={activeStartup?.name || startupData.name}
+                startupSector={activeStartup?.sector || startupData.sector}
+                fundingStage={startupData.fundingStage}
+              />
             )}
 
             {/* ── Why This Verdict? — Investment Committee Explanation Panel ── */}

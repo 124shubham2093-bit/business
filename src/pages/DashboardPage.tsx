@@ -1,4 +1,5 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { MetricCards } from '../components/dashboard/MetricCards';
 import { ScoreChart } from '../components/dashboard/ScoreChart';
@@ -39,11 +40,27 @@ export const DashboardPage: React.FC<DashboardPageProps> = ({
             <span className="text-[var(--text-secondary)] text-xs font-mono">• Live Portfolio Engine</span>
           </div>
           <h1 className="text-3xl font-bold font-display tracking-tight text-[var(--text-primary)] m-0">
-            AI Due Diligence Command Center
+            Startup Failure Intelligence &amp; Diligence Center
           </h1>
           <p className="text-sm text-[var(--text-secondary)] mt-1">
-            Monitor startup investigations, portfolio risk, AI evidence, and Cognee memory signals.
+            Empirical startup failure analytics, portfolio risk monitoring, AI evidence synthesis, and predictive infrastructure.
           </p>
+        </div>
+
+        {/* Failure Intelligence Status Strip */}
+        <div className="flex flex-wrap items-center gap-2.5">
+          <Link
+            to="/analytics"
+            className="flex items-center space-x-2 px-3 py-1.5 rounded-xl bg-purple-500/10 border border-purple-500/20 text-purple-700 dark:text-purple-300 hover:bg-purple-500/15 transition-colors text-xs font-mono group"
+          >
+            <span className="w-2 h-2 rounded-full bg-rose-500 animate-pulse" />
+            <span>Historical Closure Rate: <strong>35.4%</strong> (922 Startups)</span>
+            <span className="text-[10px] text-purple-600 dark:text-purple-400 group-hover:translate-x-0.5 transition-transform font-bold">&rarr;</span>
+          </Link>
+          <div className="flex items-center space-x-2 px-3 py-1.5 rounded-xl bg-[var(--bg-surface)] border border-[var(--border-color)] text-xs font-mono text-[var(--text-secondary)]">
+            <span className="w-2 h-2 rounded-full bg-amber-500" />
+            <span>ML Model: <strong>Training Pending</strong></span>
+          </div>
         </div>
       </div>
 

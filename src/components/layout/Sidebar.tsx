@@ -39,7 +39,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
     { name: 'New Investigation', path: '/new-investigation', icon: Sparkles },
     { name: 'Dashboard', path: '/', icon: LayoutDashboard },
     { name: 'Investigations', path: '/investigations', icon: Briefcase },
-    { name: 'Portfolio Analytics', path: '/analytics', icon: BarChart3 },
+    { name: 'Failure Intelligence', path: '/analytics', icon: BarChart3 },
     { name: 'Knowledge Graph Verification', path: '/cognee-verify', icon: ShieldCheck },
   ];
   return (
@@ -64,7 +64,10 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
             <div className="p-1.5 rounded-lg bg-indigo-500/10 border border-indigo-500/20">
               <ShieldAlert className="h-5 w-5 text-indigo-600 dark:text-indigo-400" />
             </div>
-            <span className="text-sm font-bold tracking-wider text-[var(--text-primary)] font-display">INVESTIQ</span>
+            <div>
+              <span className="text-sm font-bold tracking-wider text-[var(--text-primary)] font-display block leading-none">VENTUREIQ</span>
+              <span className="text-[9px] font-mono text-purple-600 dark:text-purple-400 font-semibold block mt-0.5">Failure Intelligence</span>
+            </div>
           </div>
           <button
             onClick={onClose}

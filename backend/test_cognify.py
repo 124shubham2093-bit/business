@@ -13,8 +13,8 @@ async def test():
     from cognee.infrastructure.llm.LLMGateway import LLMGateway
     LLMGateway.acreate_structured_output = patched_acreate_structured_output
     
-    print("Resetting database...")
-    db_path = r"C:\Users\Gurubachan Singh\Downloads\Business_Diligence\backend\.venv\Lib\site-packages\cognee\.cognee_system\databases\cognee_db"
+    from app.config.settings import settings
+    db_path = settings.get_cognee_db_path()
     conn = sqlite3.connect(db_path)
     cursor = conn.cursor()
     cursor.execute("DELETE FROM edges")

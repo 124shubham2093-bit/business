@@ -158,7 +158,7 @@ async def get_debug_memory():
 @router.get("/debug/query")
 async def get_debug_query(question: str):
     import sqlite3
-    db_path = r"C:\Users\Gurubachan Singh\Downloads\Business_Diligence\backend\.venv\Lib\site-packages\cognee\.cognee_system\databases\cognee_db"
+    db_path = CogneeRepository.DB_PATH
     
     # Proper display names — title() breaks camelCase
     DISPLAY_NAMES = {

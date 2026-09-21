@@ -1,7 +1,7 @@
 import app.memory.cognee_patch
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from app.routers import investigations, health
+from app.routers import investigations, health, predictions, analytics
 from app.config.settings import settings
 
 app = FastAPI(
@@ -22,6 +22,8 @@ app.add_middleware(
 # Register endpoints
 app.include_router(health.router, tags=["Health Check"])
 app.include_router(investigations.router, prefix="/api", tags=["Investigations"])
+app.include_router(predictions.router, prefix="/api", tags=["Predictions"])
+app.include_router(analytics.router, prefix="/api", tags=["Analytics"])
 
 if __name__ == "__main__":
     import uvicorn

@@ -5,9 +5,10 @@ from datetime import datetime
 from typing import Dict, Any, List
 import cognee
 from app.memory.cognee_patch import add_write_log
+from app.config.settings import settings
 
 class CogneeRepository:
-    DB_PATH = r"C:\Users\Gurubachan Singh\Downloads\Business_Diligence\backend\.venv\Lib\site-packages\cognee\.cognee_system\databases\cognee_db"
+    DB_PATH = settings.get_cognee_db_path()
 
     @staticmethod
     async def store_startup(startup_id: str, data: Dict[str, Any]) -> None:

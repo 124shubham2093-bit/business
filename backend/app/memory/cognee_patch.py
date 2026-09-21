@@ -180,7 +180,8 @@ def patched_acreate_structured_output(text_input: str, system_prompt: str, respo
         for node in graph.nodes:
             # Check if node already exists in database
             import sqlite3
-            db_path = r"C:\Users\Gurubachan Singh\Downloads\Business_Diligence\backend\.venv\Lib\site-packages\cognee\.cognee_system\databases\cognee_db"
+            from app.config.settings import settings
+            db_path = settings.get_cognee_db_path()
             exists = False
             try:
                 conn = sqlite3.connect(db_path, timeout=30.0)

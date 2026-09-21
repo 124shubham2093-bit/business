@@ -1,8 +1,10 @@
 import sqlite3
 import os
 
+from app.config.settings import settings
+
 def enable_wal():
-    db_path = r"C:\Users\Gurubachan Singh\Downloads\Business_Diligence\backend\.venv\Lib\site-packages\cognee\.cognee_system\databases\cognee_db"
+    db_path = settings.get_cognee_db_path()
     if not os.path.exists(db_path):
         print(f"[-] Database not found at {db_path}")
         return
