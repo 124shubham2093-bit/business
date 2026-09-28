@@ -25,7 +25,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
         } else {
           setBackendStatus('offline');
         }
-      } catch (err) {
+      } catch {
         setBackendStatus('offline');
       }
     };
@@ -35,92 +35,147 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
     return () => clearInterval(interval);
   }, []);
 
-  const menuItems = [
-    { name: 'New Investigation', path: '/new-investigation', icon: Sparkles },
+  const diligenceItems = [
     { name: 'Dashboard', path: '/', icon: LayoutDashboard },
+    { name: 'New Investigation', path: '/new-investigation', icon: Sparkles },
     { name: 'Investigations', path: '/investigations', icon: Briefcase },
-    { name: 'Failure Intelligence', path: '/analytics', icon: BarChart3 },
-    { name: 'Knowledge Graph Verification', path: '/cognee-verify', icon: ShieldCheck },
+    { name: 'Decision Center', path: '/decision-center', icon: ShieldAlert },
   ];
+
+  const intelligenceItems = [
+    { name: 'Failure Intelligence', path: '/analytics', icon: BarChart3 },
+    { name: 'Cognee Verification', path: '/cognee-verify', icon: ShieldCheck },
+  ];
+
   return (
     <>
       {/* Mobile backdrop */}
       {isOpen && (
         <div
-          className="fixed inset-0 z-40 bg-black/60 backdrop-blur-sm lg:hidden"
+          className="fixed inset-0 z-40 bg-black/50 backdrop-blur-xs lg:hidden"
           onClick={onClose}
         />
       )}
 
       {/* Sidebar Panel */}
       <aside
-        className={`fixed inset-y-0 left-0 z-50 flex flex-col w-64 border-r border-[var(--border-color)] bg-[var(--bg-sidebar)] backdrop-blur-md transition-all duration-200 ease-in-out lg:static lg:translate-x-0 ${
+        className={`fixed inset-y-0 left-0 z-50 flex flex-col w-64 border-r border-[var(--border-color)] bg-[var(--bg-sidebar)] transition-all duration-200 ease-in-out lg:static lg:translate-x-0 ${
           isOpen ? 'translate-x-0' : '-translate-x-full'
         }`}
       >
         {/* Header */}
-        <div className="flex h-16 items-center justify-between px-6 border-b border-[var(--border-color)] bg-[var(--bg-subtle)]">
+        <div className="flex h-16 items-center justify-between px-5 border-b border-[var(--border-color)] bg-[var(--bg-sidebar)]">
           <div className="flex items-center space-x-2.5">
-            <div className="p-1.5 rounded-lg bg-indigo-500/10 border border-indigo-500/20">
-              <ShieldAlert className="h-5 w-5 text-indigo-600 dark:text-indigo-400" />
+            <div className="w-8 h-8 rounded-lg bg-indigo-600 flex items-center justify-center text-white shadow-xs">
+              <ShieldCheck className="h-4.5 w-4.5" />
             </div>
             <div>
-              <span className="text-sm font-bold tracking-wider text-[var(--text-primary)] font-display block leading-none">VENTUREIQ</span>
-              <span className="text-[9px] font-mono text-purple-600 dark:text-purple-400 font-semibold block mt-0.5">Failure Intelligence</span>
+              <span className="text-sm font-bold tracking-tight text-[var(--text-primary)] font-display block leading-none">
+                InvestIQ
+              </span>
+              <span className="text-[10px] text-[var(--text-secondary)] font-medium block mt-0.5">
+                Startup Intelligence
+              </span>
             </div>
           </div>
           <button
             onClick={onClose}
-            className="lg:hidden text-[var(--text-secondary)] hover:text-[var(--text-primary)]"
+            className="lg:hidden p-1 text-[var(--text-secondary)] hover:text-[var(--text-primary)] rounded-md hover:bg-[var(--bg-subtle)]"
           >
-            <X className="h-5 w-5" />
+            <X className="h-4 w-4" />
           </button>
         </div>
 
         {/* Navigation Items */}
-        <nav className="flex-1 space-y-1 px-3 py-6 overflow-y-auto">
-          {menuItems.map((item) => (
-            <NavLink
-              key={item.name}
-              to={item.path}
-              onClick={onClose}
-              className={({ isActive }) =>
-                `group flex items-center gap-3 px-3 py-2 text-xs font-medium rounded-lg transition-all duration-200 ${
-                  isActive
-                    ? 'border-l-4 border-l-indigo-600 dark:border-l-2 dark:border-l-indigo-500 bg-indigo-100 dark:bg-[var(--bg-subtle)] text-slate-950 dark:text-white font-bold dark:font-semibold shadow-sm'
-                    : 'border-l-2 border-l-transparent text-[var(--text-secondary)] hover:bg-[var(--bg-subtle)] hover:text-[var(--text-primary)]'
-                }`
-              }
-            >
-              {({ isActive }) => (
-                <>
-                  <item.icon
-                    className={`w-4 h-4 transition-transform duration-200 group-hover:scale-110 ${
-                      isActive ? 'text-indigo-700 dark:text-indigo-400' : 'text-[var(--text-secondary)] group-hover:text-[var(--text-primary)]'
-                    }`}
-                  />
-                  <span>{item.name}</span>
-                </>
-              )}
-            </NavLink>
-          ))}
+        <nav className="flex-1 px-3 py-4 space-y-6 overflow-y-auto">
+          {/* Section 1: Diligence */}
+          <div>
+            <span className="px-3 text-[10px] font-semibold text-[var(--text-secondary)] uppercase tracking-wider font-mono block mb-1.5 opacity-75">
+              Diligence &amp; Portfolio
+            </span>
+            <div className="space-y-0.5">
+              {diligenceItems.map((item) => (
+                <NavLink
+                  key={item.name}
+                  to={item.path}
+                  onClick={onClose}
+                  className={({ isActive }) =>
+                    `group flex items-center gap-2.5 px-3 py-2 text-xs rounded-lg transition-colors duration-150 ${
+                      isActive
+                        ? 'bg-indigo-50/80 dark:bg-indigo-950/40 text-indigo-700 dark:text-indigo-300 font-semibold'
+                        : 'text-[var(--text-secondary)] hover:bg-[var(--bg-subtle)] hover:text-[var(--text-primary)] font-medium'
+                    }`
+                  }
+                >
+                  {({ isActive }) => (
+                    <>
+                      <item.icon
+                        className={`w-4 h-4 flex-shrink-0 ${
+                          isActive
+                            ? 'text-indigo-600 dark:text-indigo-400'
+                            : 'text-[var(--text-secondary)] group-hover:text-[var(--text-primary)]'
+                        }`}
+                      />
+                      <span>{item.name}</span>
+                    </>
+                  )}
+                </NavLink>
+              ))}
+            </div>
+          </div>
+
+          {/* Section 2: Intelligence & Analytics */}
+          <div>
+            <span className="px-3 text-[10px] font-semibold text-[var(--text-secondary)] uppercase tracking-wider font-mono block mb-1.5 opacity-75">
+              Intelligence &amp; Data
+            </span>
+            <div className="space-y-0.5">
+              {intelligenceItems.map((item) => (
+                <NavLink
+                  key={item.name}
+                  to={item.path}
+                  onClick={onClose}
+                  className={({ isActive }) =>
+                    `group flex items-center gap-2.5 px-3 py-2 text-xs rounded-lg transition-colors duration-150 ${
+                      isActive
+                        ? 'bg-indigo-50/80 dark:bg-indigo-950/40 text-indigo-700 dark:text-indigo-300 font-semibold'
+                        : 'text-[var(--text-secondary)] hover:bg-[var(--bg-subtle)] hover:text-[var(--text-primary)] font-medium'
+                    }`
+                  }
+                >
+                  {({ isActive }) => (
+                    <>
+                      <item.icon
+                        className={`w-4 h-4 flex-shrink-0 ${
+                          isActive
+                            ? 'text-indigo-600 dark:text-indigo-400'
+                            : 'text-[var(--text-secondary)] group-hover:text-[var(--text-primary)]'
+                        }`}
+                      />
+                      <span>{item.name}</span>
+                    </>
+                  )}
+                </NavLink>
+              ))}
+            </div>
+          </div>
         </nav>
 
         {/* Sidebar Footer */}
-        <div className="p-4 border-t border-[var(--border-color)] bg-[var(--bg-subtle)]">
-          <div className="flex items-center justify-between px-2 text-xs text-[var(--text-secondary)]">
-            <span className="font-mono text-[11px]">Diligence v1.2</span>
-            <div className="flex items-center space-x-1.5 px-2 py-0.5 rounded bg-[var(--bg-surface)] border border-[var(--border-color)] shadow-sm">
+        <div className="p-3.5 border-t border-[var(--border-color)] bg-[var(--bg-subtle)]">
+          <div className="flex items-center justify-between px-1.5 text-xs text-[var(--text-secondary)]">
+            <span className="font-mono text-[10px] text-[var(--text-secondary)]">Engine v1.2</span>
+            <div className="flex items-center space-x-1.5 px-2 py-0.5 rounded-md bg-[var(--bg-surface)] border border-[var(--border-color)] shadow-xs">
               <span className={`w-1.5 h-1.5 rounded-full ${
                 backendStatus === 'online' ? 'bg-emerald-500 animate-pulse' : 
-                backendStatus === 'checking' ? 'bg-slate-400 animate-pulse' : 'bg-amber-500'
-              }`}></span>
+                backendStatus === 'checking' ? 'bg-slate-400' : 'bg-amber-500'
+              }`} />
               <span className={`${
-                backendStatus === 'online' ? 'text-emerald-600 dark:text-emerald-400' :
-                backendStatus === 'checking' ? 'text-slate-500' : 'text-amber-600 dark:text-amber-400'
+                backendStatus === 'online' ? 'text-emerald-700 dark:text-emerald-400' :
+                backendStatus === 'checking' ? 'text-slate-500' : 'text-amber-700 dark:text-amber-400'
               } font-medium text-[10px]`}>
-                {backendStatus === 'online' ? 'Live Backend' : 
-                 backendStatus === 'checking' ? 'Checking...' : 'Local Demo Mode'}
+                {backendStatus === 'online' ? 'Live API' : 
+                 backendStatus === 'checking' ? 'Connecting...' : 'Local Mode'}
               </span>
             </div>
           </div>

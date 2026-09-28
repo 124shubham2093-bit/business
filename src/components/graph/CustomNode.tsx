@@ -19,101 +19,120 @@ interface CustomNodeProps {
 export const CustomNode: React.FC<CustomNodeProps> = ({ data, selected }) => {
   const { title, type, badge } = data;
 
-  // Icon mapping by category
-  const getIcon = () => {
+  // Category styling details
+  const getCategoryStyles = () => {
     switch (type) {
       case 'Company':
-        return <Sparkles className="w-4 h-4 text-brand-purple-light" />;
+        return {
+          icon: <Sparkles className="w-3.5 h-3.5 text-indigo-600 dark:text-indigo-400" />,
+          iconBg: 'bg-indigo-50 dark:bg-indigo-950/40 border-indigo-200 dark:border-indigo-800/50',
+          border: 'border-indigo-200 dark:border-indigo-800/40 hover:border-indigo-400',
+        };
       case 'Founder':
-        return <User className="w-4 h-4 text-blue-400" />;
+        return {
+          icon: <User className="w-3.5 h-3.5 text-blue-600 dark:text-blue-400" />,
+          iconBg: 'bg-blue-50 dark:bg-blue-950/40 border-blue-200 dark:border-blue-800/50',
+          border: 'border-blue-200 dark:border-blue-800/40 hover:border-blue-400',
+        };
       case 'Technology':
-        return <Cpu className="w-4 h-4 text-brand-purple-light" />;
+        return {
+          icon: <Cpu className="w-3.5 h-3.5 text-purple-600 dark:text-purple-400" />,
+          iconBg: 'bg-purple-50 dark:bg-purple-950/40 border-purple-200 dark:border-purple-800/50',
+          border: 'border-purple-200 dark:border-purple-800/40 hover:border-purple-400',
+        };
       case 'Finance':
-        return <Landmark className="w-4 h-4 text-emerald-400" />;
+        return {
+          icon: <Landmark className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400" />,
+          iconBg: 'bg-emerald-50 dark:bg-emerald-950/40 border-emerald-200 dark:border-emerald-800/50',
+          border: 'border-emerald-200 dark:border-emerald-800/40 hover:border-emerald-400',
+        };
       case 'Market':
-        return <Target className="w-4 h-4 text-amber-400" />;
+        return {
+          icon: <Target className="w-3.5 h-3.5 text-amber-600 dark:text-amber-400" />,
+          iconBg: 'bg-amber-50 dark:bg-amber-950/40 border-amber-200 dark:border-amber-800/50',
+          border: 'border-amber-200 dark:border-amber-800/40 hover:border-amber-400',
+        };
       case 'Legal':
-        return <Scale className="w-4 h-4 text-yellow-400" />;
+        return {
+          icon: <Scale className="w-3.5 h-3.5 text-yellow-600 dark:text-yellow-400" />,
+          iconBg: 'bg-yellow-50 dark:bg-yellow-950/40 border-yellow-200 dark:border-yellow-800/50',
+          border: 'border-yellow-200 dark:border-yellow-800/40 hover:border-yellow-400',
+        };
       case 'Risk':
-        return <ShieldAlert className="w-4 h-4 text-rose-400" />;
+        return {
+          icon: <ShieldAlert className="w-3.5 h-3.5 text-rose-600 dark:text-rose-400" />,
+          iconBg: 'bg-rose-50 dark:bg-rose-950/40 border-rose-200 dark:border-rose-800/50',
+          border: 'border-rose-200 dark:border-rose-800/40 hover:border-rose-400',
+        };
       case 'Investor':
-        return <Coins className="w-4 h-4 text-teal-400" />;
+        return {
+          icon: <Coins className="w-3.5 h-3.5 text-teal-600 dark:text-teal-400" />,
+          iconBg: 'bg-teal-50 dark:bg-teal-950/40 border-teal-200 dark:border-teal-800/50',
+          border: 'border-teal-200 dark:border-teal-800/40 hover:border-teal-400',
+        };
       case 'Document':
-        return <FileText className="w-4 h-4 text-gray-300" />;
+        return {
+          icon: <FileText className="w-3.5 h-3.5 text-slate-600 dark:text-zinc-400" />,
+          iconBg: 'bg-slate-100 dark:bg-zinc-800/60 border-slate-200 dark:border-zinc-700',
+          border: 'border-slate-200 dark:border-zinc-700 hover:border-slate-400',
+        };
       case 'News':
-        return <Newspaper className="w-4 h-4 text-amber-500" />;
+        return {
+          icon: <Newspaper className="w-3.5 h-3.5 text-orange-600 dark:text-orange-400" />,
+          iconBg: 'bg-orange-50 dark:bg-orange-950/40 border-orange-200 dark:border-orange-800/50',
+          border: 'border-orange-200 dark:border-orange-800/40 hover:border-orange-400',
+        };
       case 'Decision':
-        return <CheckCircle2 className="w-4 h-4 text-emerald-400" />;
+        return {
+          icon: <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400" />,
+          iconBg: 'bg-emerald-50 dark:bg-emerald-950/40 border-emerald-200 dark:border-emerald-800/50',
+          border: 'border-emerald-400 dark:border-emerald-600 ring-1 ring-emerald-500/20',
+        };
       default:
-        return <Cpu className="w-4 h-4 text-gray-400" />;
+        return {
+          icon: <Cpu className="w-3.5 h-3.5 text-slate-500" />,
+          iconBg: 'bg-slate-100 dark:bg-zinc-800 border-slate-200 dark:border-zinc-700',
+          border: 'border-slate-200 dark:border-zinc-700',
+        };
     }
   };
 
-  // Color classes by category
-  const getColorClasses = () => {
-    if (selected) {
-      return 'border-brand-purple bg-brand-purple/20 text-white shadow-[0_0_20px_rgba(139,92,246,0.6)] scale-[1.03] ring-1 ring-brand-purple';
-    }
-
-    switch (type) {
-      case 'Company':
-        return 'border-brand-purple bg-brand-purple/10 text-white shadow-[0_0_15px_rgba(139,92,246,0.3)]';
-      case 'Founder':
-        return 'border-blue-500/40 bg-blue-950/20 text-blue-200 shadow-[0_0_15px_rgba(59,130,246,0.1)]';
-      case 'Technology':
-        return 'border-brand-purple/40 bg-brand-purple/10 text-brand-purple-light shadow-[0_0_15px_rgba(139,92,246,0.1)]';
-      case 'Finance':
-        return 'border-emerald-500/40 bg-emerald-950/20 text-emerald-300 shadow-[0_0_15px_rgba(16,185,129,0.1)]';
-      case 'Market':
-        return 'border-amber-500/40 bg-amber-950/20 text-amber-300 shadow-[0_0_15px_rgba(245,158,11,0.1)]';
-      case 'Legal':
-        return 'border-yellow-500/40 bg-yellow-950/20 text-yellow-300 shadow-[0_0_15px_rgba(234,179,8,0.1)]';
-      case 'Risk':
-        return 'border-rose-500/40 bg-rose-950/20 text-rose-300 shadow-[0_0_15px_rgba(239,68,68,0.15)] animate-pulse';
-      case 'Investor':
-        return 'border-teal-500/40 bg-teal-950/20 text-teal-300 shadow-[0_0_15px_rgba(20,184,166,0.1)]';
-      case 'Document':
-        return 'border-gray-500/30 bg-gray-950/20 text-gray-300 shadow-[0_0_15px_rgba(107,114,128,0.1)]';
-      case 'News':
-        return 'border-amber-500/40 bg-amber-950/20 text-amber-400 shadow-[0_0_15px_rgba(245,158,11,0.1)]';
-      case 'Decision':
-        return 'border-emerald-500 bg-emerald-950/30 text-white shadow-[0_0_20px_rgba(16,185,129,0.3)] scale-[1.02] ring-1 ring-emerald-500/40 font-bold';
-      default:
-        return 'border-gray-500/20 bg-gray-950/10 text-gray-400';
-    }
-  };
+  const { icon, iconBg, border } = getCategoryStyles();
+  const selectedClasses = selected
+    ? 'ring-2 ring-indigo-500 border-indigo-600 shadow-md scale-[1.03]'
+    : `${border} shadow-xs`;
 
   return (
-    <div className={`relative px-4 py-2.5 rounded-xl border backdrop-blur-md transition-all duration-300 flex items-center space-x-3 select-none ${getColorClasses()}`}>
+    <div className={`relative px-3.5 py-2 rounded-xl border bg-[var(--bg-surface)] text-[var(--text-primary)] transition-all duration-200 flex items-center space-x-2.5 select-none ${selectedClasses}`}>
       
       {/* Handles */}
-      <Handle type="target" position={Position.Left} style={{ background: 'transparent', border: 'none', left: 0 }} />
-      <Handle type="target" position={Position.Top} style={{ background: 'transparent', border: 'none', top: 0 }} />
+      <Handle type="target" position={Position.Left} style={{ background: '#6366f1', border: '2px solid var(--bg-surface)', width: 8, height: 8, left: -4 }} />
+      <Handle type="target" position={Position.Top} style={{ background: '#6366f1', border: '2px solid var(--bg-surface)', width: 8, height: 8, top: -4 }} />
       
       {/* Icon node wrapper */}
-      <div className="flex-shrink-0 flex items-center justify-center p-1.5 rounded-lg bg-white/5 border border-white/5">
-        {getIcon()}
+      <div className={`flex-shrink-0 flex items-center justify-center p-1.5 rounded-lg border ${iconBg}`}>
+        {icon}
       </div>
 
       <div>
-        <h4 className="text-[11px] font-bold tracking-tight text-white m-0">
+        <h4 className="text-[11px] font-semibold tracking-tight text-[var(--text-primary)] m-0 leading-tight">
           {title}
         </h4>
         <div className="flex items-center space-x-1.5 mt-0.5">
-          <span className="text-[8px] text-gray-400 font-semibold uppercase tracking-wider font-mono">
+          <span className="text-[8px] text-[var(--text-secondary)] font-semibold uppercase tracking-wider font-mono">
             {type === 'Company' ? 'Startup' : type}
           </span>
           {badge && (
             <>
-              <span className="text-gray-600 text-[8px]">•</span>
-              <span className="text-gray-400 text-[8px] italic">{badge}</span>
+              <span className="text-[var(--text-secondary)] text-[8px] opacity-40">•</span>
+              <span className="text-[var(--text-secondary)] text-[8px] italic">{badge}</span>
             </>
           )}
         </div>
       </div>
 
-      <Handle type="source" position={Position.Right} style={{ background: 'transparent', border: 'none', right: 0 }} />
-      <Handle type="source" position={Position.Bottom} style={{ background: 'transparent', border: 'none', bottom: 0 }} />
+      <Handle type="source" position={Position.Right} style={{ background: '#6366f1', border: '2px solid var(--bg-surface)', width: 8, height: 8, right: -4 }} />
+      <Handle type="source" position={Position.Bottom} style={{ background: '#6366f1', border: '2px solid var(--bg-surface)', width: 8, height: 8, bottom: -4 }} />
     </div>
   );
 };

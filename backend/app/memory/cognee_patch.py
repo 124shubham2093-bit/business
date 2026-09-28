@@ -33,11 +33,11 @@ def extract_knowledge_graph_from_text(text: str) -> KnowledgeGraph:
     lower_text = text.lower()
     
     # Defaults
-    startup_name = "HelixBio AI"
-    founder_name = "Sarah Jenkins"
+    startup_name = "Acme Health"
+    founder_name = "David Chen"
     sector = "BioTech AI"
     technologies = ["React", "FastAPI", "Transformers", "CUDA"]
-    investors = ["Peak Ventures", "Y-Combinator"]
+    investors = ["Horizon Capital", "Y-Combinator"]
     
     # 1. Parse startup name
     startup_match = re.search(r"Startup:\s*(.*)", text, re.IGNORECASE)
@@ -47,21 +47,17 @@ def extract_knowledge_graph_from_text(text: str) -> KnowledgeGraph:
         startup_name = "NeuroVision AI"
     elif "visionsense" in lower_text:
         startup_name = "VisionSense AI"
-    elif "helixbio" in lower_text:
-        startup_name = "HelixBio AI"
-    elif "alpha dynamics" in lower_text:
-        startup_name = "Alpha Dynamics"
+    elif "acme health" in lower_text:
+        startup_name = "Acme Health"
         
     # 2. Parse founder name
     founder_match = re.search(r"Founder:\s*(.*)", text, re.IGNORECASE)
     if founder_match:
         founder_name = founder_match.group(1).strip()
-    elif "rahul sharma" in lower_text:
-        founder_name = "Rahul Sharma"
-    elif "alex rivera" in lower_text:
-        founder_name = "Alex Rivera"
-    elif "sarah jenkins" in lower_text:
-        founder_name = "Sarah Jenkins"
+    elif "david chen" in lower_text:
+        founder_name = "David Chen"
+    elif "elena rostova" in lower_text:
+        founder_name = "Elena Rostova"
         
     # 3. Parse technology
     tech_list = []
@@ -93,7 +89,7 @@ def extract_knowledge_graph_from_text(text: str) -> KnowledgeGraph:
     if "combinator" in lower_text or "yc" in lower_text:
         inv_list.append("Y-Combinator")
     if not inv_list:
-        inv_list = ["Peak Ventures", "Y-Combinator"]
+        inv_list = ["Horizon Capital", "Y-Combinator"]
     investors = inv_list
     
     nodes = []

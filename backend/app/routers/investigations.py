@@ -41,9 +41,22 @@ async def upload_document(file: UploadFile = File(...)):
 async def create_investigation(req: InvestigationRequestSchema):
     try:
         # 1. Scrape GitHub & Website if provided
+        github_status = None
         github_text = ""
         if req.githubUrl:
-            github_text = GitHubParser.extract_repo_info(req.githubUrl)
+            github_status = GitHubParser.extract_repo_info(req.githubUrl)
+            if github_status.get("success"):
+                github_text = (
+                    f"GitHub Repository: {github_status.get('repo_path')}\n"
+                    f"Description: {github_status.get('description')}\n"
+                    f"Primary Language: {github_status.get('language')}\n"
+                    f"Stars: {github_status.get('stars')} | Forks: {github_status.get('forks')}\n"
+                    f"Topics: {', '.join(github_status.get('topics', []))}\n"
+                    f"README Summary:\n{github_status.get('readme_excerpt')}\n"
+                )
+            else:
+                # Do NOT treat an error string as diligence evidence!
+                github_text = f"GitHub Repository Status: Unavailable ({github_status.get('error')})\n"
             
         website_text = ""
         if req.websiteUrl:
@@ -97,6 +110,8 @@ async def create_investigation(req: InvestigationRequestSchema):
             "riskLevel": riskLevel,
             "status": "Approved" if decision["recommendation"] == "INVEST" else "Flagged" if decision["recommendation"] == "PASS" else "Under Review",
             "dateInvestigated": datetime.date.today().isoformat(),
+            "github_status": github_status,
+            "githubUrl": req.githubUrl,
             "metrics": {
                 "financials": finance_score,
                 "marketSize": market_score,
@@ -119,7 +134,8 @@ async def create_investigation(req: InvestigationRequestSchema):
                 "marketOpportunity": analyses["market"]["reasoning"],
                 "techStackRisk": analyses["tech"]["reasoning"],
                 "decision": decision,
-                "evidenceList": decision["supportingEvidence"]
+                "evidenceList": decision["supportingEvidence"],
+                "github_status": github_status
             }
         }
         
@@ -133,6 +149,24 @@ async def create_investigation(req: InvestigationRequestSchema):
 @router.get("/investigations")
 async def get_all_investigations():
     return list(_investigations_db.values())
+
+@router.delete("/investigations/{id}")
+async def delete_investigation(id: str):
+    found_key = None
+    for k, v in list(_investigations_db.items()):
+        if (
+            k == id
+            or str(v.get("id")) == str(id)
+            or v.get("name", "").strip().lower() == id.strip().lower()
+            or k.strip().lower() == id.strip().lower()
+        ):
+            found_key = k
+            break
+    if found_key:
+        del _investigations_db[found_key]
+        return {"status": "success", "message": f"Investigation '{id}' deleted."}
+    raise HTTPException(status_code=404, detail=f"Investigation '{id}' not found.")
+
 
 @router.get("/investigations/cross-memory")
 async def get_cross_memory():
@@ -164,12 +198,10 @@ async def get_debug_query(question: str):
     DISPLAY_NAMES = {
         "neurovision ai": "NeuroVision AI",
         "visionsense ai": "VisionSense AI",
-        "helixbio ai": "HelixBio AI",
-        "alpha dynamics": "Alpha Dynamics",
-        "rahul sharma": "Rahul Sharma",
-        "alex rivera": "Alex Rivera",
-        "sarah jenkins": "Sarah Jenkins",
-        "peak ventures": "Peak Ventures",
+        "acme health": "Acme Health",
+        "david chen": "David Chen",
+        "elena rostova": "Elena Rostova",
+        "horizon capital": "Horizon Capital",
         "sequoia capital": "Sequoia Capital",
         "y-combinator": "Y-Combinator",
         "tensorflow": "TensorFlow",
@@ -194,7 +226,7 @@ async def get_debug_query(question: str):
         if "who founded" in question_lower:
             # Parse target company
             target_company = None
-            for name in ["neurovision ai", "visionsense ai", "helixbio ai"]:
+            for name in ["neurovision ai", "visionsense ai", "acme health"]:
                 if name.replace(" ai", "").replace(" ", "") in question_lower.replace(" ", ""):
                     target_company = name
                     break

@@ -156,21 +156,21 @@ export const AnalyticsPage: React.FC<AnalyticsPageProps> = ({ startups }) => {
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-[var(--border-color)] pb-5">
         <div>
           <div className="flex items-center space-x-2 mb-1.5">
-            <span className="px-2 py-0.5 rounded text-[10px] font-mono font-semibold bg-purple-500/10 text-purple-700 dark:text-purple-300 border border-purple-500/20 uppercase tracking-wider">
+            <span className="px-2 py-0.5 rounded text-[10px] font-mono font-semibold bg-indigo-50 dark:bg-indigo-950/40 text-indigo-700 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-800/40 uppercase tracking-wider">
               Startup Failure Intelligence Platform
             </span>
             <span className="text-[var(--text-secondary)] text-xs font-mono">&bull; Empirical Analytics &amp; ML Architecture</span>
           </div>
-          <h1 className="text-3xl font-bold font-display tracking-tight text-[var(--text-primary)] m-0">
+          <h1 className="text-2xl sm:text-3xl font-bold font-display tracking-tight text-[var(--text-primary)] m-0">
             Startup Failure Intelligence &amp; Risk Analytics
           </h1>
-          <p className="text-sm text-[var(--text-secondary)] mt-1">
+          <p className="text-xs sm:text-sm text-[var(--text-secondary)] mt-1">
             Empirical historical failure distributions, stage attrition patterns, statistical correlations, and machine learning prediction status.
           </p>
         </div>
 
         {/* Global Dataset Status Indicator */}
-        <div className="flex items-center space-x-3 bg-[var(--bg-surface)] border border-[var(--border-color)] px-3.5 py-2 rounded-xl text-xs font-mono">
+        <div className="flex items-center space-x-3 bg-[var(--bg-surface)] border border-[var(--border-color)] px-3.5 py-2 rounded-xl text-xs font-mono shadow-2xs">
           <Database className="w-4 h-4 text-indigo-600 dark:text-indigo-400" />
           <div>
             <span className="text-[10px] text-[var(--text-secondary)] block">Dataset Scope</span>
@@ -227,7 +227,7 @@ export const AnalyticsPage: React.FC<AnalyticsPageProps> = ({ startups }) => {
         </Card>
 
         {/* Card 4: Historical Closure Rate */}
-        <Card className="border-rose-200 dark:border-rose-500/20 bg-rose-50/20 dark:bg-rose-950/10">
+        <Card className="border-rose-200 dark:border-rose-900/40 bg-rose-50/30 dark:bg-rose-950/20">
           <CardContent className="p-4 flex flex-col justify-between h-full">
             <div className="flex items-center justify-between text-[var(--text-secondary)]">
               <span className="text-[9px] uppercase font-mono font-semibold tracking-wider text-rose-700 dark:text-rose-300">
@@ -244,7 +244,7 @@ export const AnalyticsPage: React.FC<AnalyticsPageProps> = ({ startups }) => {
         </Card>
 
         {/* Card 5: ML Model Operational Status */}
-        <Card className="border-indigo-200 dark:border-indigo-500/20 bg-indigo-50/20 dark:bg-indigo-950/10 col-span-2 lg:col-span-1">
+        <Card className="border-indigo-200 dark:border-indigo-800/40 bg-indigo-50/30 dark:bg-indigo-950/20 col-span-2 lg:col-span-1">
           <CardContent className="p-4 flex flex-col justify-between h-full">
             <div className="flex items-center justify-between text-[var(--text-secondary)]">
               <span className="text-[9px] uppercase font-mono font-semibold tracking-wider text-indigo-700 dark:text-indigo-300">
@@ -271,53 +271,53 @@ export const AnalyticsPage: React.FC<AnalyticsPageProps> = ({ startups }) => {
       <ModelStatusCard modelStatus={modelStatus} isLoading={isLoading} />
 
       {/* ── 3. Navigation Tabs for Analytical Deep Dives ── */}
-      <div className="flex flex-wrap gap-2 border-b border-[var(--border-color)] pb-2">
+      <div className="flex flex-wrap gap-1.5 p-1 bg-[var(--bg-subtle)] border border-[var(--border-color)] rounded-xl w-fit">
         <button
           onClick={() => setActiveTab('overview')}
-          className={`px-3.5 py-1.5 rounded-lg text-xs font-mono font-semibold transition-colors cursor-pointer ${
+          className={`px-3 py-1.5 rounded-lg text-xs transition-colors cursor-pointer ${
             activeTab === 'overview'
-              ? 'bg-indigo-600 text-white shadow-sm'
-              : 'bg-[var(--bg-surface)] text-[var(--text-secondary)] hover:text-[var(--text-primary)] border border-[var(--border-color)]'
+              ? 'bg-[var(--bg-surface)] text-indigo-700 dark:text-indigo-300 font-semibold shadow-2xs border border-[var(--border-color)]'
+              : 'text-[var(--text-secondary)] hover:text-[var(--text-primary)] font-medium'
           }`}
         >
-          Historical Outcomes Overview
+          Outcomes Overview
         </button>
         <button
           onClick={() => setActiveTab('sectors')}
-          className={`px-3.5 py-1.5 rounded-lg text-xs font-mono font-semibold transition-colors cursor-pointer ${
+          className={`px-3 py-1.5 rounded-lg text-xs transition-colors cursor-pointer ${
             activeTab === 'sectors'
-              ? 'bg-indigo-600 text-white shadow-sm'
-              : 'bg-[var(--bg-surface)] text-[var(--text-secondary)] hover:text-[var(--text-primary)] border border-[var(--border-color)]'
+              ? 'bg-[var(--bg-surface)] text-indigo-700 dark:text-indigo-300 font-semibold shadow-2xs border border-[var(--border-color)]'
+              : 'text-[var(--text-secondary)] hover:text-[var(--text-primary)] font-medium'
           }`}
         >
-          Failure Rate by Sector
+          Sector Failure Rates
         </button>
         <button
           onClick={() => setActiveTab('stages')}
-          className={`px-3.5 py-1.5 rounded-lg text-xs font-mono font-semibold transition-colors cursor-pointer ${
+          className={`px-3 py-1.5 rounded-lg text-xs transition-colors cursor-pointer ${
             activeTab === 'stages'
-              ? 'bg-indigo-600 text-white shadow-sm'
-              : 'bg-[var(--bg-surface)] text-[var(--text-secondary)] hover:text-[var(--text-primary)] border border-[var(--border-color)]'
+              ? 'bg-[var(--bg-surface)] text-indigo-700 dark:text-indigo-300 font-semibold shadow-2xs border border-[var(--border-color)]'
+              : 'text-[var(--text-secondary)] hover:text-[var(--text-primary)] font-medium'
           }`}
         >
-          Stage Attrition Patterns
+          Stage Attrition
         </button>
         <button
           onClick={() => setActiveTab('correlations')}
-          className={`px-3.5 py-1.5 rounded-lg text-xs font-mono font-semibold transition-colors cursor-pointer ${
+          className={`px-3 py-1.5 rounded-lg text-xs transition-colors cursor-pointer ${
             activeTab === 'correlations'
-              ? 'bg-indigo-600 text-white shadow-sm'
-              : 'bg-[var(--bg-surface)] text-[var(--text-secondary)] hover:text-[var(--text-primary)] border border-[var(--border-color)]'
+              ? 'bg-[var(--bg-surface)] text-indigo-700 dark:text-indigo-300 font-semibold shadow-2xs border border-[var(--border-color)]'
+              : 'text-[var(--text-secondary)] hover:text-[var(--text-primary)] font-medium'
           }`}
         >
-          Feature Correlations
+          Statistical Correlations
         </button>
         <button
           onClick={() => setActiveTab('portfolio')}
-          className={`px-3.5 py-1.5 rounded-lg text-xs font-mono font-semibold transition-colors cursor-pointer ${
+          className={`px-3 py-1.5 rounded-lg text-xs transition-colors cursor-pointer ${
             activeTab === 'portfolio'
-              ? 'bg-indigo-600 text-white shadow-sm'
-              : 'bg-[var(--bg-surface)] text-[var(--text-secondary)] hover:text-[var(--text-primary)] border border-[var(--border-color)]'
+              ? 'bg-[var(--bg-surface)] text-indigo-700 dark:text-indigo-300 font-semibold shadow-2xs border border-[var(--border-color)]'
+              : 'text-[var(--text-secondary)] hover:text-[var(--text-primary)] font-medium'
           }`}
         >
           Portfolio Benchmarks ({startups.length})

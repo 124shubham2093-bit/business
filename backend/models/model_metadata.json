@@ -1,0 +1,32 @@
+{
+  "model_name": "RandomForestClassifier",
+  "model_version": "1.0.0",
+  "training_dataset": "backend/data/startup_ml_ready.csv",
+  "training_records": 922,
+  "feature_count": 110,
+  "target_column": "is_failed",
+  "training_timestamp": "2026-09-24T15:52:42.560026+00:00",
+  "evaluation_metrics": {
+    "accuracy": 0.7676,
+    "precision": 0.6774,
+    "recall": 0.6462,
+    "f1_score": 0.6614,
+    "roc_auc": 0.8204,
+    "confusion_matrix": [
+      [
+        100,
+        20
+      ],
+      [
+        23,
+        42
+      ]
+    ]
+  },
+  "hyperparameters": {
+    "n_estimators": 100,
+    "max_depth": 6,
+    "class_weight": "balanced",
+    "random_state": 42
+  }
+}

@@ -152,7 +152,7 @@ export const CrossMemoryInsights: React.FC = () => {
         if (isMounted) {
           setInsights(data);
         }
-      } catch (err) {
+      } catch (_err) {
         if (isMounted) {
           setInsights([]);
         }

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { MetricCards } from '../components/dashboard/MetricCards';
@@ -6,6 +6,8 @@ import { ScoreChart } from '../components/dashboard/ScoreChart';
 import { StartupList } from '../components/dashboard/StartupList';
 import { RecentActivity } from '../components/dashboard/RecentActivity';
 import { CrossMemoryInsights } from '../components/dashboard/CrossMemoryInsights';
+import { FailureIntelligenceService } from '../services/failureIntelligenceService';
+import type { ModelStatusResponse } from '../types/failureIntelligence';
 import type { Startup, Activity } from '../types';
 
 interface DashboardPageProps {
@@ -23,6 +25,22 @@ export const DashboardPage: React.FC<DashboardPageProps> = ({
   onSelectStartup,
   newlyCreatedId,
 }) => {
+  const [modelStatus, setModelStatus] = useState<ModelStatusResponse | null>(null);
+
+  useEffect(() => {
+    let isMounted = true;
+    FailureIntelligenceService.getModelStatus()
+      .then((status) => {
+        if (isMounted) setModelStatus(status);
+      })
+      .catch((err) => {
+        console.warn('[DashboardPage] Could not fetch ML model status:', err);
+      });
+    return () => {
+      isMounted = false;
+    };
+  }, []);
+
   return (
     <motion.div
       initial={{ opacity: 0 }}
@@ -31,36 +49,37 @@ export const DashboardPage: React.FC<DashboardPageProps> = ({
       className="space-y-8"
     >
       {/* Page Header */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-[var(--border-color)] pb-6">
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-[var(--border-color)] pb-5">
         <div>
-          <div className="flex items-center space-x-2.5 mb-2">
-            <span className="px-2 py-0.5 rounded text-[10px] font-mono font-semibold bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 border border-indigo-500/20 uppercase tracking-wider">
-              Cognee Graph Active
-            </span>
-            <span className="text-[var(--text-secondary)] text-xs font-mono">• Live Portfolio Engine</span>
-          </div>
-          <h1 className="text-3xl font-bold font-display tracking-tight text-[var(--text-primary)] m-0">
-            Startup Failure Intelligence &amp; Diligence Center
+          <h1 className="text-2xl sm:text-3xl font-bold font-display tracking-tight text-[var(--text-primary)] m-0">
+            Portfolio Intelligence
           </h1>
-          <p className="text-sm text-[var(--text-secondary)] mt-1">
-            Empirical startup failure analytics, portfolio risk monitoring, AI evidence synthesis, and predictive infrastructure.
+          <p className="text-xs sm:text-sm text-[var(--text-secondary)] mt-1">
+            Startup investigations, portfolio analytics, and failure intelligence.
           </p>
         </div>
 
         {/* Failure Intelligence Status Strip */}
-        <div className="flex flex-wrap items-center gap-2.5">
+        <div className="flex flex-wrap items-center gap-2">
           <Link
             to="/analytics"
-            className="flex items-center space-x-2 px-3 py-1.5 rounded-xl bg-purple-500/10 border border-purple-500/20 text-purple-700 dark:text-purple-300 hover:bg-purple-500/15 transition-colors text-xs font-mono group"
+            className="flex items-center space-x-2 px-3 py-1.5 rounded-lg bg-rose-50/80 dark:bg-rose-950/30 border border-rose-200/80 dark:border-rose-900/40 text-rose-800 dark:text-rose-300 hover:bg-rose-100/70 dark:hover:bg-rose-950/50 transition-colors text-xs font-mono group"
           >
-            <span className="w-2 h-2 rounded-full bg-rose-500 animate-pulse" />
-            <span>Historical Closure Rate: <strong>35.4%</strong> (922 Startups)</span>
-            <span className="text-[10px] text-purple-600 dark:text-purple-400 group-hover:translate-x-0.5 transition-transform font-bold">&rarr;</span>
+            <span className="w-1.5 h-1.5 rounded-full bg-rose-500 animate-pulse" />
+            <span>Baseline Closure Rate: <strong>35.4%</strong> (922 Startups)</span>
+            <span className="text-[10px] text-rose-600 dark:text-rose-400 group-hover:translate-x-0.5 transition-transform font-bold">&rarr;</span>
           </Link>
-          <div className="flex items-center space-x-2 px-3 py-1.5 rounded-xl bg-[var(--bg-surface)] border border-[var(--border-color)] text-xs font-mono text-[var(--text-secondary)]">
-            <span className="w-2 h-2 rounded-full bg-amber-500" />
-            <span>ML Model: <strong>Training Pending</strong></span>
-          </div>
+          {modelStatus?.model_available ? (
+            <div className="flex items-center space-x-2 px-3 py-1.5 rounded-lg bg-emerald-50/80 dark:bg-emerald-950/30 border border-emerald-200/80 dark:border-emerald-900/40 text-xs font-mono text-emerald-800 dark:text-emerald-300">
+              <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+              <span>Failure Model: <strong>Active</strong> {modelStatus.model_name ? `(${modelStatus.model_name}${modelStatus.model_version ? ` · v${modelStatus.model_version}` : ''})` : ''}</span>
+            </div>
+          ) : (
+            <div className="flex items-center space-x-2 px-3 py-1.5 rounded-lg bg-[var(--bg-subtle)] border border-[var(--border-color)] text-xs font-mono text-[var(--text-secondary)]">
+              <span className="w-1.5 h-1.5 rounded-full bg-amber-500" />
+              <span>Failure Model: <strong>Training Pending</strong></span>
+            </div>
+          )}
         </div>
       </div>
 

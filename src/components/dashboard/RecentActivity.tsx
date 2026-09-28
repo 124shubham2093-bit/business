@@ -48,7 +48,7 @@ export const RecentActivity: React.FC<RecentActivityProps> = ({ activities }) =>
       </CardHeader>
       <CardContent className="px-6 py-4">
         {activities.length === 0 ? (
-          <div className="text-center py-8 text-xs text-[var(--text-secondary)] font-mono">No recent activities.</div>
+          <div className="text-center py-8 text-xs text-[var(--text-secondary)] font-mono">No recent investigation activity</div>
         ) : (
           <div className="relative border-l border-[var(--border-color)] pl-4 ml-2.5 space-y-6 py-2">
             {activities.map((activity) => (

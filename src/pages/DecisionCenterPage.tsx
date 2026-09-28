@@ -3,10 +3,10 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   User, Cpu, Landmark, Target,
-  FileText, ArrowLeft, Download, Layers, Scale,
-  ChevronDown, ChevronUp, ExternalLink, Check, Info, Loader2, ChevronRight,
+  FileText, ArrowLeft, Download, Scale,
+  ChevronDown, ChevronUp, Check, Info, Loader2, ChevronRight,
   Share2, Copy, FileDown, AlertTriangle, ShieldCheck, ShieldAlert, HelpCircle,
-  ListChecks, TrendingUp, TrendingDown, Gavel
+  ListChecks
 } from 'lucide-react';
 
 import { MockInvestigationService } from '../services/investigation/MockInvestigationService';
@@ -65,13 +65,13 @@ export const DecisionCenterPage: React.FC = () => {
       }
     }
     return {
-      name: 'Alpha Dynamics',
-      founderName: 'Alex Rivera',
+      name: 'Acme Health',
+      founderName: 'Founder',
       sector: 'BioTech AI',
       fundingStage: 'Seed',
-      websiteUrl: 'https://alphadynamics.io',
-      githubUrl: 'https://github.com/alphadynamics',
-      description: 'Dynamic automation platform for genomic engineering pipelines.',
+      websiteUrl: 'https://acmehealth.com',
+      githubUrl: '',
+      description: 'Healthcare automation platform.',
     };
   }, [location.state]);
 
@@ -133,8 +133,6 @@ export const DecisionCenterPage: React.FC = () => {
         strengths: activeStartup.details?.strengths || [],
         weaknesses: activeStartup.details?.risks || [],
         documents: 6,
-        entities: 48,
-        relationships: 215,
         evidenceCount: activeStartup.details?.evidenceList?.length || 8,
         queries: 40
       };
@@ -147,12 +145,19 @@ export const DecisionCenterPage: React.FC = () => {
       strengths: [],
       weaknesses: [],
       documents: 6,
-      entities: 48,
-      relationships: 215,
       evidenceCount: 8,
       queries: 40
     };
   }, [activeStartup]);
+
+  // Resolve GitHub status from active startup or location state
+  const githubStatus = useMemo(() => {
+    return activeStartup?.github_status || 
+      (activeStartup?.details as any)?.github_status || 
+      (startupData as any)?.generatedStartup?.github_status || 
+      (startupData as any)?.github_status || 
+      null;
+  }, [activeStartup, startupData]);
 
   // Build agent committee data models with Source Reliability and Custom Icons
   // AI Investment Partner — 5 evidence-backed investor questions derived from live frontend data
@@ -160,32 +165,61 @@ export const DecisionCenterPage: React.FC = () => {
     const questions = [];
     const founderName = startupData.founderName || 'the founding team';
 
-    // Q1 — always generated: cross-document Cognee contradiction
-    questions.push({
-      category: 'COGNEE MEMORY',
-      categoryColor: 'text-indigo-600 dark:text-indigo-400 bg-indigo-50 dark:bg-indigo-950/20 border-indigo-200 dark:border-indigo-500/20',
-      question: `Cognee detected a contradiction between the pitch deck narrative and GitHub commit activity for ${startupData.name}. How does the team explain this gap?`,
-      reasoning: `Cognee's knowledge graph linked pitch deck claims to repository evidence across ${finalSummary.entities} extracted entities. A semantic conflict was flagged between stated engineering velocity and actual commit frequency — a cross-document pattern only detectable with persistent memory.`,
-      icon: AlertTriangle,
-      iconColor: 'text-indigo-600 dark:text-indigo-400',
-    });
+    // Q1 — cross-document Cognee / technical verification
+    if (githubStatus?.success) {
+      questions.push({
+        category: 'COGNEE MEMORY',
+        categoryColor: 'text-indigo-600 dark:text-indigo-400 bg-indigo-50 dark:bg-indigo-950/20 border-indigo-200 dark:border-indigo-500/20',
+        question: `Cognee linked pitch deck narrative claims to verified public repository ${githubStatus.repo_path} (${githubStatus.language}). How does the open-source codebase align with commercial moats?`,
+        reasoning: `Cognee's ingestion pipeline connected pitch deck technical claims to verified repository metadata, highlighting an architecture boundary checkpoint between open-source components and proprietary layers.`,
+        icon: AlertTriangle,
+        iconColor: 'text-indigo-600 dark:text-indigo-400',
+      });
+    } else if (githubStatus && !githubStatus.success) {
+      questions.push({
+        category: 'COGNEE MEMORY',
+        categoryColor: 'text-indigo-600 dark:text-indigo-400 bg-indigo-50 dark:bg-indigo-950/20 border-indigo-200 dark:border-indigo-500/20',
+        question: `GitHub repository validation returned unavailable (${githubStatus.error || 'HTTP 404'}). How does the team independently verify technical progress?`,
+        reasoning: `Ingestion attempted repository verification against public GitHub APIs, but the repository was not found or not publicly accessible. External code evidence is unavailable for cross-verification.`,
+        icon: AlertTriangle,
+        iconColor: 'text-indigo-600 dark:text-indigo-400',
+      });
+    } else {
+      questions.push({
+        category: 'COGNEE MEMORY',
+        categoryColor: 'text-indigo-600 dark:text-indigo-400 bg-indigo-50 dark:bg-indigo-950/20 border-indigo-200 dark:border-indigo-500/20',
+        question: `No public GitHub repository was linked for ${startupData.name}. What audit process does the team use for codebase verification?`,
+        reasoning: `Cognee's ingestion pipeline noted that code repository evidence was not submitted. Technical diligence relies on internal architectural documentation.`,
+        icon: HelpCircle,
+        iconColor: 'text-indigo-600 dark:text-indigo-400',
+      });
+    }
 
-    // Q2 — technology score driven
-    if (scores.technology < 80) {
+    // Q2 — technology & repository assessment
+    if (githubStatus?.success) {
       questions.push({
         category: 'GITHUB',
         categoryColor: 'text-cyan-700 dark:text-cyan-400 bg-cyan-50 dark:bg-cyan-950/20 border-cyan-500/20',
-        question: `GitHub repository activity has shown a ${Math.round(100 - scores.technology)}% deviation from stated engineering benchmarks. What is driving this slowdown?`,
-        reasoning: `Technology Agent scanned ${finalSummary.documents} documents and found that recent commit velocity does not match the product roadmap milestones described in the pitch deck. Cognee surfaced this discrepancy by linking repository nodes to milestone claim nodes across sessions.`,
+        question: `The verified repository ${githubStatus.repo_path} has ${githubStatus.stars} stars and ${githubStatus.forks} forks in ${githubStatus.language}. What is the maintenance roadmap for this codebase?`,
+        reasoning: `Technology Agent verified active repository metadata on GitHub. Primary language is ${githubStatus.language} with ${githubStatus.topics?.length || 0} topic tags. Ingestion confirmed public availability.`,
+        icon: HelpCircle,
+        iconColor: 'text-cyan-600 dark:text-cyan-400',
+      });
+    } else if (githubStatus && !githubStatus.success) {
+      questions.push({
+        category: 'GITHUB',
+        categoryColor: 'text-cyan-700 dark:text-cyan-400 bg-cyan-50 dark:bg-cyan-950/20 border-cyan-500/20',
+        question: `GitHub Evidence Unavailable: Repository Not Found or Not Publicly Accessible. What is the private access provisioning process?`,
+        reasoning: `GitHub API returned ${githubStatus.error || 'HTTP 404'}. The committee cannot verify code quality, licensing, or dependencies from public sources without secure private repo access.`,
         icon: AlertTriangle,
         iconColor: 'text-cyan-600 dark:text-cyan-400',
       });
     } else {
       questions.push({
-        category: 'GITHUB',
+        category: 'TECHNOLOGY',
         categoryColor: 'text-cyan-700 dark:text-cyan-400 bg-cyan-50 dark:bg-cyan-950/20 border-cyan-500/20',
-        question: `The codebase shows strong engineering benchmarks, but what is the team's technical hiring plan to sustain this velocity as the product scales?`,
-        reasoning: `Technology Agent confirmed high code quality and low redundancy. However, Cognee's memory graph shows no hiring-related entities in the pitch deck, creating an unresolved dependency between current engineering output and future team capacity.`,
+        question: `The technology stack indicates custom deep learning infrastructure. How does the engineering team maintain performance benchmarks as data volumes scale?`,
+        reasoning: `Technology Agent evaluated declared architectural specifications and model pipeline documentation. No public repository was linked.`,
         icon: HelpCircle,
         iconColor: 'text-cyan-600 dark:text-cyan-400',
       });
@@ -255,7 +289,7 @@ export const DecisionCenterPage: React.FC = () => {
     }
 
     return questions;
-  }, [startupData, scores, finalSummary]);
+  }, [startupData, scores, finalSummary, githubStatus]);
 
   // Build agent committee data models with Source Reliability and Custom Icons
   const agents: AgentDetail[] = useMemo(() => [
@@ -272,61 +306,113 @@ export const DecisionCenterPage: React.FC = () => {
       strengths: ['Stanford CS PhD verified.', 'Prior software automation exit of $18M.'],
       weaknesses: ['Academic background outweighs executive sales tenure.'],
       risks: ['High key-man developer reliance on early founder core.'],
-      reasoning: 'Founder has a high-tier academic rating. Verification confirmed PhD credentials in Stanford registries. The prior exit indicates previous commercial viability.',
+      reasoning: 'Founder has a high-tier academic rating. Verification confirmed PhD credentials in submitted records. Prior venture background indicates commercial viability.',
       evidence: [
         {
           id: 'ev-founder-1',
-          title: 'Stanford Registrar Record',
-          source: 'Stanford University API',
-          docType: 'Founder Resume',
-          confidence: '99%',
-          sourceReliability: '99%',
-          text: 'Doctor of Philosophy in Computer Science conferred to Alex Rivera, matching specialization thesis in AI Genomics.',
-          entities: ['Alex Rivera', 'Stanford University'],
+          title: 'Founder Background & Academic Credentials',
+          source: 'Submitted Founder Dossier (Sample)',
+          docType: 'Founder Background',
+          confidence: '95%',
+          sourceReliability: '90%',
+          text: 'Biographical profile documents academic credentials in Computer Science specializing in AI/ML genomic architectures.',
+          entities: [startupData.founderName || 'Founder', 'Academic Background'],
           relatedNode: 'n-founder'
         },
         {
           id: 'ev-founder-2',
-          title: 'SEC Filing: AlphaLabs Acquisition',
-          source: 'Regulatory Archives',
-          docType: 'News Article',
-          confidence: '95%',
-          sourceReliability: '78%',
-          text: 'AlphaLabs Inc. acquired by BioMed Tech for $18,000,000. Alex Rivera listed as lead architecture designer.',
-          entities: ['Alex Rivera', 'AlphaLabs Inc.'],
+          title: 'Prior Venture Track Record',
+          source: 'Founder Executive Summary (Sample)',
+          docType: 'Corporate History',
+          confidence: '92%',
+          sourceReliability: '85%',
+          text: 'Previous venture track record includes lead engineering and architecture design for software automation platforms.',
+          entities: [startupData.founderName || 'Founder', 'Venture Track Record'],
           relatedNode: 'n-founder'
         }
       ],
-      graphNodes: ['Founder', 'Alex Rivera']
+      graphNodes: ['Founder', startupData.founderName || 'Founder']
     },
     {
       id: 'tech',
       name: 'Technology Agent',
       role: 'Code Moat Validation',
       icon: Cpu,
-      score: scores.technology,
-      confidence: 91,
+      score: githubStatus && !githubStatus.success ? 40 : scores.technology,
+      confidence: githubStatus && !githubStatus.success ? 0 : (githubStatus?.success ? 96 : 85),
       time: '1.8s',
       status: 'Completed',
-      summary: 'Audited target codebase, repositories, and CUDA processing nodes.',
-      strengths: ['Custom CUDA transformer structures.', 'Negligible duplicate script loops.'],
-      weaknesses: ['Sparse API schema comments inside controller files.'],
-      risks: ['Heavy custom dependency on NVIDIA container configurations.'],
-      reasoning: 'The repository scan indicates high-quality engineering benchmarks. Redundancy checks returned an index of 4.2%. Performance tests validate low kernel delays.',
-      evidence: [
-        {
-          id: 'ev-tech-1',
-          title: 'GitHub Commit Redundancy Audit',
-          source: 'GitHub API Archive',
-          docType: 'GitHub Repository',
-          confidence: '98%',
-          sourceReliability: '98%',
-          text: 'Codebase validation completed. Total line duplication measured at 4.2%. Code architecture quality rated: Grade A.',
-          entities: ['Alpha Dynamics Repo', 'CUDA Kernels'],
-          relatedNode: 'n-tech'
-        }
-      ],
-      graphNodes: ['Technology', 'CUDA Kernels']
+      summary: githubStatus?.success
+        ? `Audited verified public repository ${githubStatus.repo_path} (${githubStatus.language}, ${githubStatus.stars} stars, ${githubStatus.forks} forks).`
+        : (githubStatus && !githubStatus.success
+            ? 'Repository Not Found or Not Publicly Accessible. Public code metrics, stars, and language unavailable.'
+            : 'Audited submitted technical architecture specifications and container deployment configurations.'),
+      strengths: githubStatus?.success
+        ? [
+            `Public GitHub repository verified: ${githubStatus.repo_path}.`,
+            `Primary programming language ${githubStatus.language} verified with ${githubStatus.stars} stars.`
+          ]
+        : (githubStatus && !githubStatus.success
+            ? []
+            : ['Submitted technical specifications outline modular architecture.']),
+      weaknesses: githubStatus && !githubStatus.success
+        ? [
+            'GitHub repository verification failed: Repository Not Found or Not Publicly Accessible.',
+            'Public codebase metrics and commit integrity omitted from diligence.'
+          ]
+        : (githubStatus?.success
+            ? ['Public repository has open maintenance backlog.']
+            : ['No public GitHub repository linked for automated code verification.']),
+      risks: githubStatus && !githubStatus.success
+        ? ['Cannot independently audit code quality, commit integrity, or architectural moats without repository access.']
+        : ['Heavy custom dependency on container execution configurations.'],
+      reasoning: githubStatus?.success
+        ? `Public repository metadata verified on GitHub. Stars: ${githubStatus.stars}, forks: ${githubStatus.forks}, language: ${githubStatus.language}.`
+        : (githubStatus && !githubStatus.success
+            ? 'GitHub repository verification failed: Repository Not Found or Not Publicly Accessible. Public code metrics, stars, forks, and language are unavailable.'
+            : 'Technical architecture specifications evaluated from submission. No public repository was provided for automated indexing.'),
+      evidence: githubStatus?.success
+        ? [
+            {
+              id: 'ev-tech-1',
+              title: 'Verified GitHub Public Repository',
+              source: 'GitHub Public API',
+              docType: 'Code Analysis',
+              confidence: '98%',
+              sourceReliability: '100%',
+              text: `Repository ${githubStatus.repo_path} verified via GitHub API. Stars: ${githubStatus.stars}, forks: ${githubStatus.forks}, primary language: ${githubStatus.language}.`,
+              entities: ['Repository', githubStatus.language],
+              relatedNode: 'n-tech'
+            }
+          ]
+        : (githubStatus && !githubStatus.success
+            ? [
+                {
+                  id: 'ev-tech-1',
+                  title: 'GitHub Repository Verification Failed',
+                  source: 'GitHub Public API',
+                  docType: 'Verification Failure',
+                  confidence: '0%',
+                  sourceReliability: '0%',
+                  text: 'Repository Not Found or Not Publicly Accessible. Public code evidence unavailable.',
+                  entities: ['Repository (Unavailable)'],
+                  relatedNode: 'n-tech'
+                }
+              ]
+            : [
+                {
+                  id: 'ev-tech-1',
+                  title: 'Technical Architecture Documentation',
+                  source: 'Submitted Technical Dossier',
+                  docType: 'Code Analysis',
+                  confidence: '85%',
+                  sourceReliability: '80%',
+                  text: 'Architecture specifications reviewed. Container deployment configurations checked.',
+                  entities: ['Technical Architecture'],
+                  relatedNode: 'n-tech'
+                }
+              ]),
+      graphNodes: ['Technology', githubStatus?.success ? githubStatus.repo_path : (githubStatus && !githubStatus.success ? 'Repo Unavailable' : 'Architecture')]
     },
     {
       id: 'finance',
@@ -345,13 +431,13 @@ export const DecisionCenterPage: React.FC = () => {
       evidence: [
         {
           id: 'ev-finance-1',
-          title: 'Q2 Runway Statement',
-          source: 'Corporate Bank Ledgers',
-          docType: 'Financial Statement',
-          confidence: '97%',
-          sourceReliability: '97%',
-          text: 'Cash balance verified at $2.1M. Burn rate stands at $90k per month. Adjusted runway calculated at 24 months.',
-          entities: ['Q2 Ledgers', 'Alpha Dynamics'],
+          title: 'Runway & Burn Rate Ledger',
+          source: 'Submitted Financial Ledger (Sample)',
+          docType: 'Financial Snapshot',
+          confidence: '95%',
+          sourceReliability: '90%',
+          text: 'Cash balance reported at $2.1M with monthly burn of $90k/mo, reflecting an estimated 24-month operating runway.',
+          entities: ['Financial Ledger', 'Operating Runway'],
           relatedNode: 'n-finance'
         }
       ],
@@ -374,12 +460,12 @@ export const DecisionCenterPage: React.FC = () => {
       evidence: [
         {
           id: 'ev-market-1',
-          title: 'Biotech Automation Segment Survey',
-          source: 'Gartner Industry Report',
-          docType: 'Market Report',
-          confidence: '94%',
-          sourceReliability: '93%',
-          text: 'The addressable TAM for genomic pipeline automation is estimated to scale past $45B by 2030 at 18.2% CAGR.',
+          title: 'Target Market Segment Sizing',
+          source: 'Sector Sizing Memo (Sample)',
+          docType: 'Market Assessment',
+          confidence: '90%',
+          sourceReliability: '88%',
+          text: 'Addressable segment opportunity indicates strong automation tailwinds in biomedical workflows scaling at 18.2% CAGR.',
           entities: ['Genomics Automation', 'Pharma market'],
           relatedNode: 'n-market'
         }
@@ -395,21 +481,21 @@ export const DecisionCenterPage: React.FC = () => {
       confidence: 86,
       time: '1.3s',
       status: 'Completed',
-      summary: 'Audited patent registers and competitor feature sets.',
-      strengths: ['Proprietary transformer patents.', 'Rivals do not employ local CUDA custom kernels.'],
+      summary: 'Audited competitive landscape and claimed feature moats.',
+      strengths: ['Proprietary transformer architectures.', 'Custom GPU-optimized processing kernels.'],
       weaknesses: ['Competitors possess larger sales and distribution teams.'],
       risks: ['Rivals might replicate neural structures if IP is not protected.'],
-      reasoning: 'The technical patent database validation confirms a defensive moat. Early deployment positions the company well.',
+      reasoning: 'Technical documentation indicates architectural differentiation, though market competitors maintain broader distribution reach.',
       evidence: [
         {
           id: 'ev-comp-1',
-          title: 'Neural Transformer Sequence Moat',
-          source: 'USPTO Patent Database',
-          docType: 'Patent Filing',
-          confidence: '92%',
-          sourceReliability: '97%',
-          text: 'Patent application #948,284 granted for genomic neural sequencer transformer architectures.',
-          entities: ['USPTO Patent #948,284', 'Alpha Dynamics'],
+          title: 'Technical Differentiation Moat',
+          source: 'Technical Moat Documentation (Sample)',
+          docType: 'IP Documentation',
+          confidence: '88%',
+          sourceReliability: '85%',
+          text: 'Technical documentation specifies proprietary neural sequencing transformer architecture as principal moat.',
+          entities: ['Architecture Moat', 'Neural Sequencer'],
           relatedNode: 'n-market'
         }
       ],
@@ -424,21 +510,21 @@ export const DecisionCenterPage: React.FC = () => {
       confidence: 99,
       time: '1.1s',
       status: 'Completed',
-      summary: 'Audited articles of incorporation and HIPAA/SOC2 certificates.',
-      strengths: ['SOC-2 Type II active.', 'Delaware C-Corp in active standing.'],
+      summary: 'Audited corporate structure documents and operational policy filings.',
+      strengths: ['Standard commercial compliance policies active.', 'Delaware C-Corp in active standing.'],
       weaknesses: ['State license approvals are pending downstream healthcare certifications.'],
       risks: ['Delays in regulatory approval timelines.'],
-      reasoning: 'The corporate registration status is fully active. Core compliance frameworks are in place.',
+      reasoning: 'Corporate registration status is active. Standard security and corporate governance frameworks are documented.',
       evidence: [
         {
           id: 'ev-legal-1',
-          title: 'SOC-2 Type II Compliance audit',
-          source: 'AICPA Registry Audits',
-          docType: 'Regulatory Documents',
-          confidence: '99%',
-          sourceReliability: '99%',
-          text: 'Framework audit completed. HIPAA and SOC2 compliance controls are active and verified.',
-          entities: ['AICPA Registry', 'SOC-2 Certificate'],
+          title: 'Entity Standing & Compliance Review',
+          source: 'Corporate Filing Archive (Sample)',
+          docType: 'Compliance Filing',
+          confidence: '96%',
+          sourceReliability: '94%',
+          text: 'Delaware C-Corp incorporation in good standing; standard commercial security controls and policy documentation on file.',
+          entities: ['Corporate Filing', 'Compliance Policies'],
           relatedNode: 'n-legal'
         }
       ],
@@ -454,69 +540,168 @@ export const DecisionCenterPage: React.FC = () => {
       .slice(0, 5);
   }, [agents]);
 
-  const keyRisks = useMemo(() => {
-    const allRisks = [
-      ...finalSummary.weaknesses,
-      ...agents.flatMap(a => a.risks)
-    ];
-    return [...new Set(allRisks)].slice(0, 3);
-  }, [finalSummary.weaknesses, agents]);
-
   const averageConfidence = useMemo(() => {
     return Math.round(agents.reduce((sum, a) => sum + a.confidence, 0) / agents.length);
   }, [agents]);
 
-  // ─── Why This Verdict? — deterministic data derived from existing component state ───
-  const whyVerdictData = useMemo(() => {
-    // Evidence categories: show only if the corresponding agent has evidence
-    const agentIds = agents.map(a => a.id);
-    const evidenceCategories = [
-      { label: 'Founder Background', icon: User, agentId: 'founder' },
-      { label: 'Technical Architecture', icon: Cpu, agentId: 'tech' },
-      { label: 'Financial Information', icon: Landmark, agentId: 'finance' },
-      { label: 'Market Opportunity', icon: Target, agentId: 'market' },
-      { label: 'Competitive Landscape', icon: Scale, agentId: 'competition' },
-      { label: 'Legal & Compliance Review', icon: ShieldAlert, agentId: 'legal' },
-    ].filter(cat => agentIds.includes(cat.agentId));
+  type DiligenceStatus = 'Verified evidence' | 'Not found' | 'Requires verification';
 
-    // Confidence drivers: top-scoring agents (score >= 80) strengths, capped at 4
-    const confidenceDrivers = agents
-      .filter(a => a.score >= 80)
-      .sort((a, b) => b.score - a.score)
-      .flatMap(a => a.strengths)
-      .slice(0, 4);
+  interface DiligenceCategoryItem {
+    category: string;
+    icon: any;
+    status: DiligenceStatus;
+    evidence: string;
+  }
 
-    // Risk drivers: from weaknesses of lower-scoring agents or finalSummary.weaknesses, capped at 4
-    const allWeaknesses = [
-      ...finalSummary.weaknesses,
-      ...agents.filter(a => a.score < 85).flatMap(a => a.weaknesses),
-    ];
-    const riskDrivers = [...new Set(allWeaknesses)].slice(0, 4);
+  const dueDiligenceSummary = useMemo<DiligenceCategoryItem[]>(() => {
+    const items: DiligenceCategoryItem[] = [];
 
-    // Strongest agents by score
-    const sorted = [...agents].sort((a, b) => b.score - a.score);
-    const strongestNames = sorted.slice(0, 2).map(a => a.name.replace(' Agent', ''));
-    const weakestNames = sorted.slice(-2).map(a => a.name.replace(' Agent', ''));
+    // 1. Founder
+    if (activeStartup?.details?.founderBackground) {
+      items.push({
+        category: 'Founder',
+        icon: User,
+        status: 'Verified evidence',
+        evidence: activeStartup.details.founderBackground,
+      });
+    } else if (startupData?.founderName && startupData.founderName !== 'Founder' && startupData.founderName !== 'Not specified') {
+      items.push({
+        category: 'Founder',
+        icon: User,
+        status: 'Requires verification',
+        evidence: `Founder name "${startupData.founderName}" declared in submission. Executive background verification pending.`,
+      });
+    } else {
+      items.push({
+        category: 'Founder',
+        icon: User,
+        status: 'Not found',
+        evidence: 'No founder biographical data or executive dossier provided.',
+      });
+    }
 
-    // Deterministic verdict logic text
-    const recText = finalSummary.recommendation === 'INVEST'
-      ? 'recommends INVEST'
-      : finalSummary.recommendation === 'PASS'
-      ? 'recommends PASS'
-      : 'recommends UNDER REVIEW';
+    // 2. Technology
+    if (githubStatus?.success) {
+      items.push({
+        category: 'Technology',
+        icon: Cpu,
+        status: 'Verified evidence',
+        evidence: `GitHub repository ${githubStatus.repo_path} verified: ${githubStatus.stars} stars, ${githubStatus.forks} forks, primary language ${githubStatus.language}. ${githubStatus.description || ''}`,
+      });
+    } else if (githubStatus && !githubStatus.success) {
+      items.push({
+        category: 'Technology',
+        icon: Cpu,
+        status: 'Not found',
+        evidence: `Repository Not Found or Not Publicly Accessible (${githubStatus.error || 'HTTP 404'}). Public code evidence unavailable.`,
+      });
+    } else if (activeStartup?.details?.techStackRisk) {
+      items.push({
+        category: 'Technology',
+        icon: Cpu,
+        status: 'Requires verification',
+        evidence: activeStartup.details.techStackRisk,
+      });
+    } else {
+      items.push({
+        category: 'Technology',
+        icon: Cpu,
+        status: 'Not found',
+        evidence: 'No repository URL or technical architecture documentation provided.',
+      });
+    }
 
-    const strengthPhrase = strongestNames.length > 0
-      ? `strong ${strongestNames.join(' and ')} signals`
-      : 'multiple positive evaluation signals';
+    // 3. Financial
+    if (activeStartup?.details?.financialSnapshot) {
+      const snap = activeStartup.details.financialSnapshot;
+      const parts: string[] = [];
+      if (snap.revenue) parts.push(`Revenue: ${snap.revenue}`);
+      if (snap.burnRate) parts.push(`Burn: ${snap.burnRate}`);
+      if (snap.runway) parts.push(`Runway: ${snap.runway}`);
+      if (snap.valuation) parts.push(`Valuation: ${snap.valuation}`);
+      items.push({
+        category: 'Financial',
+        icon: Landmark,
+        status: 'Verified evidence',
+        evidence: parts.length > 0 ? parts.join(' | ') : 'Financial snapshot provided.',
+      });
+    } else if (startupData?.financialsText) {
+      items.push({
+        category: 'Financial',
+        icon: Landmark,
+        status: 'Requires verification',
+        evidence: `Financial statement text submitted (${startupData.financialsText.slice(0, 140)}...). Audited statements required.`,
+      });
+    } else {
+      items.push({
+        category: 'Financial',
+        icon: Landmark,
+        status: 'Not found',
+        evidence: 'No financial model, ledger, or runway documentation provided.',
+      });
+    }
 
-    const riskPhrase = weakestNames.length > 0
-      ? `with notable concerns in ${weakestNames.join(' and ')} dimensions`
-      : 'with risks noted across select evaluation dimensions';
+    // 4. Market
+    if (activeStartup?.details?.marketOpportunity) {
+      items.push({
+        category: 'Market',
+        icon: Target,
+        status: 'Verified evidence',
+        evidence: activeStartup.details.marketOpportunity,
+      });
+    } else if (startupData?.sector) {
+      items.push({
+        category: 'Market',
+        icon: Target,
+        status: 'Requires verification',
+        evidence: `Sector identified as ${startupData.sector}. Detailed Total Addressable Market (TAM) analysis pending.`,
+      });
+    } else {
+      items.push({
+        category: 'Market',
+        icon: Target,
+        status: 'Not found',
+        evidence: 'No market size, segment CAGR, or customer persona documentation submitted.',
+      });
+    }
 
-    const verdictLogic = `InvestIQ ${recText} for ${startupData.name} based on an investment score of ${finalSummary.score}/100 and ${finalSummary.riskLevel} risk profile. The committee identified ${strengthPhrase}, ${riskPhrase}.`;
+    // 5. Competition
+    if (activeStartup?.details?.strengths && activeStartup.details.strengths.length > 0) {
+      items.push({
+        category: 'Competition',
+        icon: Scale,
+        status: 'Verified evidence',
+        evidence: `Competitive moat factors identified: ${activeStartup.details.strengths.slice(0, 2).join('; ')}`,
+      });
+    } else {
+      items.push({
+        category: 'Competition',
+        icon: Scale,
+        status: 'Requires verification',
+        evidence: 'Competitive landscape and incumbent displacement analysis pending independent evaluation.',
+      });
+    }
 
-    return { evidenceCategories, confidenceDrivers, riskDrivers, verdictLogic };
-  }, [agents, finalSummary, startupData]);
+    // 6. Legal & Compliance
+    if (activeStartup?.metrics && (activeStartup.metrics as any).legal !== undefined) {
+      const legalScore = (activeStartup.metrics as any).legal;
+      items.push({
+        category: 'Legal & Compliance',
+        icon: ShieldAlert,
+        status: 'Verified evidence',
+        evidence: `Compliance and IP risk audit completed (Score: ${legalScore}/100).`,
+      });
+    } else {
+      items.push({
+        category: 'Legal & Compliance',
+        icon: ShieldAlert,
+        status: 'Requires verification',
+        evidence: 'Cap table, incorporation filings, and regulatory compliance documents pending audit.',
+      });
+    }
+
+    return items;
+  }, [activeStartup, startupData, githubStatus]);
 
   // Decision Builder simulation panel states
   const [builderStep, setBuilderStep] = useState(0);
@@ -552,23 +737,6 @@ export const DecisionCenterPage: React.FC = () => {
     }
   }, [builderStep]);
 
-  // Deep linking to Knowledge Graph handler
-  const handleDeepLinkGraph = (nodeName: string) => {
-    navigate('/knowledge-graph', {
-      state: {
-        startup: {
-          name: startupData.name,
-          sector: startupData.sector,
-          investmentScore: finalSummary.score,
-          recommendation: finalSummary.recommendation,
-          riskLevel: finalSummary.riskLevel,
-          status: finalSummary.recommendation === 'INVEST' ? 'Approved' : 'Flagged'
-        },
-        highlightNodeId: nodeName
-      }
-    });
-  };
-
   // Action handlers
   const handleDownloadPDF = () => {
     window.print();
@@ -599,14 +767,10 @@ export const DecisionCenterPage: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-[var(--bg-dark)] text-[var(--text-primary)] font-sans flex flex-col relative overflow-x-hidden">
+    <div className="min-h-screen bg-[var(--bg-page)] text-[var(--text-primary)] font-sans flex flex-col relative overflow-x-hidden">
       
-      {/* Background neon glows */}
-      <div className="absolute top-1/4 left-1/4 w-[500px] h-[500px] bg-brand-purple/5 rounded-full blur-[160px] pointer-events-none -z-10 animate-pulse" />
-      <div className="absolute bottom-1/4 right-1/4 w-[500px] h-[500px] bg-brand-purple-light/5 rounded-full blur-[160px] pointer-events-none -z-10 animate-pulse" />
-
       {/* Top Header Navigation */}
-      <header className="h-16 border-b border-[var(--border-color)] bg-[var(--bg-surface)]/80 backdrop-blur-md px-6 flex items-center justify-between z-30 flex-shrink-0">
+      <header className="h-16 border-b border-[var(--border-color)] bg-[var(--bg-surface)] px-6 flex items-center justify-between z-30 flex-shrink-0">
         <div className="flex items-center space-x-4">
           <Button
             variant="ghost"
@@ -656,7 +820,7 @@ export const DecisionCenterPage: React.FC = () => {
             variant="primary"
             size="sm"
             onClick={handleExportJSON}
-            className="h-9 px-3 hover:shadow-[0_0_15px_rgba(139,92,246,0.35)] cursor-pointer"
+            className="h-9 px-3 cursor-pointer"
           >
             <Download className="w-4 h-4 mr-1.5" />
             Export JSON
@@ -713,13 +877,13 @@ export const DecisionCenterPage: React.FC = () => {
 
               {/* Quick stats counter */}
               <div className="space-y-2.5">
-                <span className="text-[9px] text-[var(--text-secondary)] block uppercase tracking-widest font-bold font-mono">Cognee Memory Logs</span>
+                <span className="text-[9px] text-[var(--text-secondary)] block uppercase tracking-widest font-bold font-mono">Diligence Telemetry</span>
                 <div className="grid grid-cols-2 gap-3 text-center font-mono">
                   {[
                     { label: 'Documents', val: finalSummary.documents },
-                    { label: 'Entities', val: finalSummary.entities },
-                    { label: 'Relations', val: finalSummary.relationships },
-                    { label: 'Queries', val: finalSummary.queries }
+                    { label: 'Evidence Scanned', val: finalSummary.evidenceCount },
+                    { label: 'Evaluation Dimensions', val: 6 },
+                    { label: 'Audit Queries', val: finalSummary.queries }
                   ].map((s, idx) => (
                     <div key={idx} className="bg-[var(--bg-surface)] border border-[var(--border-color)] p-2 rounded-xl">
                       <span className="text-[8px] text-[var(--text-secondary)] block uppercase font-medium">{s.label}</span>
@@ -810,27 +974,32 @@ export const DecisionCenterPage: React.FC = () => {
 
             {/* Agent Contradiction Detected Alert Panel */}
             <Card className="border border-amber-500/30 bg-amber-500/5 p-4 flex flex-col space-y-2 relative overflow-hidden flex-shrink-0 text-left">
-              <div className="absolute top-0 right-0 w-24 h-24 bg-amber-500/5 rounded-full blur-xl pointer-events-none" />
-              <div className="flex items-center space-x-2.5 text-xs">
-                <AlertTriangle className="w-4.5 h-4.5 text-amber-600 dark:text-amber-400 animate-pulse" />
-                <span className="font-bold text-amber-600 dark:text-amber-400 font-mono uppercase tracking-wider">Multi-Agent Conflict Detected</span>
+              <div className="flex items-center justify-between text-xs">
+                <div className="flex items-center space-x-2">
+                  <AlertTriangle className="w-4 h-4 text-amber-600 dark:text-amber-400" />
+                  <span className="font-bold text-amber-600 dark:text-amber-400 font-mono uppercase tracking-wider text-[11px]">
+                    Heuristic Divergence Analysis
+                  </span>
+                </div>
+                <span className="text-[9px] font-mono px-1.5 py-0.5 rounded bg-amber-100 dark:bg-amber-950/40 text-amber-700 dark:text-amber-300 border border-amber-300 dark:border-amber-800/40">
+                  Rule-Based Synthesis
+                </span>
               </div>
               <p className="text-[11px] text-[var(--text-primary)] leading-normal text-left font-mono">
-                ⚠️ <strong className="text-[var(--text-primary)]">Technology Agent</strong> reports deep IP custom kernel moats, while <strong className="text-[var(--text-primary)]">Competition Agent</strong> reports high risk of larger market rivals replicating neural blocks.
+                Technology assessment reports proprietary architectural differentiation, while Competition assessment highlights risk of well-resourced market rivals targeting adjacent enterprise segments.
               </p>
-              <div className="text-[10px] text-[var(--text-secondary)] font-mono italic">
-                Decision Builder consolidated consensus weights, adjusting rating confidence bounds from 91% to 84%.
+              <div className="text-[10px] text-[var(--text-secondary)] font-mono">
+                Overall diligence rating is balanced across both evaluation dimensions.
               </div>
             </Card>
 
             {/* Decision Builder animated progress card */}
             {!isBuilderDone ? (
               <Card className="border border-indigo-200 dark:border-indigo-500/20 bg-indigo-50 dark:bg-indigo-950/20 p-5 relative overflow-hidden flex-shrink-0">
-                <div className="absolute top-0 right-0 w-32 h-32 bg-indigo-500/5 rounded-full blur-2xl" />
                 <div className="flex flex-col space-y-4">
                   <div className="flex justify-between items-center text-xs font-mono">
                     <span className="text-indigo-600 dark:text-indigo-400 font-bold flex items-center">
-                      <Layers className="w-3.5 h-3.5 mr-1.5 animate-spin" />
+                      <Loader2 className="w-3.5 h-3.5 mr-1.5 animate-spin" />
                       Consolidating Decision Engine Verdict...
                     </span>
                     <span className="text-[var(--text-secondary)]">Phase {builderStep + 1} / 6</span>
@@ -862,11 +1031,7 @@ export const DecisionCenterPage: React.FC = () => {
                 </div>
               </Card>
             ) : (
-              <Card glow className="border border-indigo-200 dark:border-indigo-500/30 bg-indigo-50 dark:bg-indigo-950/20 p-5 flex flex-col space-y-4 relative overflow-hidden flex-shrink-0 text-left">
-                {/* Background glows */}
-                <div className="absolute top-0 right-0 w-40 h-40 bg-indigo-500/5 rounded-full blur-3xl pointer-events-none" />
-                <div className="absolute bottom-0 left-0 w-32 h-32 bg-emerald-500/5 rounded-full blur-2xl pointer-events-none" />
-
+              <Card className="border border-indigo-200 dark:border-indigo-800/40 bg-indigo-50/40 dark:bg-indigo-950/20 p-5 flex flex-col space-y-4 relative overflow-hidden flex-shrink-0 text-left">
                 {/* ── A. Verdict Header ── */}
                 <div className="flex items-center justify-between pb-3 border-b border-[var(--border-color)]">
                   <div className="flex items-center space-x-3">
@@ -884,7 +1049,6 @@ export const DecisionCenterPage: React.FC = () => {
                   </div>
                   <Badge
                     variant={finalSummary.recommendation === 'INVEST' ? 'success' : finalSummary.recommendation === 'PASS' ? 'danger' : 'warning'}
-                    glow
                     className="font-bold text-xs px-3 py-1 font-mono"
                   >
                     {finalSummary.recommendation}
@@ -922,11 +1086,16 @@ export const DecisionCenterPage: React.FC = () => {
                   {finalSummary.reasoning}
                 </p>
 
-                {/* ── C. Strongest Evidence Points ── */}
+                {/* ── C. Sample Diligence Evidence Points ── */}
                 <div className="space-y-2">
-                  <span className="text-[9px] font-bold text-cyan-600 dark:text-cyan-400 uppercase tracking-widest font-mono block">
-                    Strongest Evidence ({topEvidence.length} verified sources)
-                  </span>
+                  <div className="flex items-center justify-between">
+                    <span className="text-[9px] font-bold text-cyan-600 dark:text-cyan-400 uppercase tracking-widest font-mono block">
+                      Sample Diligence Evidence ({topEvidence.length} demo artifacts)
+                    </span>
+                    <span className="text-[9px] text-[var(--text-secondary)] font-mono">
+                      Intake Files Archive &bull; Sample Dossier
+                    </span>
+                  </div>
                   <div className="space-y-1.5">
                     {topEvidence.map((ev) => (
                       <div
@@ -950,67 +1119,20 @@ export const DecisionCenterPage: React.FC = () => {
                   </div>
                 </div>
 
-                {/* ── D. Key Risk Factors ── */}
-                <div className="space-y-2">
-                  <span className="text-[9px] font-bold text-rose-600 dark:text-rose-400 uppercase tracking-widest font-mono block">
-                    Key Risk Factors
-                  </span>
-                  <div className="space-y-1.5">
-                    {keyRisks.map((risk, idx) => (
-                      <div key={idx} className="flex items-start space-x-2.5 bg-rose-500/5 border border-rose-500/10 p-2.5 rounded-xl">
-                        <AlertTriangle className="w-3.5 h-3.5 text-rose-600 dark:text-rose-400 flex-shrink-0 mt-0.5" />
-                        <span className="text-[10px] text-[var(--text-primary)] leading-relaxed">{risk}</span>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-
-                {/* ── E. Why This Matters ── */}
-                <div className="bg-[var(--bg-surface)] border border-[var(--border-color)] p-3 rounded-xl">
-                  <span className="text-[9px] font-bold text-indigo-600 dark:text-indigo-400 uppercase tracking-widest font-mono block mb-1.5">
-                    Why This Matters
-                  </span>
-                  <p className="text-[10px] text-[var(--text-secondary)] leading-relaxed font-mono italic">
-                    Based on {finalSummary.entities} entities extracted across {finalSummary.documents} documents, InvestIQ&apos;s {agents.length} AI agents mapped {finalSummary.relationships} entity relationships in the Cognee knowledge graph. {startupData.name} operating in {startupData.sector} at {startupData.fundingStage} stage {finalSummary.recommendation === 'INVEST' ? 'demonstrates strong fundamentals with defensible positioning' : finalSummary.recommendation === 'PASS' ? 'presents significant structural concerns that warrant caution' : 'shows mixed signals requiring further investigation'}. This verdict is backed by cross-document evidence that only a persistent knowledge graph can surface — connecting founder history, technical moats, and financial patterns across multiple ingested sources.
-                  </p>
-                </div>
-
-                {/* ── F. Suggested Next Actions ── */}
+                {/* ── Suggested Next Actions ── */}
                 <div className="flex items-center gap-2 pt-2 border-t border-[var(--border-color)]">
-                  {finalSummary.recommendation === 'INVEST' ? (
-                    <>
-                      <Button variant="outline" size="sm" onClick={() => navigate('/')} className="flex-1 border-[var(--border-color)] text-[var(--text-secondary)] hover:text-[var(--text-primary)] text-[10px] cursor-pointer">
-                        <ArrowLeft className="w-3.5 h-3.5 mr-1.5" />
-                        Return to Portfolio
-                      </Button>
-                      <Button variant="primary" size="sm" onClick={() => handleDeepLinkGraph('Tech')} className="flex-1 text-[10px] cursor-pointer hover:shadow-[0_0_12px_rgba(139,92,246,0.35)]">
-                        <Layers className="w-3.5 h-3.5 mr-1.5" />
-                        Inspect Tech Moat Graph
-                      </Button>
-                    </>
-                  ) : finalSummary.recommendation === 'PASS' ? (
-                    <>
-                      <Button variant="outline" size="sm" onClick={() => navigate('/')} className="flex-1 border-[var(--border-color)] text-[var(--text-secondary)] hover:text-[var(--text-primary)] text-[10px] cursor-pointer">
-                        <ArrowLeft className="w-3.5 h-3.5 mr-1.5" />
-                        Archive Investigation
-                      </Button>
-                      <Button variant="outline" size="sm" onClick={() => handleDeepLinkGraph('Risk')} className="flex-1 border-rose-500/20 text-rose-600 dark:text-rose-400 hover:text-rose-500 text-[10px] cursor-pointer">
-                        <AlertTriangle className="w-3.5 h-3.5 mr-1.5" />
-                        Review Risk Graph
-                      </Button>
-                    </>
-                  ) : (
-                    <>
-                      <Button variant="primary" size="sm" onClick={() => handleDeepLinkGraph('Founder')} className="flex-1 text-[10px] cursor-pointer hover:shadow-[0_0_12px_rgba(139,92,246,0.35)]">
-                        <Layers className="w-3.5 h-3.5 mr-1.5" />
-                        Deep Dive Knowledge Graph
-                      </Button>
-                      <Button variant="outline" size="sm" onClick={handleExportJSON} className="flex-1 border-[var(--border-color)] text-[var(--text-secondary)] hover:text-[var(--text-primary)] text-[10px] cursor-pointer">
-                        <Download className="w-3.5 h-3.5 mr-1.5" />
-                        Export for Partner Review
-                      </Button>
-                    </>
-                  )}
+                  <Button variant="outline" size="sm" onClick={() => navigate('/')} className="flex-1 border-[var(--border-color)] text-[var(--text-secondary)] hover:text-[var(--text-primary)] text-[10px] cursor-pointer">
+                    <ArrowLeft className="w-3.5 h-3.5 mr-1.5" />
+                    Return to Portfolio
+                  </Button>
+                  <Button variant="outline" size="sm" onClick={handleExportJSON} className="flex-1 border-[var(--border-color)] text-[var(--text-secondary)] hover:text-[var(--text-primary)] text-[10px] cursor-pointer">
+                    <Download className="w-3.5 h-3.5 mr-1.5" />
+                    Export Report JSON
+                  </Button>
+                  <Button variant="primary" size="sm" onClick={handleDownloadPDF} className="flex-1 text-[10px] cursor-pointer">
+                    <FileDown className="w-3.5 h-3.5 mr-1.5" />
+                    Print / Export PDF
+                  </Button>
                 </div>
               </Card>
             )}
@@ -1024,94 +1146,56 @@ export const DecisionCenterPage: React.FC = () => {
               />
             )}
 
-            {/* ── Why This Verdict? — Investment Committee Explanation Panel ── */}
+            {/* ── Due-Diligence Summary (6 Categories) ── */}
             {isBuilderDone && (
-              <Card className="border border-[var(--border-color)] bg-[var(--bg-subtle)] p-5 flex flex-col space-y-5 flex-shrink-0 text-left">
-
-                {/* Header */}
-                <div className="flex items-center space-x-3 pb-3 border-b border-[var(--border-color)]">
-                  <div className="p-2 rounded-xl bg-indigo-500/10 border border-indigo-500/20 text-indigo-600 dark:text-indigo-400 flex-shrink-0">
-                    <Gavel className="w-4 h-4" />
-                  </div>
-                  <div>
-                    <span className="text-[10px] font-bold text-indigo-600 dark:text-indigo-400 uppercase tracking-widest font-mono block">
-                      Why This Verdict?
-                    </span>
-                    <span className="text-[9px] text-[var(--text-secondary)] font-mono">
-                      Investment committee explanation — derived from agent evaluations
-                    </span>
+              <Card className="border border-[var(--border-color)] bg-[var(--bg-surface)] p-5 flex flex-col space-y-4 flex-shrink-0 text-left">
+                <div className="flex items-center justify-between pb-3 border-b border-[var(--border-color)]">
+                  <div className="flex items-center space-x-3">
+                    <div className="p-2 rounded-xl bg-indigo-500/10 border border-indigo-500/20 text-indigo-600 dark:text-indigo-400 flex-shrink-0">
+                      <ListChecks className="w-4 h-4" />
+                    </div>
+                    <div>
+                      <span className="text-[10px] font-bold text-indigo-600 dark:text-indigo-400 uppercase tracking-widest font-mono block">
+                        Due-Diligence Summary
+                      </span>
+                      <span className="text-[9px] text-[var(--text-secondary)] font-mono">
+                        Evidence audit across 6 core investment evaluation dimensions
+                      </span>
+                    </div>
                   </div>
                 </div>
 
-                {/* A. Evidence Reviewed */}
-                <div className="space-y-2">
-                  <div className="flex items-center space-x-2">
-                    <ListChecks className="w-3.5 h-3.5 text-cyan-600 dark:text-cyan-400" />
-                    <span className="text-[9px] font-bold text-cyan-600 dark:text-cyan-400 uppercase tracking-widest font-mono">
-                      Evidence Reviewed
-                    </span>
-                  </div>
-                  <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
-                    {whyVerdictData.evidenceCategories.map((cat, idx) => {
-                      const IconComp = cat.icon;
-                      return (
-                        <div key={idx} className="flex items-center space-x-2 bg-[var(--bg-surface)] border border-[var(--border-color)] px-2.5 py-2 rounded-xl">
-                          <div className="p-1 rounded-lg bg-cyan-500/10 flex-shrink-0">
-                            <IconComp className="w-3 h-3 text-cyan-600 dark:text-cyan-400" />
+                <div className="divide-y divide-[var(--border-color)]">
+                  {dueDiligenceSummary.map((item, idx) => {
+                    const IconComp = item.icon;
+                    return (
+                      <div key={idx} className="py-3 flex flex-col sm:flex-row sm:items-start justify-between gap-3 text-xs">
+                        <div className="flex items-center space-x-2.5 sm:w-48 flex-shrink-0">
+                          <div className="p-1.5 rounded-lg bg-[var(--bg-subtle)] text-[var(--text-secondary)]">
+                            <IconComp className="w-3.5 h-3.5" />
                           </div>
-                          <span className="text-[10px] font-medium text-[var(--text-primary)] leading-tight">{cat.label}</span>
+                          <span className="font-semibold text-[var(--text-primary)]">{item.category}</span>
                         </div>
-                      );
-                    })}
-                  </div>
-                </div>
-
-                {/* B. Confidence Drivers */}
-                <div className="space-y-2">
-                  <div className="flex items-center space-x-2">
-                    <TrendingUp className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400" />
-                    <span className="text-[9px] font-bold text-emerald-600 dark:text-emerald-400 uppercase tracking-widest font-mono">
-                      Confidence Drivers
-                    </span>
-                  </div>
-                  <div className="space-y-1.5">
-                    {whyVerdictData.confidenceDrivers.map((point, idx) => (
-                      <div key={idx} className="flex items-start space-x-2.5 bg-emerald-500/5 border border-emerald-500/10 px-3 py-2 rounded-xl">
-                        <Check className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400 flex-shrink-0 mt-0.5" />
-                        <span className="text-[10px] text-[var(--text-primary)] leading-relaxed">{point}</span>
+                        <div className="flex-1 text-[var(--text-secondary)] leading-relaxed text-[11px]">
+                          {item.evidence}
+                        </div>
+                        <div className="flex-shrink-0">
+                          <span
+                            className={`inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-mono font-medium border ${
+                              item.status === 'Verified evidence'
+                                ? 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-500/20'
+                                : item.status === 'Requires verification'
+                                ? 'bg-amber-500/10 text-amber-600 dark:text-amber-400 border-amber-500/20'
+                                : 'bg-slate-500/10 text-slate-500 dark:text-slate-400 border-slate-500/20'
+                            }`}
+                          >
+                            {item.status}
+                          </span>
+                        </div>
                       </div>
-                    ))}
-                  </div>
+                    );
+                  })}
                 </div>
-
-                {/* C. Risk Drivers */}
-                <div className="space-y-2">
-                  <div className="flex items-center space-x-2">
-                    <TrendingDown className="w-3.5 h-3.5 text-rose-600 dark:text-rose-400" />
-                    <span className="text-[9px] font-bold text-rose-600 dark:text-rose-400 uppercase tracking-widest font-mono">
-                      Risk Drivers
-                    </span>
-                  </div>
-                  <div className="space-y-1.5">
-                    {whyVerdictData.riskDrivers.map((point, idx) => (
-                      <div key={idx} className="flex items-start space-x-2.5 bg-rose-500/5 border border-rose-500/10 px-3 py-2 rounded-xl">
-                        <AlertTriangle className="w-3.5 h-3.5 text-rose-600 dark:text-rose-400 flex-shrink-0 mt-0.5" />
-                        <span className="text-[10px] text-[var(--text-primary)] leading-relaxed">{point}</span>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-
-                {/* D. Verdict Logic */}
-                <div className="bg-[var(--bg-surface)] border border-indigo-500/20 px-4 py-3 rounded-xl">
-                  <span className="text-[9px] font-bold text-indigo-600 dark:text-indigo-400 uppercase tracking-widest font-mono block mb-1.5">
-                    Verdict Logic
-                  </span>
-                  <p className="text-[11px] text-[var(--text-primary)] leading-relaxed m-0 font-sans">
-                    {whyVerdictData.verdictLogic}
-                  </p>
-                </div>
-
               </Card>
             )}
 
@@ -1147,7 +1231,7 @@ export const DecisionCenterPage: React.FC = () => {
                       key={idx}
                       className={`border rounded-xl transition-all duration-200 overflow-hidden ${
                         isOpen
-                          ? 'border-indigo-500/30 bg-[var(--bg-surface)] shadow-[0_0_12px_rgba(139,92,246,0.08)]'
+                          ? 'border-indigo-500/30 bg-[var(--bg-surface)] shadow-xs'
                           : 'border-[var(--border-color)] bg-[var(--bg-subtle)] hover:border-[var(--border-color)] hover:bg-[var(--bg-surface)]'
                       }`}
                     >
@@ -1209,7 +1293,7 @@ export const DecisionCenterPage: React.FC = () => {
                     key={agent.id}
                     className={`border transition-all duration-300 ${
                       isExpanded
-                        ? 'border-indigo-500/40 bg-[var(--bg-surface)] shadow-[0_0_15px_rgba(139,92,246,0.1)]'
+                        ? 'border-indigo-500/40 bg-[var(--bg-surface)] shadow-xs'
                         : 'border-[var(--border-color)] bg-[var(--bg-subtle)] hover:border-[var(--border-color)]'
                     }`}
                   >
@@ -1311,18 +1395,16 @@ export const DecisionCenterPage: React.FC = () => {
                               </div>
                             </div>
 
-                            {/* Related graph node tags linking */}
+                            {/* Related evaluation focus tags */}
                             <div className="flex flex-wrap items-center gap-2 pt-2 border-t border-[var(--border-color)]">
-                              <span className="text-[8px] font-bold text-[var(--text-secondary)] uppercase tracking-wider font-mono mr-1">Semantic Node Links:</span>
+                              <span className="text-[8px] font-bold text-[var(--text-secondary)] uppercase tracking-wider font-mono mr-1">Evaluation Focus:</span>
                               {agent.graphNodes.map((node) => (
-                                <button
+                                <span
                                   key={node}
-                                  onClick={() => handleDeepLinkGraph(node)}
-                                  className="text-[9px] font-bold font-mono text-cyan-700 dark:text-cyan-400 bg-cyan-50 dark:bg-cyan-950/20 hover:bg-cyan-100 dark:hover:bg-cyan-950/40 border border-cyan-500/20 px-2 py-0.5 rounded flex items-center gap-1 cursor-pointer transition-all duration-200"
+                                  className="text-[9px] font-bold font-mono text-cyan-700 dark:text-cyan-400 bg-cyan-50 dark:bg-cyan-950/20 border border-cyan-500/20 px-2 py-0.5 rounded"
                                 >
                                   {node}
-                                  <ExternalLink className="w-2.5 h-2.5" />
-                                </button>
+                                </span>
                               ))}
                             </div>
                           </div>
@@ -1384,18 +1466,6 @@ export const DecisionCenterPage: React.FC = () => {
                         ))}
                       </div>
                     </div>
-
-                    <div className="pt-2">
-                      <Button
-                        variant="primary"
-                        size="sm"
-                        onClick={() => handleDeepLinkGraph(selectedEvidence.relatedNode)}
-                        className="w-full text-[11px] hover:shadow-[0_0_12px_rgba(139,92,246,0.35)] cursor-pointer"
-                      >
-                        Inspect on Semantic Graph
-                        <ExternalLink className="w-3.5 h-3.5 ml-1.5" />
-                      </Button>
-                    </div>
                   </div>
                 ) : (
                   <div className="flex flex-col items-center justify-center py-16 text-center space-y-2 text-[var(--text-secondary)]">
@@ -1432,7 +1502,7 @@ export const DecisionCenterPage: React.FC = () => {
             initial={{ opacity: 0, y: 50, scale: 0.95 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 20, scale: 0.95 }}
-            className="fixed bottom-6 left-1/2 transform -translate-x-1/2 z-50 bg-indigo-600 border border-indigo-400/20 text-white font-mono text-xs px-5 py-3 rounded-xl shadow-[0_0_20px_rgba(139,92,246,0.35)] flex items-center space-x-2"
+            className="fixed bottom-6 left-1/2 transform -translate-x-1/2 z-50 bg-indigo-600 border border-indigo-400/20 text-white font-mono text-xs px-5 py-3 rounded-xl shadow-lg flex items-center space-x-2"
           >
             <ShieldCheck className="w-4 h-4 text-emerald-400" />
             <span>{toastMsg}</span>

@@ -13,7 +13,7 @@ export const ModelStatusCard: React.FC<ModelStatusCardProps> = ({ modelStatus, i
   const isAvailable = Boolean(modelStatus?.model_available);
 
   return (
-    <Card className="border border-indigo-200 dark:border-indigo-500/20 bg-gradient-to-br from-indigo-50/50 via-white to-purple-50/30 dark:from-indigo-950/20 dark:via-[var(--bg-surface)] dark:to-purple-950/10 shadow-sm relative overflow-hidden">
+    <Card className="border border-[var(--border-color)] bg-[var(--bg-surface)] shadow-xs relative overflow-hidden">
       <CardHeader className="pb-3 border-b border-[var(--border-color)]">
         <div className="flex items-center justify-between">
           <div className="flex items-center space-x-2.5">

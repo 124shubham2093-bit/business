@@ -89,15 +89,15 @@ export const pipelineSteps: PipelineStepConfig[] = [
     id: 'step-6',
     name: 'Checking GitHub',
     agent: 'Code Inspector',
-    agentStatus: 'Auditing code commit logs...',
-    agentOutput: 'Code quality & volume verified.',
-    confidence: 91,
+    agentStatus: 'Querying repository metadata...',
+    agentOutput: 'Public repository verification evaluated.',
+    confidence: 85,
     memoryStatus: 'Connected (Mock)',
     logs: [
-      '> Connecting GitHub developer channels...',
-      '> Checked 147 commits across 3 active repository branches.',
-      '> Code churn index: 4.2% (Excellent).',
-      '> Automated security check: no security warnings found.'
+      '> Querying GitHub API for repository metadata...',
+      '> Checking public visibility and active repository status...',
+      '> Inspecting primary language and topic tags...',
+      '> Repository metadata evaluated.'
     ]
   },
   {

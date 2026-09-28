@@ -51,7 +51,7 @@ class MockExtractor(LLMExtractor):
         import re
         lower_text = text.lower()
         
-        name = "HelixBio AI"
+        name = "Acme Health"
         startup_match = re.search(r"Startup:\s*(.*)", text, re.IGNORECASE)
         if startup_match:
             name = startup_match.group(1).strip()
@@ -59,21 +59,17 @@ class MockExtractor(LLMExtractor):
             name = "NeuroVision AI"
         elif "visionsense" in lower_text:
             name = "VisionSense AI"
-        elif "helixbio" in lower_text:
-            name = "HelixBio AI"
-        elif "alpha dynamics" in lower_text:
-            name = "Alpha Dynamics"
+        elif "acme health" in lower_text:
+            name = "Acme Health"
             
-        founder = "Sarah Jenkins"
+        founder = "David Chen"
         founder_match = re.search(r"Founder:\s*(.*)", text, re.IGNORECASE)
         if founder_match:
             founder = founder_match.group(1).strip()
-        elif "rahul sharma" in lower_text:
-            founder = "Rahul Sharma"
-        elif "alex rivera" in lower_text:
-            founder = "Alex Rivera"
-        elif "sarah jenkins" in lower_text:
-            founder = "Sarah Jenkins"
+        elif "david chen" in lower_text:
+            founder = "David Chen"
+        elif "elena rostova" in lower_text:
+            founder = "Elena Rostova"
             
         tech_list = []
         if "tensorflow" in lower_text:
@@ -102,7 +98,7 @@ class MockExtractor(LLMExtractor):
         if "combinator" in lower_text or "yc" in lower_text:
             inv_list.append("Y-Combinator")
         if not inv_list:
-            inv_list = ["Peak Ventures", "Y-Combinator"]
+            inv_list = ["Horizon Capital", "Y-Combinator"]
         investors = inv_list
         
         from app.memory.cognee_patch import add_write_log
@@ -115,7 +111,7 @@ class MockExtractor(LLMExtractor):
         return {
             "name": name,
             "founder": founder,
-            "sector": "BioTech AI" if "biotech" in lower_text or name == "HelixBio AI" else "Computer Vision AI" if "vision" in lower_text else "Enterprise Diligence SaaS",
+            "sector": "BioTech AI" if "biotech" in lower_text or name == "Acme Health" else "Computer Vision AI" if "vision" in lower_text else "Enterprise Diligence SaaS",
             "funding": "Seed",
             "revenue": "$1.2M ARR",
             "technology": technology,

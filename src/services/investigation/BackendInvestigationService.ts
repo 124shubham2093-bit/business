@@ -11,11 +11,11 @@ export const BackendInvestigationService: InvestigationService = {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           name: startup.name,
-          founderName: startup.details?.founderBackground?.split(' (')[0] || 'Alex Rivera',
+          founderName: startup.details?.founderBackground?.split(' (')[0] || `${startup.name} Founder`,
           sector: startup.sector,
           fundingStage: (startup as any).fundingStage || 'Seed',
           websiteUrl: (startup as any).websiteUrl || 'https://example.com',
-          githubUrl: (startup as any).githubUrl || 'https://github.com/example',
+          githubUrl: (startup as any).githubUrl || '',
           description: startup.elevatorPitch,
           pitchDeckText: (startup as any).pitchDeckText || '',
           financialsText: (startup as any).financialsText || '',
@@ -30,6 +30,30 @@ export const BackendInvestigationService: InvestigationService = {
       console.warn('Network error connecting to backend, falling back to local service:', err);
       return (MockInvestigationService as any).createInvestigationLocal(startup);
     }
+  },
+
+  async deleteInvestigation(id: string): Promise<boolean> {
+    try {
+      const res = await fetch(`${BACKEND_API_BASE}/investigations/${encodeURIComponent(id)}`, {
+        method: 'DELETE',
+      });
+      if (!res.ok && res.status !== 404) {
+        let errorMsg = `Failed to delete investigation (HTTP ${res.status})`;
+        try {
+          const errData = await res.json();
+          if (errData.detail) errorMsg = errData.detail;
+        } catch {}
+        throw new Error(errorMsg);
+      }
+    } catch (err: any) {
+      if (err.message && err.message.startsWith('Failed to delete')) {
+        throw err;
+      }
+      console.warn('Network error calling backend delete:', err);
+    }
+    // Clean local fallback storage so it doesn't reappear
+    (MockInvestigationService as any).deleteInvestigationLocal?.(id);
+    return true;
   },
 
   async getKnowledgeGraph(name: string): Promise<{ nodes: any[]; edges: any[] }> {
@@ -242,7 +266,7 @@ export async function getCrossMemoryInsights(): Promise<CrossMemoryInsight[]> {
     if (!res.ok) return [];
     const data = await res.json();
     return Array.isArray(data) ? data : [];
-  } catch (err) {
+  } catch (_err) {
     return [];
   }
 }

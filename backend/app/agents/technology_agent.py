@@ -20,23 +20,47 @@ class TechnologyAgent:
         if "cuda" in desc_lower or "gpu" in desc_lower:
             tech_list += ", CUDA Kernels"
             
+        if "github repository status: unavailable" in desc_lower:
+            confidence = "0%"
+            reasoning = "GitHub repository verification failed: Repository Not Found or Not Publicly Accessible. Public code metrics, stars, and language could not be verified."
+            strengths = ["Technical architecture specifications submitted for review"]
+            weaknesses = [
+                "Repository Not Found or Not Publicly Accessible — Public code evidence unavailable",
+                "Server compute dependencies scale exponentially with customer workloads"
+            ]
+        elif "github repository:" in desc_lower:
+            confidence = "92%"
+            reasoning = f"Public repository verified on GitHub. Core stack utilizes {tech_list}."
+            strengths = [
+                "Public code repository metadata and language verified",
+                "Custom GPU configurations yield high performance margins"
+            ]
+            weaknesses = [
+                "Server compute dependencies scale exponentially with customer workloads"
+            ]
+        else:
+            confidence = "85%"
+            reasoning = f"Technical architecture evaluated from submission. Stack references {tech_list}."
+            strengths = [
+                "Technical architecture specifications submitted for review",
+                "Custom GPU configurations yield high performance margins"
+            ]
+            weaknesses = [
+                "Server compute dependencies scale exponentially with customer workloads"
+            ]
+            
         return {
             "score": score,
-            "confidence": "94%",
-            "reasoning": f"Proprietary transformer model implemented using {tech_list}. Custom kernels reduce prediction speeds to under 22ms.",
-            "strengths": [
-                "Proprietary sequence model code validated",
-                "Custom GPU configurations yield high performance margins"
-            ],
-            "weaknesses": [
-                "Server compute dependencies scale exponentially with customer workloads"
-            ],
+            "confidence": confidence,
+            "reasoning": reasoning,
+            "strengths": strengths,
+            "weaknesses": weaknesses,
             "evidence": [
                 {
-                    "source": "GitHub Commit Log Audit",
-                    "confidence": "95%",
-                    "reason": "Active repository checked. Core code structure and custom kernels validated.",
-                    "linkedEntities": ["codebase"],
+                    "source": "GitHub Public API" if "github repository:" in desc_lower else ("GitHub Public API" if "github repository status: unavailable" in desc_lower else "Architecture Technical Audit"),
+                    "confidence": "92%" if "github repository:" in desc_lower else ("0%" if "github repository status: unavailable" in desc_lower else "85%"),
+                    "reason": "Verified public repository metadata and declared tech stack." if "github repository:" in desc_lower else ("Repository Not Found or Not Publicly Accessible. Public code evidence unavailable." if "github repository status: unavailable" in desc_lower else "Architecture analysis based on submitted technical specifications."),
+                    "linkedEntities": ["codebase"] if "github repository:" in desc_lower else [],
                     "timestamp": "Just now"
                 }
             ]

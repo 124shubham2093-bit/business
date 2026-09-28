@@ -12,11 +12,40 @@ import { BackendInvestigationService } from './BackendInvestigationService';
 const LOCAL_STORAGE_KEY = 'investiq_startups';
 const LOCAL_STORAGE_ACTIVITIES_KEY = 'investiq_activities';
 
+const FORBIDDEN_LEGACY_NAMES = [
+  'helixbio',
+  'alphadynamics',
+  'alpha dynamics',
+  'alpha dynamic',
+  'quantumflow',
+  'finvantage',
+  'nexus devtools',
+  'cybershield',
+  'alex rivera',
+  'sarah jenkins',
+  'rahul sharma',
+  'peak ventures',
+  'dfdf',
+];
+
+function containsForbidden(text: string): boolean {
+  if (!text) return false;
+  const lower = text.toLowerCase();
+  return FORBIDDEN_LEGACY_NAMES.some((term) => lower.includes(term));
+}
+
 const loadStartups = (): Startup[] => {
   const data = localStorage.getItem(LOCAL_STORAGE_KEY);
   if (data) {
     try {
-      return JSON.parse(data);
+      const parsed: Startup[] = JSON.parse(data);
+      const cleaned = parsed.filter(
+        (s) => !containsForbidden(s.name) && !containsForbidden(s.id) && !containsForbidden(s.elevatorPitch || '')
+      );
+      if (cleaned.length !== parsed.length) {
+        saveStartups(cleaned);
+      }
+      return cleaned;
     } catch (e) {
       console.error(e);
     }
@@ -32,7 +61,14 @@ const loadActivities = (): Activity[] => {
   const data = localStorage.getItem(LOCAL_STORAGE_ACTIVITIES_KEY);
   if (data) {
     try {
-      return JSON.parse(data);
+      const parsed: Activity[] = JSON.parse(data);
+      const cleaned = parsed.filter(
+        (a) => !containsForbidden(a.startupName || '') && !containsForbidden(a.user || '') && !containsForbidden(a.action || '')
+      );
+      if (cleaned.length !== parsed.length) {
+        saveActivities(cleaned);
+      }
+      return cleaned;
     } catch (e) {
       console.error(e);
     }
@@ -63,8 +99,7 @@ export const MockInvestigationService = {
       const newAct: Activity = {
         id: `act-${Date.now()}`,
         type: 'investigation',
-        user: 'Sarah Jenkins',
-        avatarUrl: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=facearea&facepad=2&w=256&h=256&q=80',
+        user: 'Investment Committee',
         startupName: result.name,
         action: 'completed due diligence pipeline assessment',
         timestamp: 'Just now',
@@ -117,8 +152,7 @@ export const MockInvestigationService = {
     const newAct: Activity = {
       id: `act-${Date.now()}`,
       type: 'investigation',
-      user: 'Sarah Jenkins',
-      avatarUrl: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=facearea&facepad=2&w=256&h=256&q=80',
+      user: 'Investment Committee',
       startupName: startup.name,
       action: 'completed due diligence pipeline assessment',
       timestamp: 'Just now',
@@ -127,6 +161,21 @@ export const MockInvestigationService = {
     saveActivities(activities);
     
     return delay(startupWithDecision);
+  },
+
+  async deleteInvestigation(id: string): Promise<boolean> {
+    if (ACTIVE_SERVICE_MODE === 'backend') {
+      return BackendInvestigationService.deleteInvestigation(id);
+    }
+    return (MockInvestigationService as any).deleteInvestigationLocal(id);
+  },
+
+  deleteInvestigationLocal(id: string): boolean {
+    startups = startups.filter((s) => s.id !== id && s.name.toLowerCase() !== id.toLowerCase());
+    saveStartups(startups);
+    activities = activities.filter((a) => a.startupName.toLowerCase() !== id.toLowerCase() && a.id !== id);
+    saveActivities(activities);
+    return true;
   },
 
   async updateStartup(updated: Startup): Promise<Startup> {
@@ -147,8 +196,7 @@ export const MockInvestigationService = {
         const newAct: Activity = {
           id: `act-${Date.now()}`,
           type,
-          user: 'Sarah Jenkins',
-          avatarUrl: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=facearea&facepad=2&w=256&h=256&q=80',
+          user: 'Investment Committee',
           startupName: updated.name,
           action: actionText,
           timestamp: 'Just now',
@@ -319,7 +367,7 @@ export const MockInvestigationService = {
     if (ACTIVE_SERVICE_MODE === 'backend') {
       return BackendInvestigationService.getNodeDetails(nodeId);
     }
-    const details = mockGraphDetails.find((n) => n.id === nodeId);
+    const details = mockGraphDetails[nodeId];
     return delay(details || null);
   },
 

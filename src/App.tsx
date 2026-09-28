@@ -7,7 +7,6 @@ import { InvestigationsPage } from './pages/InvestigationsPage';
 import { AnalyticsPage } from './pages/AnalyticsPage';
 import { NewInvestigationPage } from './pages/NewInvestigationPage';
 import { InvestigationPipelinePage } from './pages/InvestigationPipelinePage';
-import { KnowledgeGraphPage } from './pages/KnowledgeGraphPage';
 import { DecisionCenterPage } from './pages/DecisionCenterPage';
 import { StartupDrawer } from './components/dashboard/StartupDrawer';
 import { CogneeVerifyPage } from './pages/CogneeVerifyPage';
@@ -95,6 +94,25 @@ function App() {
     });
   };
 
+  // Delete investigation and refresh lists
+  const handleDeleteStartup = async (id: string) => {
+    try {
+      await MockInvestigationService.deleteInvestigation(id);
+      const [loadedStartups, loadedActivities] = await Promise.all([
+        MockInvestigationService.getInvestigations(),
+        MockInvestigationService.getRecentActivity(),
+      ]);
+      setStartups(loadedStartups);
+      setActivities(loadedActivities);
+      if (selectedStartup && (selectedStartup.id === id || selectedStartup.name.toLowerCase() === id.toLowerCase())) {
+        setSelectedStartup(null);
+      }
+    } catch (err: any) {
+      console.error('Failed to delete investigation:', err);
+      alert(`Failed to delete investigation: ${err.message || 'Unknown error'}`);
+    }
+  };
+
   return (
     <ThemeProvider>
       {isLoading && startups.length === 0 ? (
@@ -132,6 +150,7 @@ function App() {
                     startups={startups}
                     searchQuery={searchQuery}
                     onSelectStartup={setSelectedStartup}
+                    onDeleteStartup={handleDeleteStartup}
                   />
                 }
               />
@@ -142,9 +161,6 @@ function App() {
             
             {/* Immersive full-screen pipeline screen */}
             <Route path="/investigations/pipeline" element={<InvestigationPipelinePage />} />
-            
-            {/* Full-screen knowledge graph page */}
-            <Route path="/knowledge-graph" element={<KnowledgeGraphPage />} />
 
             {/* Explainable Decision Center page */}
             <Route path="/decision-center" element={<DecisionCenterPage />} />
@@ -155,6 +171,7 @@ function App() {
             startup={selectedStartup}
             onClose={() => setSelectedStartup(null)}
             onUpdateStartup={handleUpdateStartup}
+            onDeleteStartup={handleDeleteStartup}
           />
         </>
       )}

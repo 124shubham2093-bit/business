@@ -39,19 +39,19 @@ export const CogneeVerifyPage: React.FC = () => {
   const [isRunning, setIsRunning] = useState(false);
   const [currentStep, setCurrentStep] = useState<number | null>(null);
   const [stepResults, setStepResults] = useState<StepResult[]>([
-    { step: 1, title: 'Verify Data is Stored', status: 'pending', message: 'Ingest NeuroVision AI into Cognee.' },
+    { step: 1, title: 'Verify Data is Stored', status: 'pending', message: 'Ingest Acme Health into Cognee.' },
     { step: 2, title: 'Check Cognee Memory API', status: 'pending', message: 'Check if entities exist in GET /api/debug/memory.' },
     { step: 3, title: 'Restart Persistence Test', status: 'pending', message: 'Verify memory persists on disk across requests.' },
-    { step: 4, title: 'Duplicate Founder Merging', status: 'pending', message: 'Upload VisionSense AI & merge Rahul Sharma.' },
-    { step: 5, title: 'Semantic Search Execution', status: 'pending', message: 'Ask question: "Who founded NeuroVision AI?".' },
-    { step: 6, title: 'Relationship Discovery', status: 'pending', message: 'Identify startups sharing same investor Peak Ventures.' },
-    { step: 7, title: 'Check Graph Growth', status: 'pending', message: 'Verify node count increases from 45 to 58.' },
-    { step: 8, title: 'Redundant Ingestion Suppression', status: 'pending', message: 'Re-upload NeuroVision AI; count stays at 58.' },
+    { step: 4, title: 'Duplicate Founder Merging', status: 'pending', message: 'Upload DataPulse & merge David Chen.' },
+    { step: 5, title: 'Semantic Search Execution', status: 'pending', message: 'Ask question: "Who founded Acme Health?".' },
+    { step: 6, title: 'Relationship Discovery', status: 'pending', message: 'Identify startups sharing same investor Sequoia Capital.' },
+    { step: 7, title: 'Check Graph Growth', status: 'pending', message: 'Verify node count increases.' },
+    { step: 8, title: 'Redundant Ingestion Suppression', status: 'pending', message: 'Re-upload Acme Health; node count remains deduplicated.' },
     { step: 9, title: 'Evidence Trace & Metadata', status: 'pending', message: 'Verify source metadata on founder node click.' }
   ]);
 
   // Semantic query state
-  const [queryText, setQueryText] = useState('Who founded NeuroVision AI?');
+  const [queryText, setQueryText] = useState('Who founded Acme Health?');
   const [queryResponse, setQueryResponse] = useState<any | null>(null);
   const [isQuerying, setIsQuerying] = useState(false);
   
@@ -102,7 +102,7 @@ export const CogneeVerifyPage: React.FC = () => {
       if (res.ok) {
         await fetchStats();
         await fetchLogs();
-        setStepResults(stepResults.map(s => ({ ...s, status: 'pending', message: s.step === 1 ? 'Ingest NeuroVision AI into Cognee.' : s.message })));
+        setStepResults(stepResults.map(s => ({ ...s, status: 'pending', message: s.step === 1 ? 'Ingest Acme Health into Cognee.' : s.message })));
         setQueryResponse(null);
         setCurrentStep(null);
       }
@@ -133,18 +133,18 @@ export const CogneeVerifyPage: React.FC = () => {
     try {
       // Step 1: Upload startup
       setCurrentStep(1);
-      updateStep(0, 'running', 'Ingesting startup NeuroVision AI with founder Rahul Sharma...');
+      updateStep(0, 'running', 'Ingesting startup Acme Health with founder David Chen...');
       const upload1Res = await fetch(`${BACKEND_API_BASE}/investigations`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          name: 'NeuroVision AI',
-          founderName: 'Rahul Sharma',
-          sector: 'Computer Vision AI',
+          name: 'Acme Health',
+          founderName: 'David Chen',
+          sector: 'BioTech AI',
           fundingStage: 'Seed',
-          websiteUrl: 'https://neurovision.ai',
-          githubUrl: 'https://github.com/neurovision',
-          description: 'Vision intelligence suite using TensorFlow. Funded by Peak Ventures.'
+          websiteUrl: 'https://acmehealth.com',
+          githubUrl: 'https://github.com/acmehealth',
+          description: 'Bioinformatics and neural sequence discovery using TensorFlow. Funded by Sequoia Capital.'
         })
       });
       if (!upload1Res.ok) throw new Error('Failed to upload Startup A');
@@ -157,15 +157,15 @@ export const CogneeVerifyPage: React.FC = () => {
       const nodesAdded1 = statsData1.nodes - baselineStats.nodes;
       const edgesAdded1 = statsData1.edges - baselineStats.edges;
       
-      updateStep(0, 'success', `Verify Data Stored: Ingested 'NeuroVision AI' (Startup) and 'Rahul Sharma' (Founder) successfully.`, {
-        action: 'Ingested NeuroVision AI',
+      updateStep(0, 'success', `Verify Data Stored: Ingested 'Acme Health' (Startup) and 'David Chen' (Founder) successfully.`, {
+        action: 'Ingested Acme Health',
         nodes_added: `+${nodesAdded1}`,
         edges_added: `+${edgesAdded1}`,
         entity_ids_created: [
-          'Startup #startup_neurovision_ai',
-          'Founder #founder_rahul_sharma',
+          'Startup #startup_acme_health',
+          'Founder #founder_david_chen',
           'Technology #technology_tensorflow',
-          'Investor #investor_peak_ventures'
+          'Investor #investor_sequoia_capital'
         ]
       });
 
@@ -177,7 +177,7 @@ export const CogneeVerifyPage: React.FC = () => {
       const memoryData = await memoryRes.json();
       
       const entities = memoryData.entities || [];
-      const requiredEntityNames = ['neurovision ai', 'rahul sharma', 'tensorflow', 'peak ventures'];
+      const requiredEntityNames = ['acme health', 'david chen', 'tensorflow', 'sequoia capital'];
       const requiredEntityTypes = ['startup', 'founder', 'technology', 'investor'];
 
       const missingEntities = requiredEntityNames.filter(name => 
@@ -222,22 +222,22 @@ export const CogneeVerifyPage: React.FC = () => {
 
       // Step 4: Duplicate founder merging with animated reuse sequence
       setCurrentStep(4);
-      updateStep(3, 'running', 'Searching existing memory for founder Rahul Sharma...');
+      updateStep(3, 'running', 'Searching existing memory for founder David Chen...');
       await new Promise(r => setTimeout(r, 600));
-      updateStep(3, 'running', 'Existing Founder Found: Rahul Sharma (founder_rahul_sharma)');
+      updateStep(3, 'running', 'Existing Founder Found: David Chen (founder_david_chen)');
       await new Promise(r => setTimeout(r, 500));
-      updateStep(3, 'running', 'Node Reused — skipping duplicate creation. Ingesting VisionSense AI...');
+      updateStep(3, 'running', 'Node Reused — skipping duplicate creation. Ingesting DataPulse...');
       const upload2Res = await fetch(`${BACKEND_API_BASE}/investigations`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          name: 'VisionSense AI',
-          founderName: 'Rahul Sharma',
-          sector: 'Computer Vision AI',
+          name: 'DataPulse',
+          founderName: 'David Chen',
+          sector: 'Data Infrastructure',
           fundingStage: 'Seed',
-          websiteUrl: 'https://visionsense.ai',
-          githubUrl: 'https://github.com/visionsense',
-          description: 'Next-generation vision sensors. Funded by Peak Ventures.'
+          websiteUrl: 'https://datapulse.io',
+          githubUrl: '',
+          description: 'Data infrastructure pipelines using TensorFlow. Funded by Sequoia Capital.'
         })
       });
       if (!upload2Res.ok) throw new Error('Failed to upload Startup B');
@@ -246,28 +246,28 @@ export const CogneeVerifyPage: React.FC = () => {
       const statsRes2 = await fetch(`${BACKEND_API_BASE}/debug/stats`);
       const statsData2 = await statsRes2.json();
       
-      updateStep(3, 'success', `Memory Reuse: Founder 'Rahul Sharma' already exists. Node reused, graph updated.`, {
+      updateStep(3, 'success', `Memory Reuse: Founder 'David Chen' already exists. Node reused, graph updated.`, {
         memory_reuse_sequence: [
           '1. Searching Existing Memory...',
-          '2. Existing Founder Found: Rahul Sharma',
-          '3. Node Reused (founder_rahul_sharma)',
+          '2. Existing Founder Found: David Chen',
+          '3. Node Reused (founder_david_chen)',
           '4. Graph Updated'
         ],
         similarity: '100%',
-        nodes_reused: ['founder_rahul_sharma', 'investor_peak_ventures', 'technology_tensorflow'],
-        new_startup_created: 'startup_visionsense_ai',
+        nodes_reused: ['founder_david_chen', 'investor_sequoia_capital', 'technology_tensorflow'],
+        new_startup_created: 'startup_alpha_dynamics',
         founder_count_before: statsData1.founders,
         founder_count_after: statsData2.founders
       });
 
       // Step 5: Test Semantic Search
       setCurrentStep(5);
-      updateStep(4, 'running', 'Querying question: Who founded NeuroVision AI?');
-      const q1Res = await fetch(`${BACKEND_API_BASE}/debug/query?question=Who%20founded%20NeuroVision%20AI%3F`);
+      updateStep(4, 'running', 'Querying question: Who founded Acme Health?');
+      const q1Res = await fetch(`${BACKEND_API_BASE}/debug/query?question=Who%20founded%20Acme%20Health%3F`);
       const q1Data = await q1Res.json();
       updateStep(4, 'success', `Semantic answer verified: "${q1Data.answer}"`, {
         source: 'Cognee Memory (not LLM)',
-        query: 'Who founded NeuroVision AI?',
+        query: 'Who founded Acme Health?',
         answer: q1Data.answer,
         confidence_contributors: {
           source_reliability: '98% — Pitch Deck (Page 3) verified',
@@ -275,12 +275,12 @@ export const CogneeVerifyPage: React.FC = () => {
           evidence_completeness: '95% — Founder node has full metadata'
         },
         final_confidence: '98%',
-        graph_path: 'Founder (Rahul Sharma) ──[founded]──> Startup (NeuroVision AI)'
+        graph_path: 'Founder (David Chen) ──[founded]──> Startup (Acme Health)'
       });
 
       // Step 6: Relationship Discovery
       setCurrentStep(6);
-      updateStep(5, 'running', 'Querying: Which startups share Peak Ventures investor?');
+      updateStep(5, 'running', 'Querying: Which startups share Sequoia Capital investor?');
       const q2Res = await fetch(`${BACKEND_API_BASE}/debug/query?question=Which%20startups%20share%20the%20same%20investor%3F`);
       const q2Data = await q2Res.json();
       updateStep(5, 'success', `Discovered joint investor relationship: "${q2Data.answer}"`, q2Data);
@@ -298,18 +298,18 @@ export const CogneeVerifyPage: React.FC = () => {
 
       // Step 8: Upload exactly the same startup again
       setCurrentStep(8);
-      updateStep(7, 'running', 'Re-ingesting NeuroVision AI to check duplicate document suppression...');
+      updateStep(7, 'running', 'Re-ingesting Acme Health to check duplicate document suppression...');
       const upload3Res = await fetch(`${BACKEND_API_BASE}/investigations`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          name: 'NeuroVision AI',
-          founderName: 'Rahul Sharma',
-          sector: 'Computer Vision AI',
+          name: 'Acme Health',
+          founderName: 'David Chen',
+          sector: 'BioTech AI',
           fundingStage: 'Seed',
-          websiteUrl: 'https://neurovision.ai',
-          githubUrl: 'https://github.com/neurovision',
-          description: 'Vision intelligence suite using TensorFlow. Funded by Peak Ventures.'
+          websiteUrl: 'https://acmehealth.com',
+          githubUrl: 'https://github.com/acmehealth',
+          description: 'Bioinformatics and neural sequence discovery using TensorFlow. Funded by Sequoia Capital.'
         })
       });
       if (!upload3Res.ok) throw new Error('Failed to upload Startup A again');
@@ -319,7 +319,7 @@ export const CogneeVerifyPage: React.FC = () => {
       
       if (statsData3.nodes === statsData2.nodes) {
         updateStep(7, 'success', `Cognee recognized existing startup and nodes stayed at ${statsData2.nodes}.`, {
-          action: 'Re-ingested NeuroVision AI',
+          action: 'Re-ingested Acme Health',
           deduplicated: 'YES',
           previous_node_count: statsData2.nodes,
           current_node_count: statsData3.nodes,
@@ -335,9 +335,9 @@ export const CogneeVerifyPage: React.FC = () => {
       // Step 9: Check Evidence
       setCurrentStep(9);
       updateStep(8, 'running', 'Retrieving source evidence metadata log...');
-      const graphRes = await fetch(`${BACKEND_API_BASE}/investigations/NeuroVision%20AI/graph`);
+      const graphRes = await fetch(`${BACKEND_API_BASE}/investigations/Acme%20Health/graph`);
       const graphData = await graphRes.json();
-      const founderNode = graphData.nodes.find((n: any) => n.data.type === 'Founder' || n.id.includes('rahul_sharma'));
+      const founderNode = graphData.nodes.find((n: any) => n.data.type === 'Founder' || n.id.includes('david_chen'));
       if (founderNode) {
         const detailsRes = await fetch(`${BACKEND_API_BASE}/debug/node/${founderNode.id}`);
         const detailsData = await detailsRes.json();
@@ -374,7 +374,7 @@ export const CogneeVerifyPage: React.FC = () => {
       } else {
         setQueryResponse({ answer: 'Failed to fetch query response from backend.', confidence: '0%', evidence: 'N/A', relatedNodes: [], memoryPath: '' });
       }
-    } catch (e) {
+    } catch (_e) {
       setQueryResponse({ answer: 'Failed to communicate with backend.', confidence: '0%', evidence: 'N/A', relatedNodes: [], memoryPath: '' });
     } finally {
       setIsQuerying(false);
@@ -410,7 +410,7 @@ export const CogneeVerifyPage: React.FC = () => {
           <Button
             onClick={runVerificationSuite}
             disabled={isRunning || isDbConnecting}
-            className="bg-indigo-600 hover:bg-indigo-700 text-white font-medium text-xs shadow-lg shadow-indigo-500/25 flex items-center space-x-1.5 py-2 px-4 animate-fade-in"
+            className="bg-indigo-600 hover:bg-indigo-700 text-white font-medium text-xs shadow-xs hover:shadow-sm flex items-center space-x-1.5 py-2 px-4 transition-all"
           >
             <Play className={`w-3.5 h-3.5 ${isRunning ? 'animate-pulse' : ''}`} />
             <span>Run Verification Suite</span>
@@ -556,7 +556,7 @@ export const CogneeVerifyPage: React.FC = () => {
           <Card className="border border-[var(--border-color)] bg-[var(--bg-surface)]">
             <CardHeader className="border-b border-[var(--border-color)] p-4 flex flex-row items-center gap-2">
               <Clock className="w-4 h-4 text-amber-500 dark:text-amber-400" />
-              <CardTitle className="text-sm font-semibold">Memory Write Log (Cognitive Stream)</CardTitle>
+              <CardTitle className="text-sm font-semibold">Memory Ingestion &amp; Graph Write Log</CardTitle>
             </CardHeader>
             <CardContent className="p-4">
               <div className="space-y-3 font-mono text-[11px] max-h-48 overflow-y-auto pr-1">

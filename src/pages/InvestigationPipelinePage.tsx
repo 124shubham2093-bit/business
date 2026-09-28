@@ -5,8 +5,8 @@ import { ReactFlow, Background, type Node, type Edge, useNodesState, useEdgesSta
 import '@xyflow/react/dist/style.css';
 import {
   Cpu, Check, ArrowRight, Terminal, Activity,
-  Database, User, Landmark, Target, ShieldAlert,
-  Coins, Sparkles, CheckCircle2, Loader2
+  User, Landmark, Target, ShieldAlert, AlertTriangle,
+  Coins, CheckCircle2, Loader2
 } from 'lucide-react';
 
 import type { Startup } from '../services/investigation/investigationTypes';
@@ -49,13 +49,13 @@ export const InvestigationPipelinePage: React.FC = () => {
       }
     }
     return {
-      name: 'Alpha Dynamics',
-      founderName: 'Alex Rivera',
+      name: 'Acme Health',
+      founderName: 'Founder',
       sector: 'BioTech AI',
       fundingStage: 'Seed',
-      websiteUrl: 'https://alphadynamics.io',
-      githubUrl: 'https://github.com/alphadynamics',
-      description: 'Dynamic automation platform',
+      websiteUrl: 'https://acmehealth.com',
+      githubUrl: '',
+      description: 'Healthcare automation platform',
       pitchDeckName: 'pitch_deck_v1.pdf',
       financialsName: 'financials_q2.xlsx',
       pitchDeckText: ''
@@ -100,6 +100,16 @@ export const InvestigationPipelinePage: React.FC = () => {
     };
   }, [backendResult, startupData]);
 
+  // Resolve GitHub status from backend result or navigation state
+  const githubStatus = useMemo(() => {
+    return backendResult?.github_status || 
+      (backendResult?.details as any)?.github_status || 
+      (startupData as any)?.generatedStartup?.github_status || 
+      (startupData as any)?.generatedStartup?.details?.github_status || 
+      (startupData as any)?.github_status || 
+      null;
+  }, [backendResult, startupData]);
+
   // Define agents configs
   const agents: AgentConfig[] = useMemo(() => [
     {
@@ -127,16 +137,38 @@ export const InvestigationPipelinePage: React.FC = () => {
       icon: Cpu,
       color: 'text-purple-400 border-purple-500/20 bg-purple-500/5',
       tasks: {
-        initializing: 'Initializing code structures scans...',
-        retrieving: 'Accessing target repository configurations...',
-        analyzing: 'Auditing CUDA container kernels...',
-        generating: 'Evaluating proprietary ML neural networks...'
+        initializing: 'Initializing technical architecture audit...',
+        retrieving: githubStatus?.success 
+          ? `Accessing GitHub public repository (${githubStatus.repo_path})...`
+          : (githubStatus && !githubStatus.success 
+              ? 'Checking GitHub repository accessibility...' 
+              : 'Accessing target architecture specifications...'),
+        analyzing: githubStatus?.success
+          ? `Verifying language (${githubStatus.language}) and stars (${githubStatus.stars})...`
+          : (githubStatus && !githubStatus.success
+              ? 'Repository Not Found or Not Publicly Accessible'
+              : 'Auditing neural network pipeline specs...'),
+        generating: githubStatus?.success
+          ? 'Evaluating README documentation and topics...'
+          : (githubStatus && !githubStatus.success
+              ? 'Flagging GitHub repository as unavailable in diligence report...'
+              : 'Evaluating technical architecture moats...')
       },
-      evidenceCollected: [
-        'Scanned 147 commits. Redundancy rate averages 4.2% (Low).',
-        'Custom CUDA kernels validated at under 22ms per prediction.'
-      ],
-      confidence: `${scores.technology}%`
+      evidenceCollected: githubStatus?.success
+        ? [
+            `Verified public repository: ${githubStatus.repo_path} (${githubStatus.stars} stars, ${githubStatus.forks} forks). Primary language: ${githubStatus.language}.`,
+            githubStatus.readme_excerpt ? 'README documentation verified against declared architecture.' : 'Public metadata confirmed.'
+          ]
+        : (githubStatus && !githubStatus.success
+            ? [
+                `Repository Not Found or Not Publicly Accessible (${githubStatus.error || 'HTTP 404'}).`,
+                'GitHub evidence unavailable — Codebase metrics omitted from diligence.'
+              ]
+            : [
+                'Technical architecture specifications and neural network blueprints verified.',
+                'Custom CUDA kernels validated at under 22ms per prediction.'
+              ]),
+      confidence: githubStatus && !githubStatus.success ? '0%' : `${scores.technology}%`
     },
     {
       id: 'finance',
@@ -228,7 +260,7 @@ export const InvestigationPipelinePage: React.FC = () => {
       ],
       confidence: `${scores.investmentScore}%`
     }
-  ], [scores, startupData]);
+  ], [scores, startupData, githubStatus]);
 
   // Simulation loop states
   const [activeStepIdx, setActiveStepIdx] = useState(0);
@@ -324,19 +356,25 @@ export const InvestigationPipelinePage: React.FC = () => {
       const targetAgent = agents[idx];
       if (targetAgent && targetAgent.evidenceCollected.length > 0) {
         // Append first evidence item
+        const isUnavailableGithub = idx === 1 && githubStatus && !githubStatus.success;
         const newEv1 = {
           id: `ev-${idx}-1`,
           timestamp: new Date().toLocaleTimeString(),
-          source: idx === 0 ? 'Stanford CS database' : idx === 1 ? 'GitHub Actions repo' : idx === 2 ? 'Invoicing Audits' : idx === 3 ? 'Market Sizing survey' : idx === 4 ? 'Patent Registries' : 'SOC2 Audit Files',
-          confidence: targetAgent.id === 'legal' ? '99%' : targetAgent.confidence,
+          source: idx === 0 ? 'Founder Registry' : idx === 1 ? 'GitHub Public API' : idx === 2 ? 'Invoicing Audits' : idx === 3 ? 'Market Sizing survey' : idx === 4 ? 'Patent Registries' : 'SOC2 Audit Files',
+          confidence: isUnavailableGithub ? '0%' : (targetAgent.id === 'legal' ? '99%' : targetAgent.confidence),
           category: targetAgent.name,
           reason: targetAgent.evidenceCollected[0]
         };
         setEvidenceList((prev) => [newEv1, ...prev]);
-        setLogs((prev) => [...prev, `[EVIDENCE] ${targetAgent.name} successfully extracted: "${newEv1.reason}"`]);
+        setLogs((prev) => [
+          ...prev, 
+          isUnavailableGithub 
+            ? `[WARN] ${targetAgent.name}: Repository Not Found or Not Publicly Accessible. GitHub evidence unavailable.`
+            : `[EVIDENCE] ${targetAgent.name} successfully extracted: "${newEv1.reason}"`
+        ]);
       }
     }
-  }, [stepProgress, activeStepIdx, currentAgent, isCompleted, agents]);
+  }, [stepProgress, activeStepIdx, currentAgent, isCompleted, agents, githubStatus]);
 
   // Scroll terminal logs to bottom
   useEffect(() => {
@@ -356,18 +394,25 @@ export const InvestigationPipelinePage: React.FC = () => {
       }
     ];
 
+    const techNode = githubStatus?.success
+      ? { id: 'n-github', type: 'custom', position: { x: 350, y: 30 }, data: { title: `Repo: ${githubStatus.repo_path}`, type: 'Technology', riskLevel: 'Low', badge: `${githubStatus.stars}★ ${githubStatus.language}` } }
+      : { id: 'n-tech', type: 'custom', position: { x: 350, y: 30 }, data: { title: 'CUDA Core Transformers', type: 'Technology', riskLevel: 'Low', badge: 'Proprietary ML' } };
+
     const allAvailableNodes = [
       { id: 'n-founder', type: 'custom', position: { x: 50, y: 30 }, data: { title: `Founder: ${startupData.founderName}`, type: 'Founder', riskLevel: 'Low' } },
-      { id: 'n-tech', type: 'custom', position: { x: 350, y: 30 }, data: { title: 'CUDA Core Transformers', type: 'Technology', riskLevel: 'Low' } },
+      techNode,
       { id: 'n-finance', type: 'custom', position: { x: 50, y: 270 }, data: { title: '$1.2M ARR Ledgers', type: 'Finance', riskLevel: 'Low' } },
       { id: 'n-market', type: 'custom', position: { x: 350, y: 270 }, data: { title: '$45B TAM Segments', type: 'Market', riskLevel: 'Low' } },
       { id: 'n-legal', type: 'custom', position: { x: 200, y: 330 }, data: { title: 'Articles of Incorporation', type: 'Legal', riskLevel: 'Low' } },
       { id: 'n-decision', type: 'custom', position: { x: 200, y: 20 }, data: { title: `Score: ${scores.investmentScore}/100`, type: 'Risk', riskLevel: 'Low', badge: scores.recommendation } },
     ];
 
+    const techEdgeTarget = githubStatus?.success ? 'n-github' : 'n-tech';
+    const techEdgeLabel = githubStatus?.success ? 'REPOSITORY' : 'DEVELOPED';
+
     const allAvailableEdges = [
       { id: 'e-founder', source: 'n-founder', target: 'n-company', animated: true, label: 'FOUNDER_OF', style: { stroke: '#3b82f6' } },
-      { id: 'e-tech', source: 'n-company', target: 'n-tech', animated: true, label: 'DEVELOPED', style: { stroke: '#8b5cf6' } },
+      { id: 'e-tech', source: 'n-company', target: techEdgeTarget, animated: true, label: techEdgeLabel, style: { stroke: '#8b5cf6' } },
       { id: 'e-finance', source: 'n-company', target: 'n-finance', animated: true, label: 'GENERATES', style: { stroke: '#10b981' } },
       { id: 'e-market', source: 'n-company', target: 'n-market', animated: true, label: 'TARGETS', style: { stroke: '#f59e0b' } },
       { id: 'e-legal', source: 'n-company', target: 'n-legal', animated: true, label: 'SUBJECT_TO', style: { stroke: '#eab308' } },
@@ -398,7 +443,7 @@ export const InvestigationPipelinePage: React.FC = () => {
 
     setNodes(currentNodes);
     setEdges(currentEdges);
-  }, [activeStepIdx, startupData, scores, totalSteps, setNodes, setEdges]);
+  }, [activeStepIdx, startupData, scores, totalSteps, setNodes, setEdges, githubStatus]);
 
   // Overall metrics calculations
   const overallProgress = Math.min(
@@ -467,21 +512,6 @@ export const InvestigationPipelinePage: React.FC = () => {
   };
 
 
-  const handleViewKnowledgeGraph = () => {
-    navigate('/knowledge-graph', {
-      state: {
-        startup: backendResult || {
-          name: startupData.name,
-          sector: startupData.sector,
-          investmentScore: scores.investmentScore,
-          recommendation: scores.recommendation,
-          riskLevel: scores.risk >= 25 ? 'High' : scores.risk >= 18 ? 'Medium' : 'Low',
-          status: scores.recommendation === 'INVEST' ? 'Approved' : scores.recommendation === 'PASS' ? 'Flagged' : 'Under Review',
-        }
-      }
-    });
-  };
-
   const handleViewDecisionCenter = () => {
     navigate('/decision-center', {
       state: {
@@ -497,8 +527,6 @@ export const InvestigationPipelinePage: React.FC = () => {
     });
   };
 
-  const [completionTab, setCompletionTab] = useState<'summary' | 'graph'>('summary');
-
   const finalReportSummary = useMemo(() => {
     if (backendResult) {
       return {
@@ -508,7 +536,6 @@ export const InvestigationPipelinePage: React.FC = () => {
         score: backendResult.investmentScore,
         recommendation: backendResult.status === 'Approved' ? 'INVEST' : backendResult.status === 'Flagged' ? 'PASS' : 'UNDER REVIEW',
         evidence: backendResult.details.evidenceList?.length || 8,
-        relations: 215,
         queries: 40
       };
     }
@@ -526,7 +553,6 @@ export const InvestigationPipelinePage: React.FC = () => {
       score: scores.investmentScore,
       recommendation: scores.recommendation,
       evidence: 8,
-      relations: 215,
       queries: 40
     };
   }, [backendResult, scores, startupData]);
@@ -543,11 +569,7 @@ export const InvestigationPipelinePage: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen bg-[#030014] dark:bg-[#030014] bg-slate-50 text-[var(--text-primary)] font-sans flex flex-col overflow-hidden relative">
-      
-      {/* Background neon blur overlays */}
-      <div className="absolute top-1/4 left-1/4 w-[400px] h-[400px] bg-brand-purple/5 rounded-full blur-[140px] pointer-events-none -z-10 animate-pulse" />
-      <div className="absolute bottom-1/4 right-1/4 w-[400px] h-[400px] bg-brand-purple-light/5 rounded-full blur-[140px] pointer-events-none -z-10 animate-pulse" />
+    <div className="min-h-screen bg-[var(--bg-page)] text-[var(--text-primary)] font-sans flex flex-col overflow-hidden relative">
 
       <AnimatePresence mode="wait">
         {!isCompleted ? (
@@ -560,16 +582,16 @@ export const InvestigationPipelinePage: React.FC = () => {
             className="flex-1 flex flex-col p-6 space-y-4 max-w-7xl mx-auto w-full overflow-hidden"
           >
             {/* Header progress panel */}
-            <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 bg-white/30 dark:bg-white/2 border border-slate-200 dark:border-white/5 rounded-2xl p-5 backdrop-blur-xl">
+            <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 bg-[var(--bg-surface)] border border-[var(--border-color)] rounded-2xl p-5 shadow-xs">
               <div>
-                <span className="text-[9px] text-brand-purple-light font-bold uppercase tracking-widest flex items-center space-x-1">
+                <span className="text-[9px] text-indigo-600 dark:text-indigo-400 font-bold uppercase tracking-widest flex items-center space-x-1 font-mono">
                   <Activity className="w-3.5 h-3.5 animate-pulse mr-1" />
                   <span>DILIGENCE MISSION CONTROL</span>
                 </span>
-                <h1 className="text-2xl font-bold font-display text-slate-900 dark:text-white mt-1">
+                <h1 className="text-2xl font-bold font-display text-[var(--text-primary)] mt-1">
                   Scanning: {startupData.name}
                 </h1>
-                <p className="text-[10px] text-slate-500 dark:text-gray-400 mt-0.5 font-mono">
+                <p className="text-[10px] text-[var(--text-secondary)] mt-0.5 font-mono">
                   Target: {startupData.sector} • {startupData.fundingStage} stage
                 </p>
               </div>
@@ -822,168 +844,105 @@ export const InvestigationPipelinePage: React.FC = () => {
             exit={{ opacity: 0 }}
             className="flex-1 flex items-center justify-center p-6 w-full max-w-4xl mx-auto"
           >
-            <Card glow className="w-full border border-slate-200 dark:border-white/10 relative overflow-hidden bg-white dark:bg-dark-bg/85 backdrop-blur-3xl">
-              <div className="absolute top-0 inset-x-0 h-1 bg-gradient-to-r from-emerald-500 via-brand-purple-light to-emerald-500 shadow-[0_0_20px_rgba(139,92,246,0.8)]" />
+            <Card className="w-full border border-[var(--border-color)] relative overflow-hidden bg-[var(--bg-surface)] shadow-lg">
+              <div className="absolute top-0 inset-x-0 h-1 bg-gradient-to-r from-emerald-500 via-indigo-500 to-emerald-500" />
 
               <CardHeader className="text-center pb-2">
-                <div className="mx-auto w-12 h-12 rounded-full bg-emerald-950/50 border border-emerald-500/30 flex items-center justify-center shadow-[0_0_30px_rgba(16,185,129,0.2)] mb-3 animate-bounce">
-                  <Check className="w-6 h-6 text-emerald-400" />
+                <div className="mx-auto w-12 h-12 rounded-full bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-500/30 flex items-center justify-center mb-3">
+                  <Check className="w-6 h-6 text-emerald-600 dark:text-emerald-400" />
                 </div>
-                <CardTitle className="text-2xl font-bold text-slate-900 dark:text-white">
+                <CardTitle className="text-2xl font-bold text-[var(--text-primary)]">
                   ✓ Investigation Complete
                 </CardTitle>
-                <p className="text-xs text-slate-500 dark:text-gray-400">
+                <p className="text-xs text-[var(--text-secondary)]">
                   Diligence report successfully compiled and saved to memory.
                 </p>
 
-                <div className="flex items-center justify-center space-x-2 mt-4">
-                  <Button
-                    size="sm"
-                    variant={completionTab === 'summary' ? 'primary' : 'ghost'}
-                    onClick={() => setCompletionTab('summary')}
-                    className="h-8 text-xs py-1"
-                  >
-                    <Sparkles className="w-3.5 h-3.5 mr-1" />
-                    Diligence Report Summary
-                  </Button>
-                  <Button
-                    size="sm"
-                    variant={completionTab === 'graph' ? 'primary' : 'ghost'}
-                    onClick={() => setCompletionTab('graph')}
-                    className="h-8 text-xs py-1 text-brand-purple-light"
-                  >
-                    <Database className="w-3.5 h-3.5 mr-1" />
-                    Interactive Cognee Graph
-                  </Button>
-                </div>
               </CardHeader>
 
               <CardContent className="p-6 pt-2">
-                <AnimatePresence mode="wait">
-                  {completionTab === 'summary' ? (
-                    <motion.div
-                      key="summary-tab"
-                      initial={{ opacity: 0, y: 10 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      exit={{ opacity: 0, y: -10 }}
-                      className="space-y-6"
-                    >
-                      {/* Verdict Banner */}
-                      <div className="flex flex-col sm:flex-row items-center justify-between gap-4 p-4 rounded-xl border border-brand-purple/20 bg-brand-purple/5">
-                        <div className="flex items-center space-x-3">
-                          <span className="text-2xl">🚀</span>
-                          <div className="text-left">
-                            <h4 className="text-sm font-bold text-slate-900 dark:text-white">{startupData.name}</h4>
-                            <p className="text-[9px] text-slate-500 dark:text-gray-400 uppercase tracking-wider">{startupData.sector}</p>
-                          </div>
-                        </div>
-
-                        <div className="flex items-center space-x-6">
-                          <div className="text-center sm:text-right">
-                            <span className="text-[9px] text-slate-500 dark:text-gray-500 block">INVESTMENT INDEX</span>
-                            <span className="text-3xl font-bold font-display text-slate-900 dark:text-white">
-                              {finalReportSummary.score}
-                              <span className="text-xs font-normal text-slate-500 dark:text-gray-500">/100</span>
-                            </span>
-                          </div>
-                          <div className="h-10 w-px bg-white/10" />
-                          <div className="text-center">
-                            <span className="text-[9px] text-slate-500 dark:text-gray-500 block">RECOMMENDATION</span>
-                            <Badge
-                              variant={finalReportSummary.recommendation === 'INVEST' ? 'success' : 'warning'}
-                              glow={finalReportSummary.recommendation === 'INVEST'}
-                              className="mt-1 font-bold text-sm px-3 py-1 uppercase"
-                            >
-                              {finalReportSummary.recommendation}
-                            </Badge>
-                          </div>
-                        </div>
+                <div className="space-y-6">
+                  {/* GitHub Verification Status Banner */}
+                  {githubStatus && !githubStatus.success && (
+                    <div className="flex items-center space-x-3 p-3.5 rounded-xl border border-rose-500/30 bg-rose-500/10 text-rose-800 dark:text-rose-300 text-xs">
+                      <AlertTriangle className="w-4 h-4 flex-shrink-0 text-rose-600 dark:text-rose-400" />
+                      <div>
+                        <span className="font-bold block">GitHub Repository Verification Failed: Repository Not Found or Not Publicly Accessible</span>
+                        <span className="text-[11px] opacity-90">{githubStatus.error || 'The specified repository could not be located via public GitHub APIs. Code metrics and evidence were omitted from diligence.'}</span>
                       </div>
-
-                      {/* Strengths / Risks / Detail lists */}
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs text-left">
-                        <div className="bg-slate-50 dark:bg-white/2 border border-slate-200 dark:border-white/5 p-4 rounded-xl space-y-2">
-                          <span className="text-[10px] font-bold text-emerald-700 dark:text-emerald-400 block uppercase tracking-wider">Major Strengths</span>
-                          <ul className="space-y-1.5 list-disc pl-4 text-slate-700 dark:text-gray-300">
-                            {finalReportSummary.strengths.map((str, idx) => (
-                              <li key={idx} className="leading-relaxed">{str}</li>
-                            ))}
-                          </ul>
-                        </div>
-                        <div className="bg-slate-50 dark:bg-white/2 border border-slate-200 dark:border-white/5 p-4 rounded-xl space-y-2">
-                          <span className="text-[10px] font-bold text-rose-700 dark:text-rose-400 block uppercase tracking-wider">Major Risks</span>
-                          <ul className="space-y-1.5 list-disc pl-4 text-slate-700 dark:text-gray-300">
-                            {finalReportSummary.risks.map((rsk, idx) => (
-                              <li key={idx} className="leading-relaxed">{rsk}</li>
-                            ))}
-                          </ul>
-                        </div>
-                      </div>
-
-                      {/* Cognee DB metadata stats */}
-                      <div className="bg-slate-50 dark:bg-white/2 border border-slate-200 dark:border-white/5 p-4 rounded-xl text-left space-y-2">
-                        <span className="text-[10px] font-bold text-cyan-700 dark:text-cyan-400 block uppercase tracking-wider">Cognee Memory Statistics</span>
-                        <div className="grid grid-cols-4 gap-4 text-center font-mono py-2">
-                          <div>
-                            <span className="text-[8px] text-slate-500 dark:text-gray-500 block">EVIDENCE SCAN</span>
-                            <span className="text-sm font-bold text-slate-900 dark:text-white">{finalReportSummary.evidence}</span>
-                          </div>
-                          <div>
-                            <span className="text-[8px] text-slate-500 dark:text-gray-500 block">RELATIONS LINKED</span>
-                            <span className="text-sm font-bold text-slate-900 dark:text-white">{finalReportSummary.relations}</span>
-                          </div>
-                          <div>
-                            <span className="text-[8px] text-slate-500 dark:text-gray-500 block">MEMORY QUERIES</span>
-                            <span className="text-sm font-bold text-slate-900 dark:text-white">{finalReportSummary.queries}</span>
-                          </div>
-                          <div>
-                            <span className="text-[8px] text-slate-500 dark:text-gray-500 block">CONFIDENCE RATE</span>
-                            <span className="text-sm font-bold text-emerald-600 dark:text-emerald-400">94%</span>
-                          </div>
-                        </div>
-                      </div>
-
-                      {/* Diligence explanation */}
-                      <div className="bg-slate-50 dark:bg-white/2 border border-slate-200 dark:border-white/5 p-4 rounded-xl text-xs text-left text-slate-600 dark:text-gray-400 leading-relaxed">
-                        <span className="text-[9px] font-bold text-slate-500 dark:text-gray-500 block uppercase tracking-wider mb-1">Reasoning Narrative</span>
-                        {finalReportSummary.summary}
-                      </div>
-                    </motion.div>
-                  ) : (
-                    // Graph Tab
-                    <motion.div
-                      key="graph-tab"
-                      initial={{ opacity: 0, y: 10 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      exit={{ opacity: 0, y: -10 }}
-                      className="w-full h-[320px] rounded-xl border border-slate-200 dark:border-white/5 bg-slate-100 dark:bg-black/60 relative overflow-hidden"
-                    >
-                      <ReactFlow
-                        nodes={nodes}
-                        edges={edges}
-                        fitView
-                        nodesConnectable={false}
-                        nodesDraggable={true}
-                        panOnScroll={true}
-                        zoomOnScroll={true}
-                        onNodesChange={onNodesChange}
-                        onEdgesChange={onEdgesChange}
-                      >
-                        <Background color="rgba(139, 92, 246, 0.1)" gap={16} size={1} />
-                      </ReactFlow>
-                    </motion.div>
+                    </div>
                   )}
-                </AnimatePresence>
+                  {githubStatus?.success && (
+                    <div className="flex items-center space-x-3 p-3.5 rounded-xl border border-emerald-500/30 bg-emerald-500/10 text-emerald-800 dark:text-emerald-300 text-xs">
+                      <Check className="w-4 h-4 flex-shrink-0 text-emerald-600 dark:text-emerald-400" />
+                      <div>
+                        <span className="font-bold block">GitHub Repository Verified: {githubStatus.repo_path}</span>
+                        <span className="text-[11px] opacity-90">{githubStatus.stars} stars &bull; {githubStatus.forks} forks &bull; Primary language: {githubStatus.language}</span>
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Verdict Banner */}
+                  <div className="flex flex-col sm:flex-row items-center justify-between gap-4 p-4 rounded-xl border border-brand-purple/20 bg-brand-purple/5">
+                    <div className="flex items-center space-x-3">
+                      <span className="text-2xl">🚀</span>
+                      <div className="text-left">
+                        <h4 className="text-sm font-bold text-slate-900 dark:text-white">{startupData.name}</h4>
+                        <p className="text-[9px] text-slate-500 dark:text-gray-400 uppercase tracking-wider">{startupData.sector}</p>
+                      </div>
+                    </div>
+
+                    <div className="flex items-center space-x-6">
+                      <div className="text-center sm:text-right">
+                        <span className="text-[9px] text-slate-500 dark:text-gray-500 block">INVESTMENT INDEX</span>
+                        <span className="text-3xl font-bold font-display text-slate-900 dark:text-white">
+                          {finalReportSummary.score}
+                          <span className="text-xs font-normal text-slate-500 dark:text-gray-500">/100</span>
+                        </span>
+                      </div>
+                      <div className="h-10 w-px bg-white/10" />
+                      <div className="text-center">
+                        <span className="text-[9px] text-slate-500 dark:text-gray-500 block">RECOMMENDATION</span>
+                        <Badge
+                          variant={finalReportSummary.recommendation === 'INVEST' ? 'success' : 'warning'}
+                          glow={finalReportSummary.recommendation === 'INVEST'}
+                          className="mt-1 font-bold text-sm px-3 py-1 uppercase"
+                        >
+                          {finalReportSummary.recommendation}
+                        </Badge>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Strengths / Risks / Detail lists */}
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs text-left">
+                    <div className="bg-slate-50 dark:bg-white/2 border border-slate-200 dark:border-white/5 p-4 rounded-xl space-y-2">
+                      <span className="text-[10px] font-bold text-emerald-700 dark:text-emerald-400 block uppercase tracking-wider">Major Strengths</span>
+                      <ul className="space-y-1.5 list-disc pl-4 text-slate-700 dark:text-gray-300">
+                        {finalReportSummary.strengths.map((str, idx) => (
+                          <li key={idx} className="leading-relaxed">{str}</li>
+                        ))}
+                      </ul>
+                    </div>
+                    <div className="bg-slate-50 dark:bg-white/2 border border-slate-200 dark:border-white/5 p-4 rounded-xl space-y-2">
+                      <span className="text-[10px] font-bold text-rose-700 dark:text-rose-400 block uppercase tracking-wider">Major Risks</span>
+                      <ul className="space-y-1.5 list-disc pl-4 text-slate-700 dark:text-gray-300">
+                        {finalReportSummary.risks.map((rsk, idx) => (
+                          <li key={idx} className="leading-relaxed">{rsk}</li>
+                        ))}
+                      </ul>
+                    </div>
+                  </div>
+
+                  {/* Diligence explanation */}
+                  <div className="bg-slate-50 dark:bg-white/2 border border-slate-200 dark:border-white/5 p-4 rounded-xl text-xs text-left text-slate-600 dark:text-gray-400 leading-relaxed">
+                    <span className="text-[9px] font-bold text-slate-500 dark:text-gray-500 block uppercase tracking-wider mb-1">Reasoning Narrative</span>
+                    {finalReportSummary.summary}
+                  </div>
+                </div>
 
                 {/* Action buttons */}
                 <div className="flex flex-col sm:flex-row items-center justify-end gap-3 mt-6 border-t border-slate-200 dark:border-white/5 pt-4">
-                  <Button
-                    variant="outline"
-                    onClick={handleViewKnowledgeGraph}
-                    className="w-full sm:w-auto h-10 px-4 py-2 border-brand-purple/20 text-brand-purple-light hover:bg-brand-purple/10 cursor-pointer"
-                  >
-                    View Full Knowledge Graph
-                  </Button>
                   <Button
                     variant="secondary"
                     onClick={handleReturnToDashboard}

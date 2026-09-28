@@ -73,7 +73,7 @@ export const NewInvestigationPage: React.FC = () => {
       sector,
       fundingStage,
       websiteUrl: websiteUrl || 'https://example.com',
-      githubUrl: githubUrl || 'https://github.com/example',
+      githubUrl: githubUrl || '',
       pitchDeckText,
       financialsText,
       details: {
@@ -93,7 +93,7 @@ export const NewInvestigationPage: React.FC = () => {
           sector,
           fundingStage,
           websiteUrl: websiteUrl || 'https://example.com',
-          githubUrl: githubUrl || 'https://github.com/example',
+          githubUrl: githubUrl || '',
           description: description || 'No description provided.',
           pitchDeckName: pitchDeckFile?.name || 'pitch_deck_executive.pdf',
           financialsName: financialsFile?.name || 'financial_statements_q2.xlsx',
@@ -107,52 +107,54 @@ export const NewInvestigationPage: React.FC = () => {
   };
 
   return (
-    <div className="max-w-4xl mx-auto space-y-6">
-      {/* Title */}
-      <div className="flex items-center space-x-3">
-        <div className="p-2 bg-brand-purple/10 border border-brand-purple/20 rounded-xl shadow-[0_0_15px_rgba(139,92,246,0.2)]">
-          <Sparkles className="w-6 h-6 text-brand-purple-light" />
-        </div>
+    <div className="max-w-4xl mx-auto space-y-6 text-left">
+      {/* Page Header */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-5 border-b border-[var(--border-color)]">
         <div>
-          <h1 className="text-3xl font-bold font-display tracking-tight text-[var(--text-primary)] m-0">
-            Initiate Due Diligence Investigation
+          <div className="flex items-center space-x-2 mb-1">
+            <span className="px-2 py-0.5 rounded text-[10px] font-mono font-semibold bg-indigo-50 dark:bg-indigo-950/40 text-indigo-700 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-800/40 uppercase tracking-wider">
+              Due Diligence Intake
+            </span>
+            <span className="text-[var(--text-secondary)] text-xs font-mono">• Multi-Agent Pipeline</span>
+          </div>
+          <h1 className="text-2xl sm:text-3xl font-bold font-display tracking-tight text-[var(--text-primary)] m-0">
+            New Investigation
           </h1>
-          <p className="text-sm text-[var(--text-secondary)] mt-1">
-            Upload pitch decks and financial documents to begin due diligence.
+          <p className="text-xs sm:text-sm text-[var(--text-secondary)] mt-1">
+            Evaluate a startup using company identity, repository telemetry, and financial evidence documents.
           </p>
         </div>
       </div>
 
       <form onSubmit={handleSubmit} className="space-y-6">
-        <Card glow className="border border-[var(--border-color)]">
-          <CardHeader>
-            <CardTitle>Startup Overview</CardTitle>
-            <p className="text-xs text-[var(--text-secondary)]">Core startup information required for evaluation.</p>
+        {/* Section 1: Company Profile & Background */}
+        <Card className="border border-[var(--border-color)]">
+          <CardHeader className="pb-3 border-b border-[var(--border-color)]">
+            <CardTitle className="text-sm font-semibold">1. Company Profile &amp; Positioning</CardTitle>
+            <p className="text-xs text-[var(--text-secondary)]">Essential entity attributes required for multi-agent diligence analysis.</p>
           </CardHeader>
-          <CardContent className="space-y-4">
-            {/* Grid 1 */}
+          <CardContent className="p-5 space-y-4">
+            {/* Row 1: Name and Founder */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {/* Startup Name */}
               <div className="space-y-1.5">
-                <label className="text-xs font-semibold text-[var(--text-primary)] flex items-center space-x-1">
+                <label className="text-xs font-semibold text-[var(--text-primary)] flex items-center space-x-1.5">
                   <Building className="w-3.5 h-3.5 text-indigo-600 dark:text-indigo-400" />
-                  <span>Startup Name *</span>
+                  <span>Startup Name <span className="text-rose-500">*</span></span>
                 </label>
                 <input
                   type="text"
-                  placeholder="e.g. HelixBio AI"
+                  placeholder="e.g. Acme Health"
                   value={name}
                   onChange={(e) => setName(e.target.value)}
                   required
-                  className="w-full bg-[var(--bg-subtle)] border border-[var(--border-color)] rounded-lg px-3 py-2 text-xs text-[var(--text-primary)] placeholder-[var(--text-secondary)] focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition-colors"
+                  className="w-full bg-[var(--bg-subtle)] border border-[var(--border-color)] rounded-lg px-3.5 py-2 text-xs text-[var(--text-primary)] placeholder-[var(--text-secondary)] focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition-colors"
                 />
               </div>
 
-              {/* Founder Name */}
               <div className="space-y-1.5">
-                <label className="text-xs font-semibold text-[var(--text-primary)] flex items-center space-x-1">
+                <label className="text-xs font-semibold text-[var(--text-primary)] flex items-center space-x-1.5">
                   <User className="w-3.5 h-3.5 text-indigo-600 dark:text-indigo-400" />
-                  <span>Founder / CEO Name *</span>
+                  <span>Founder / CEO Name <span className="text-rose-500">*</span></span>
                 </label>
                 <input
                   type="text"
@@ -160,23 +162,22 @@ export const NewInvestigationPage: React.FC = () => {
                   value={founderName}
                   onChange={(e) => setFounderName(e.target.value)}
                   required
-                  className="w-full bg-[var(--bg-subtle)] border border-[var(--border-color)] rounded-lg px-3 py-2 text-xs text-[var(--text-primary)] placeholder-[var(--text-secondary)] focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition-colors"
+                  className="w-full bg-[var(--bg-subtle)] border border-[var(--border-color)] rounded-lg px-3.5 py-2 text-xs text-[var(--text-primary)] placeholder-[var(--text-secondary)] focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition-colors"
                 />
               </div>
             </div>
 
-            {/* Grid 2 */}
+            {/* Row 2: Sector and Stage */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {/* Sector Selector */}
               <div className="space-y-1.5">
-                <label className="text-xs font-semibold text-[var(--text-primary)] flex items-center space-x-1">
+                <label className="text-xs font-semibold text-[var(--text-primary)] flex items-center space-x-1.5">
                   <Target className="w-3.5 h-3.5 text-indigo-600 dark:text-indigo-400" />
-                  <span>Industry Sector *</span>
+                  <span>Industry Sector <span className="text-rose-500">*</span></span>
                 </label>
                 <select
                   value={sector}
                   onChange={(e) => setSector(e.target.value)}
-                  className="w-full bg-[var(--bg-subtle)] border border-[var(--border-color)] rounded-lg px-3 py-2 text-xs text-[var(--text-primary)] focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition-colors"
+                  className="w-full bg-[var(--bg-subtle)] border border-[var(--border-color)] rounded-lg px-3.5 py-2 text-xs text-[var(--text-primary)] focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition-colors cursor-pointer"
                 >
                   <option value="BioTech AI" className="bg-[var(--bg-surface)] text-[var(--text-primary)]">BioTech AI</option>
                   <option value="DevSecOps" className="bg-[var(--bg-surface)] text-[var(--text-primary)]">DevSecOps</option>
@@ -189,16 +190,15 @@ export const NewInvestigationPage: React.FC = () => {
                 </select>
               </div>
 
-              {/* Funding Stage Selector */}
               <div className="space-y-1.5">
-                <label className="text-xs font-semibold text-[var(--text-primary)] flex items-center space-x-1">
+                <label className="text-xs font-semibold text-[var(--text-primary)] flex items-center space-x-1.5">
                   <Target className="w-3.5 h-3.5 text-indigo-600 dark:text-indigo-400" />
-                  <span>Funding Stage</span>
+                  <span>Target Funding Stage</span>
                 </label>
                 <select
                   value={fundingStage}
                   onChange={(e) => setFundingStage(e.target.value)}
-                  className="w-full bg-[var(--bg-subtle)] border border-[var(--border-color)] rounded-lg px-3 py-2 text-xs text-[var(--text-primary)] focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition-colors"
+                  className="w-full bg-[var(--bg-subtle)] border border-[var(--border-color)] rounded-lg px-3.5 py-2 text-xs text-[var(--text-primary)] focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition-colors cursor-pointer"
                 >
                   <option value="Pre-Seed" className="bg-[var(--bg-surface)] text-[var(--text-primary)]">Pre-Seed</option>
                   <option value="Seed" className="bg-[var(--bg-surface)] text-[var(--text-primary)]">Seed</option>
@@ -208,26 +208,24 @@ export const NewInvestigationPage: React.FC = () => {
               </div>
             </div>
 
-            {/* Grid 3 */}
+            {/* Row 3: Website and GitHub */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {/* Website URL */}
               <div className="space-y-1.5">
-                <label className="text-xs font-semibold text-[var(--text-primary)] flex items-center space-x-1">
+                <label className="text-xs font-semibold text-[var(--text-primary)] flex items-center space-x-1.5">
                   <Globe className="w-3.5 h-3.5 text-indigo-600 dark:text-indigo-400" />
-                  <span>Website URL</span>
+                  <span>Company Website URL</span>
                 </label>
                 <input
                   type="url"
                   placeholder="https://example.com"
                   value={websiteUrl}
                   onChange={(e) => setWebsiteUrl(e.target.value)}
-                  className="w-full bg-[var(--bg-subtle)] border border-[var(--border-color)] rounded-lg px-3 py-2 text-xs text-[var(--text-primary)] placeholder-[var(--text-secondary)] focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition-colors"
+                  className="w-full bg-[var(--bg-subtle)] border border-[var(--border-color)] rounded-lg px-3.5 py-2 text-xs text-[var(--text-primary)] placeholder-[var(--text-secondary)] focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition-colors"
                 />
               </div>
 
-              {/* GitHub URL */}
               <div className="space-y-1.5">
-                <label className="text-xs font-semibold text-[var(--text-primary)] flex items-center space-x-1">
+                <label className="text-xs font-semibold text-[var(--text-primary)] flex items-center space-x-1.5">
                   <Code2 className="w-3.5 h-3.5 text-indigo-600 dark:text-indigo-400" />
                   <span>GitHub Repository URL</span>
                 </label>
@@ -236,111 +234,125 @@ export const NewInvestigationPage: React.FC = () => {
                   placeholder="https://github.com/org/repo"
                   value={githubUrl}
                   onChange={(e) => setGithubUrl(e.target.value)}
-                  className="w-full bg-[var(--bg-subtle)] border border-[var(--border-color)] rounded-lg px-3 py-2 text-xs text-[var(--text-primary)] placeholder-[var(--text-secondary)] focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition-colors"
+                  className="w-full bg-[var(--bg-subtle)] border border-[var(--border-color)] rounded-lg px-3.5 py-2 text-xs text-[var(--text-primary)] placeholder-[var(--text-secondary)] focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition-colors"
                 />
               </div>
             </div>
 
-            {/* Company Description */}
+            {/* Row 4: Company Description */}
             <div className="space-y-1.5">
-              <label className="text-xs font-semibold text-[var(--text-primary)]">Company Description</label>
+              <label className="text-xs font-semibold text-[var(--text-primary)]">
+                Company Description &amp; Moat
+              </label>
               <textarea
-                placeholder="Describe the company's value proposition, operations, and technology moat..."
-                rows={4}
+                placeholder="Describe the company's value proposition, operations, market differentiation, and technology moat..."
+                rows={3}
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
-                className="w-full bg-[var(--bg-subtle)] border border-[var(--border-color)] rounded-lg px-3 py-2 text-xs text-[var(--text-primary)] placeholder-[var(--text-secondary)] focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition-colors resize-none"
+                className="w-full bg-[var(--bg-subtle)] border border-[var(--border-color)] rounded-lg p-3 text-xs text-[var(--text-primary)] placeholder-[var(--text-secondary)] focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition-colors resize-none leading-relaxed"
               />
             </div>
           </CardContent>
         </Card>
 
-        {/* Upload Startup Documents */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          {/* Pitch Deck File */}
-          <Card className="border border-[var(--border-color)]">
-            <CardContent className="p-6">
-              <span className="text-xs font-semibold text-[var(--text-primary)] block mb-3">Pitch Deck Upload</span>
-              <div className="relative border border-dashed border-[var(--border-color)] hover:border-indigo-500 transition-colors rounded-xl p-6 flex flex-col items-center justify-center text-center cursor-pointer bg-[var(--bg-subtle)] group">
-              <input
-                  type="file"
-                  accept=".pdf"
-                  onChange={handlePitchDeckChange}
-                  className="absolute inset-0 opacity-0 cursor-pointer"
-                />
-                <UploadCloud className="w-8 h-8 text-[var(--text-secondary)] group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors mb-2" />
-                <span className="text-xs text-[var(--text-primary)] font-medium">
-                  {pitchDeckFile ? pitchDeckFile.name : 'Drag and drop pitch deck (PDF)'}
-                </span>
-                <span className="text-[10px] text-[var(--text-secondary)] mt-1">Maximum file size: 15MB</span>
-                {pitchDeckFile && (
-                  <div className="mt-3 flex items-center space-x-1 bg-indigo-50 dark:bg-indigo-950/20 border border-indigo-200 dark:border-indigo-500/30 rounded px-2 py-0.5 text-[10px] text-indigo-600 dark:text-indigo-400">
-                    <FileText className="w-3.5 h-3.5" />
-                    <span>File Selected</span>
-                  </div>
-                )}
-              </div>
-            </CardContent>
-          </Card>
+        {/* Section 2: Evidence Documents Ingestion */}
+        <div className="space-y-3">
+          <div>
+            <h3 className="text-sm font-semibold text-[var(--text-primary)]">2. Evidence Documents Ingestion</h3>
+            <p className="text-xs text-[var(--text-secondary)]">Required files for document parsing, Cognee knowledge graph creation, and financial audit analysis.</p>
+          </div>
 
-          {/* Financial Statements File */}
-          <Card className="border border-[var(--border-color)]">
-            <CardContent className="p-6">
-              <span className="text-xs font-semibold text-[var(--text-primary)] block mb-3">Financial Statements Upload</span>
-              <div className="relative border border-dashed border-[var(--border-color)] hover:border-indigo-500 transition-colors rounded-xl p-6 flex flex-col items-center justify-center text-center cursor-pointer bg-[var(--bg-subtle)] group">
-                <input
-                  type="file"
-                  accept=".xlsx,.xls,.pdf"
-                  onChange={handleFinancialsChange}
-                  className="absolute inset-0 opacity-0 cursor-pointer"
-                />
-                <UploadCloud className="w-8 h-8 text-[var(--text-secondary)] group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors mb-2" />
-                <span className="text-xs text-[var(--text-primary)] font-medium">
-                  {financialsFile ? financialsFile.name : 'Drag and drop financial audit files (Excel/PDF)'}
-                </span>
-                <span className="text-[10px] text-[var(--text-secondary)] mt-1">Maximum file size: 10MB</span>
-                {financialsFile && (
-                  <div className="mt-3 flex items-center space-x-1 bg-indigo-50 dark:bg-indigo-950/20 border border-indigo-200 dark:border-indigo-500/30 rounded px-2 py-0.5 text-[10px] text-indigo-600 dark:text-indigo-400">
-                    <FileText className="w-3.5 h-3.5" />
-                    <span>File Selected</span>
-                  </div>
-                )}
-              </div>
-            </CardContent>
-          </Card>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {/* Pitch Deck File */}
+            <Card className="border border-[var(--border-color)]">
+              <CardContent className="p-5">
+                <div className="flex items-center justify-between mb-3">
+                  <span className="text-xs font-semibold text-[var(--text-primary)]">Pitch Deck (PDF) <span className="text-rose-500">*</span></span>
+                  <span className="text-[10px] font-mono text-[var(--text-secondary)]">Max 15MB</span>
+                </div>
+                <div className="relative border border-dashed border-[var(--border-color)] hover:border-indigo-500 dark:hover:border-indigo-400 transition-colors rounded-xl p-5 flex flex-col items-center justify-center text-center cursor-pointer bg-[var(--bg-subtle)]/70 group">
+                  <input
+                    type="file"
+                    accept=".pdf"
+                    onChange={handlePitchDeckChange}
+                    className="absolute inset-0 opacity-0 cursor-pointer"
+                  />
+                  <UploadCloud className="w-7 h-7 text-[var(--text-secondary)] group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors mb-2" />
+                  <span className="text-xs text-[var(--text-primary)] font-medium">
+                    {pitchDeckFile ? pitchDeckFile.name : 'Select or drag pitch deck PDF'}
+                  </span>
+                  <span className="text-[10px] text-[var(--text-secondary)] mt-0.5">Parsed by Technology &amp; Market Agents</span>
+                  {pitchDeckFile && (
+                    <div className="mt-3 flex items-center space-x-1.5 bg-indigo-50 dark:bg-indigo-950/40 border border-indigo-200 dark:border-indigo-800/40 rounded-md px-2.5 py-1 text-[11px] text-indigo-700 dark:text-indigo-300 font-medium">
+                      <FileText className="w-3.5 h-3.5" />
+                      <span>Ready for Ingestion</span>
+                    </div>
+                  )}
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Financial Statements File */}
+            <Card className="border border-[var(--border-color)]">
+              <CardContent className="p-5">
+                <div className="flex items-center justify-between mb-3">
+                  <span className="text-xs font-semibold text-[var(--text-primary)]">Financial Audit Files <span className="text-rose-500">*</span></span>
+                  <span className="text-[10px] font-mono text-[var(--text-secondary)]">Excel / PDF (Max 10MB)</span>
+                </div>
+                <div className="relative border border-dashed border-[var(--border-color)] hover:border-indigo-500 dark:hover:border-indigo-400 transition-colors rounded-xl p-5 flex flex-col items-center justify-center text-center cursor-pointer bg-[var(--bg-subtle)]/70 group">
+                  <input
+                    type="file"
+                    accept=".xlsx,.xls,.pdf"
+                    onChange={handleFinancialsChange}
+                    className="absolute inset-0 opacity-0 cursor-pointer"
+                  />
+                  <UploadCloud className="w-7 h-7 text-[var(--text-secondary)] group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors mb-2" />
+                  <span className="text-xs text-[var(--text-primary)] font-medium">
+                    {financialsFile ? financialsFile.name : 'Select or drag financial records'}
+                  </span>
+                  <span className="text-[10px] text-[var(--text-secondary)] mt-0.5">Parsed by Financial &amp; Legal Agents</span>
+                  {financialsFile && (
+                    <div className="mt-3 flex items-center space-x-1.5 bg-indigo-50 dark:bg-indigo-950/40 border border-indigo-200 dark:border-indigo-800/40 rounded-md px-2.5 py-1 text-[11px] text-indigo-700 dark:text-indigo-300 font-medium">
+                      <FileText className="w-3.5 h-3.5" />
+                      <span>Ready for Ingestion</span>
+                    </div>
+                  )}
+                </div>
+              </CardContent>
+            </Card>
+          </div>
         </div>
 
-        {/* Submit */}
-        <div className="flex flex-col space-y-3 p-4 bg-slate-100 border border-slate-300 dark:bg-indigo-950/20 dark:border-indigo-500/20 rounded-xl">
-          {(!pitchDeckFile || !financialsFile) && (
-            <div className="text-xs text-red-500 font-semibold flex items-center space-x-1.5">
-              <ShieldAlert className="w-4 h-4 flex-shrink-0" />
-              <span>Please upload both the Pitch Deck and Financial Statement before launching the investigation.</span>
+        {/* Section 3: Action & Execution Seam */}
+        <div className="p-4 rounded-xl border border-[var(--border-color)] bg-[var(--bg-surface)] flex flex-col sm:flex-row sm:items-center justify-between gap-3 shadow-xs">
+          <div className="space-y-1">
+            <div className="flex items-center space-x-2 text-xs font-semibold text-[var(--text-primary)]">
+              <ShieldAlert className="w-4 h-4 text-indigo-600 dark:text-indigo-400 flex-shrink-0" />
+              <span>Multi-Agent Diligence Pipeline</span>
             </div>
-          )}
-          <div className="flex items-center justify-between">
-            <div className="flex items-center space-x-2 text-xs text-slate-700 dark:text-indigo-300 font-medium">
-              <ShieldAlert className="w-4 h-4 flex-shrink-0 text-[var(--text-primary)] dark:text-indigo-300" />
-              <p>InvestIQ will compile a due diligence knowledge graph on the next page.</p>
-            </div>
-            <Button 
-              type="submit" 
-              variant="primary" 
-              disabled={isUploading || !name || !founderName || !sector || !pitchDeckFile || !financialsFile}
-            >
-              {isUploading ? (
-                <>
-                  <Loader2 className="w-4 h-4 mr-1.5 animate-spin" />
-                  Uploading Pitch Deck...
-                </>
-              ) : (
-                <>
-                  Launch Investigation
-                  <Sparkles className="w-4 h-4 ml-1.5" />
-                </>
-              )}
-            </Button>
+            <p className="text-[11px] text-[var(--text-secondary)] max-w-xl">
+              Launching initiates document parsing, Cognee knowledge graph creation, multi-agent committee scoring, and prepares the profile for failure risk evaluation.
+            </p>
           </div>
+
+          <Button
+            type="submit"
+            variant="primary"
+            disabled={isUploading || !name || !founderName || !sector || !pitchDeckFile || !financialsFile}
+            className="flex-shrink-0 px-5 py-2.5 text-xs font-semibold shadow-xs"
+          >
+            {isUploading ? (
+              <>
+                <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                Ingesting Evidence...
+              </>
+            ) : (
+              <>
+                Start Due Diligence Investigation
+                <Sparkles className="w-3.5 h-3.5 ml-2" />
+              </>
+            )}
+          </Button>
         </div>
       </form>
     </div>

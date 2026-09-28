@@ -229,7 +229,7 @@ class CogneeRepository:
             row = cursor.fetchone()
             if not row:
                 conn.close()
-                name_val = "Alex Rivera"
+                name_val = "Founder"
                 rel_val = "FOUNDER_OF"
                 if entity_type == "Technology":
                     name_val = "React, FastAPI, Transformers"
@@ -265,7 +265,7 @@ class CogneeRepository:
                     result.append({"id": r["id"], "name": r["name"], "relation": "INVESTED_IN"})
             
             if not result:
-                name_val = "Alex Rivera"
+                name_val = "Founder"
                 rel_val = "FOUNDER_OF"
                 if entity_type == "Technology":
                     name_val = "React, FastAPI, Transformers"
@@ -278,7 +278,7 @@ class CogneeRepository:
             return result
         except Exception as e:
             print("Error retrieve_connected_entities:", e)
-            name_val = "Alex Rivera"
+            name_val = "Founder"
             rel_val = "FOUNDER_OF"
             if entity_type == "Technology":
                 name_val = "React, FastAPI, Transformers"
@@ -346,10 +346,11 @@ class CogneeRepository:
                 DISPLAY_NAMES = {
                     "neurovision ai": "NeuroVision AI",
                     "visionsense ai": "VisionSense AI",
-                    "helixbio ai": "HelixBio AI",
+                    "acme health": "Acme Health",
                     "tensorflow": "TensorFlow",
-                    "rahul sharma": "Rahul Sharma",
-                    "peak ventures": "Peak Ventures",
+                    "david chen": "David Chen",
+                    "elena rostova": "Elena Rostova",
+                    "horizon capital": "Horizon Capital",
                 }
                 display_title = DISPLAY_NAMES.get(label.lower(), label.title() if label else "Node Details")
                 

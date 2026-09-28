@@ -39,6 +39,7 @@ class StartupDetailsSchema(BaseModel):
     techStackRisk: str
     decision: Optional[DecisionSchema] = None
     evidenceList: Optional[List[EvidenceSchema]] = None
+    github_status: Optional[Dict[str, Any]] = None
 
 class StartupSchema(BaseModel):
     id: str
@@ -52,6 +53,8 @@ class StartupSchema(BaseModel):
     dateInvestigated: str
     metrics: MetricBreakdownSchema
     details: StartupDetailsSchema
+    github_status: Optional[Dict[str, Any]] = None
+    githubUrl: Optional[str] = None
 
 class UploadResponseSchema(BaseModel):
     filename: str

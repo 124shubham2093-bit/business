@@ -2,6 +2,7 @@ import type { Startup, Activity, GeneratedScores, InvestigationStats, User, Noti
 
 export interface InvestigationService {
   createInvestigation(startup: Startup): Promise<Startup>;
+  deleteInvestigation(id: string): Promise<boolean>;
   updateStartup(startup: Startup): Promise<Startup>;
   getAllInvestigations(): Promise<Startup[]>;
   getInvestigations(): Promise<Startup[]>;

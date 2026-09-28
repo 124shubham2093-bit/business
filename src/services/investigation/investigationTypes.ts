@@ -63,6 +63,18 @@ export interface FinancialSnapshot {
   valuation: string;
 }
 
+export interface GitHubStatus {
+  success: boolean;
+  error?: string | null;
+  repo_path?: string;
+  description?: string;
+  stars?: number;
+  forks?: number;
+  language?: string;
+  topics?: string[];
+  readme_excerpt?: string;
+}
+
 export interface StartupDetails {
   summary: string;
   strengths: string[];
@@ -75,6 +87,7 @@ export interface StartupDetails {
   // Custom decision and evidence extensions
   decision?: Decision;
   evidenceList?: Evidence[];
+  github_status?: GitHubStatus | null;
 }
 
 export interface Startup {
@@ -89,6 +102,8 @@ export interface Startup {
   dateInvestigated: string;
   metrics: MetricBreakdown;
   details: StartupDetails;
+  github_status?: GitHubStatus | null;
+  githubUrl?: string;
 }
 
 export interface Activity {

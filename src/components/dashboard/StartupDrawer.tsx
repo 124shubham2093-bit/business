@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, Check, AlertTriangle, TrendingUp, DollarSign, Calendar, Landmark, Plus } from 'lucide-react';
+import { X, Check, AlertTriangle, TrendingUp, DollarSign, Calendar, Landmark, Plus, Trash2 } from 'lucide-react';
 import type { Startup } from '../../types';
 import { Button } from '../ui/Button';
 import { StartupDiligenceFlow } from './StartupDiligenceFlow';
@@ -9,16 +9,19 @@ interface StartupDrawerProps {
   startup: Startup | null;
   onClose: () => void;
   onUpdateStartup: (updatedStartup: Startup) => void;
+  onDeleteStartup?: (id: string) => Promise<void> | void;
 }
 
 export const StartupDrawer: React.FC<StartupDrawerProps> = ({
   startup,
   onClose,
   onUpdateStartup,
+  onDeleteStartup,
 }) => {
   const [newNote, setNewNote] = useState('');
   const [localNotes, setLocalNotes] = useState<string[]>([]);
   const [toastMessage, setToastMessage] = useState<string | null>(null);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
 
   const showToast = (msg: string) => {
     setToastMessage(msg);
@@ -324,8 +327,59 @@ export const StartupDrawer: React.FC<StartupDrawerProps> = ({
                 )}
               </div>
             </div>
+
+            {/* Delete Investigation Action */}
+            {onDeleteStartup && (
+              <div className="pt-4 border-t border-[var(--border-color)]">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setShowDeleteModal(true)}
+                  className="w-full text-xs text-rose-600 dark:text-rose-400 border-rose-500/30 hover:bg-rose-50 dark:hover:bg-rose-950/20"
+                >
+                  <Trash2 className="w-3.5 h-3.5 mr-1.5" />
+                  Delete Investigation
+                </Button>
+              </div>
+            )}
           </div>
         </motion.div>
+
+        {/* Delete Confirmation Modal */}
+        {showDeleteModal && (
+          <div className="fixed inset-0 z-60 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
+            <div className="bg-[var(--bg-surface)] border border-[var(--border-color)] rounded-xl max-w-md w-full p-6 space-y-4 shadow-2xl">
+              <h3 className="text-base font-bold text-[var(--text-primary)]">Delete Investigation</h3>
+              <p className="text-xs text-[var(--text-secondary)] leading-relaxed">
+                Are you sure you want to delete the investigation for <strong className="text-[var(--text-primary)]">{startup.name}</strong>? This action cannot be undone.
+              </p>
+              <div className="flex items-center justify-end space-x-3 pt-2">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setShowDeleteModal(false)}
+                  className="text-xs"
+                >
+                  Cancel
+                </Button>
+                <Button
+                  variant="primary"
+                  size="sm"
+                  onClick={async () => {
+                    if (onDeleteStartup) {
+                      await onDeleteStartup(startup.id);
+                    }
+                    setShowDeleteModal(false);
+                    onClose();
+                  }}
+                  className="text-xs bg-rose-600 hover:bg-rose-700 text-white border-rose-600"
+                >
+                  Delete Investigation
+                </Button>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
     </AnimatePresence>
   );
