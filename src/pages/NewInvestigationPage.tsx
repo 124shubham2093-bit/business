@@ -22,6 +22,7 @@ export const NewInvestigationPage: React.FC = () => {
   const [pitchDeckFile, setPitchDeckFile] = useState<File | null>(null);
   const [financialsFile, setFinancialsFile] = useState<File | null>(null);
   const [isUploading, setIsUploading] = useState(false);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
   const handlePitchDeckChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
@@ -34,8 +35,20 @@ export const NewInvestigationPage: React.FC = () => {
       setFinancialsFile(e.target.files[0]);
     }
   };
+
+  const parseGithubUrl = (url: string): { owner: string; repo: string } | null => {
+    const match = url.trim().match(/(?:https?:\/\/)?(?:www\.)?github\.com\/([^\/\s]+)\/([^\/\s#?]+)/i);
+    if (match && match[1] && match[2]) {
+      const repo = match[2].replace(/\.git$/i, '');
+      return { owner: match[1], repo };
+    }
+    return null;
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setErrorMessage(null);
+
     if (!name || !founderName || !sector) {
       alert('Please fill in the required fields (Startup Name, Founder Name, Sector).');
       return;
@@ -44,6 +57,37 @@ export const NewInvestigationPage: React.FC = () => {
     if (!pitchDeckFile || !financialsFile) {
       alert('Please upload both the Pitch Deck and Financial Statement before launching the investigation.');
       return;
+    }
+
+    // Verify GitHub repository if provided
+    if (githubUrl && githubUrl.trim()) {
+      const parsed = parseGithubUrl(githubUrl);
+      if (!parsed) {
+        const msg = 'Repository Not Found or Not Publicly Accessible';
+        setErrorMessage(msg);
+        alert(msg);
+        return;
+      }
+
+      try {
+        const response = await fetch(`https://api.github.com/repos/${parsed.owner}/${parsed.repo}`);
+        if (response.status === 404) {
+          const msg = 'Repository Not Found or Not Publicly Accessible';
+          setErrorMessage(msg);
+          alert(msg);
+          return;
+        } else if (response.status !== 200) {
+          const msg = 'Unable to verify GitHub repository';
+          setErrorMessage(msg);
+          alert(msg);
+          return;
+        }
+      } catch (err) {
+        const msg = 'Unable to verify GitHub repository';
+        setErrorMessage(msg);
+        alert(msg);
+        return;
+      }
     }
 
     setIsUploading(true);
@@ -127,6 +171,13 @@ export const NewInvestigationPage: React.FC = () => {
       </div>
 
       <form onSubmit={handleSubmit} className="space-y-6">
+        {errorMessage && (
+          <div className="p-4 bg-rose-50 dark:bg-rose-950/40 border border-rose-200 dark:border-rose-800 rounded-xl text-rose-600 dark:text-rose-400 text-xs font-semibold flex items-center space-x-2.5 shadow-xs">
+            <ShieldAlert className="w-4 h-4 flex-shrink-0" />
+            <span>{errorMessage}</span>
+          </div>
+        )}
+
         {/* Section 1: Company Profile & Background */}
         <Card className="border border-[var(--border-color)]">
           <CardHeader className="pb-3 border-b border-[var(--border-color)]">
