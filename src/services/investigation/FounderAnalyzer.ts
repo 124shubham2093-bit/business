@@ -15,27 +15,21 @@ export const FounderAnalyzer = {
       score = Math.min(98, score + 2);
     }
     
-    const background = `${founderName} is the lead visionary, holding a Stanford Computer Science PhD and has compiled over 10 publications in sequencing networks.`;
+    const background = `${founderName} is the declared executive lead and founder.`;
     const strengths = [
-      `Founder ${founderName} has deep academic experience from Stanford.`,
-      'Proven expertise in machine learning and biological sequence representations.'
+      `Declared founder leadership: ${founderName}.`,
+      'Executive leadership profile submitted in diligence materials.'
     ];
     const risks = [
-      'High key-man risk due to core founder dependency.'
+      'Founder professional track record and credentials require independent verification.',
+      'Key-person operational dependency on core founding team.'
     ];
     
     const evidence: Evidence[] = [
       {
-        source: 'Stanford Registrar',
-        confidence: '99%',
-        reason: 'PhD dissertation records confirmed and verified.',
-        linkedEntities: [founderName],
-        timestamp: new Date().toISOString(),
-      },
-      {
-        source: 'Google Scholar Research Index',
-        confidence: '95%',
-        reason: '10+ publications matched to founder name.',
+        source: 'Founder Intake Submission',
+        confidence: '90%',
+        reason: `Declared executive identity (${founderName}) recorded in diligence intake.`,
         linkedEntities: [founderName],
         timestamp: new Date().toISOString(),
       }

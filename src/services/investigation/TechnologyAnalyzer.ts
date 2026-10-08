@@ -15,18 +15,37 @@ export const TechnologyAnalyzer = {
       score = Math.min(98, score + 3);
     }
     
-    const techStackRisk = 'Low. Deep learning models run on custom optimized CUDA hardware. Secured IP patent for neural network architecture.';
-    const strengths = [
-      'Proprietary transformer model for organic synthesis representation.',
-      'High capital efficiency with low server cost-per-inference due to custom kernels.'
-    ];
-    const risks = [
-      'High reliance on GPU spot instances which are highly volatile.'
-    ];
-    
     const descLower = (description || '').toLowerCase();
     const hasValidGitHub = descLower.includes('github repository:');
     const hasUnavailableGitHub = descLower.includes('github repository status: unavailable');
+
+    let strengths: string[];
+    let risks: string[];
+    let techStackRisk: string;
+
+    if (hasUnavailableGitHub) {
+      techStackRisk = 'GitHub repository unavailable. Public code verification omitted.';
+      strengths = ['Technical architecture specifications submitted for review.'];
+      risks = [
+        'Repository Not Found or Not Publicly Accessible — Public code evidence unavailable.',
+        'Technical implementation requires independent code audit.'
+      ];
+    } else if (hasValidGitHub) {
+      techStackRisk = 'Public repository verified on GitHub. Telemetry and documentation accessible.';
+      strengths = [
+        'Public GitHub repository and open-source codebase verified.',
+        'Codebase metadata, primary language, and repository documentation confirmed.'
+      ];
+      risks = [
+        'Production infrastructure, security posture, and test coverage require technical audit.'
+      ];
+    } else {
+      techStackRisk = 'Technical architecture evaluated from submission materials.';
+      strengths = ['Technical architecture specifications submitted for review.'];
+      risks = [
+        'No public code repository verified — Technical implementation requires independent code audit.'
+      ];
+    }
 
     const evidence: Evidence[] = [
       hasValidGitHub ? {
@@ -42,17 +61,10 @@ export const TechnologyAnalyzer = {
         linkedEntities: [],
         timestamp: new Date().toISOString(),
       } : {
-        source: 'Technical Architecture Documentation',
-        confidence: '88%',
-        reason: 'Technical architecture specifications and neural network blueprints verified.',
+        source: 'Technical Intake Documentation',
+        confidence: '85%',
+        reason: 'Technical architecture specifications and stack profile reviewed from submission.',
         linkedEntities: ['tech_stack'],
-        timestamp: new Date().toISOString(),
-      },
-      {
-        source: 'USPTO Database',
-        confidence: '99%',
-        reason: 'Active patent status registered under the company entity.',
-        linkedEntities: ['Patent Filing'],
         timestamp: new Date().toISOString(),
       }
     ];

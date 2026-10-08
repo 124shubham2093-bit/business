@@ -16,52 +16,46 @@ class FinancialAgent:
         if has_financials:
             score = min(98, score + 4)
             
-        # Parse some financials if present
-        import re
-        rev_text = "$1.2M ARR"
-        rev_match = re.findall(r'\$\d+(?:\.\d+)?\s*[m|k|b]?', desc_lower)
-        if rev_match:
-            rev_text = f"{rev_match[0].upper()} ARR"
-            
-        burn_rate = "$90k/mo"
-        burn_match = re.findall(r'burn\s*(?:rate)?\s*(?:of)?\s*(\$\d+(?:\.\d+)?\s*[m|k]?)', desc_lower)
-        if burn_match:
-            burn_rate = f"{burn_match[0]}/mo"
-            
-        runway = "24 months"
-        runway_match = re.findall(r'(\d+)\s*month\s*(?:runway)?', desc_lower)
-        if runway_match:
-            runway = f"{runway_match[0]} months"
-            
-        valuation = "$22M Post-Money"
-        val_match = re.findall(r'valuation\s*(?:of)?\s*(\$\d+(?:\.\d+)?\s*[m|b|k]?)', desc_lower)
-        if val_match:
-            valuation = f"{val_match[0].upper()} Post-Money"
-            
+        if has_financials:
+            strengths = [
+                "Financial documentation and diligence overview submitted for review.",
+                "Target capitalization structure defined in intake submission."
+            ]
+            weaknesses = [
+                "Private-company financial performance, revenue, and burn rate are not publicly established from reviewed sources.",
+                "Audited financial statements and bank ledger reconciliation require formal verification."
+            ]
+            reasoning = f"Financial documentation submitted for {startup_id}. Detailed revenue and runway require formal audit verification."
+        else:
+            strengths = [
+                "Capitalization profile and target funding stage noted in diligence intake."
+            ]
+            weaknesses = [
+                "Private-company financial performance is not publicly verified.",
+                "Revenue, burn rate, and cash runway were not established from reviewed evidence.",
+                "Customer contracts, subscription invoicing, and bank records require verification."
+            ]
+            reasoning = f"Financial parameters for {startup_id} evaluated from intake submission. Verified public financial data is not established."
+
         snapshot = {
-            "revenue": rev_text,
-            "burnRate": burn_rate,
-            "runway": runway,
-            "valuation": valuation
+            "revenue": "Requires verification",
+            "burnRate": "Requires verification",
+            "runway": "Requires verification",
+            "valuation": "Requires verification"
         }
-            
+
         return {
             "score": score,
-            "confidence": "90%",
-            "reasoning": f"ARR validated at {rev_text} with monthly burn at {burn_rate}. Runway is stable at {runway}.",
-            "strengths": [
-                f"Runway verified at {runway}",
-                "Customer contracts and invoicing match bank ledger entries"
-            ],
-            "weaknesses": [
-                "ARR growth velocity must double to support Series A target valuations"
-            ],
+            "confidence": "80%",
+            "reasoning": reasoning,
+            "strengths": strengths,
+            "weaknesses": weaknesses,
             "evidence": [
                 {
-                    "source": "Corporate Bank Statement Ledger",
-                    "confidence": "94%",
-                    "reason": "ARR cash inputs verified directly against SaaS invoicing records.",
-                    "linkedEntities": ["revenue_ledger"],
+                    "source": "Financial Intake & Diligence Submission",
+                    "confidence": "85%",
+                    "reason": "Preliminary financial overview reviewed; full financial verification pending audit.",
+                    "linkedEntities": ["financials"],
                     "timestamp": "Just now"
                 }
             ],

@@ -15,20 +15,21 @@ export const MarketAnalyzer = {
       score = Math.min(98, score + 2);
     }
     
-    const opportunity = `Total Addressable Market (TAM) is estimated at $45B in pharmaceutical pre-clinical discovery. Target Market CAGR is 18.2%.`;
+    const opportunity = `Target market domain identified as ${sector}. Detailed addressable market size requires independent verification.`;
     const strengths = [
-      `Massive addressable target space inside the ${sector} industry vertical.`,
-      'Macro trends show expanding client demand for automated pre-clinical drug discovery.'
+      `Clear market positioning within the ${sector} sector.`,
+      'Product offerings and commercial positioning articulated in diligence materials.'
     ];
     const risks = [
-      'Customer procurement cycle can stretch to 9-12 months for enterprise labs.'
+      `Market sizing (TAM/SAM) and growth projections for ${sector} require independent market validation.`,
+      'Customer acquisition velocity and enterprise sales cycle duration require empirical validation.'
     ];
     
     const evidence: Evidence[] = [
       {
-        source: 'Personal Medicine Forecast 2026 Survey',
-        confidence: '85%',
-        reason: 'TAM growth calculations matching verified industry benchmarks.',
+        source: 'Market Diligence Review',
+        confidence: '82%',
+        reason: 'Commercial positioning and target sector context evaluated from intake materials.',
         linkedEntities: [sector],
         timestamp: new Date().toISOString(),
       }

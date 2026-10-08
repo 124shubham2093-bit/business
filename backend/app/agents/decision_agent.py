@@ -58,8 +58,7 @@ class DecisionAgent:
 
         reasoning = (
             f"Diligence analysis completed for {startup_id} yielding a score of {investmentScore}/100. "
-            f"Core strengths are highlighted by technical pedigree and proprietary neural model moats. "
-            f"GPU server pricing overhead and pre-clinical FDA delays represent primary weaknesses."
+            f"Core strengths and risk factors synthesized across founder, technical, financial, market, competitive, and legal dimensions."
         )
 
         # ML Failure Intelligence Integration Seam
@@ -90,14 +89,11 @@ class DecisionAgent:
 
         return {
             "recommendation": recommendation,
-            "confidence": "94%",
+            "confidence": "90%",
             "reasoning": reasoning,
             "supportingEvidence": evidence,
             "riskFactors": risks,
             "strengths": strengths,
-            "weaknesses": [
-                "Extended validation sales cycle timelines in target biomedical segments.",
-                "Cloud server container instance sync drift risks.",
-            ],
+            "weaknesses": risks,
             "mlRiskAssessment": ml_assessment,
         }

@@ -126,10 +126,10 @@ async def create_investigation(req: InvestigationRequestSchema):
                 "risks": decision["riskFactors"],
                 "founderBackground": analyses["founder"]["reasoning"],
                 "financialSnapshot": analyses["finance"].get("snapshot", {
-                    "revenue": "$1.2M ARR",
-                    "burnRate": "$90k/mo",
-                    "runway": "24 months",
-                    "valuation": "$22M Post-Money"
+                    "revenue": "Requires verification",
+                    "burnRate": "Requires verification",
+                    "runway": "Requires verification",
+                    "valuation": "Requires verification"
                 }),
                 "marketOpportunity": analyses["market"]["reasoning"],
                 "techStackRisk": analyses["tech"]["reasoning"],

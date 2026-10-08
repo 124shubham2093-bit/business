@@ -27,22 +27,26 @@ class FounderAgent:
             if match:
                 founder_name = match.group(1).split('\n')[0].strip().title()
             
+        strengths = [
+            f"Declared founder leadership: {founder_name}.",
+            "Executive leadership profile submitted in diligence materials."
+        ]
+        weaknesses = [
+            "Founder professional track record and credentials require independent verification.",
+            "Key-person operational dependency on core founding team."
+        ]
+
         return {
             "score": score,
-            "confidence": "96%",
-            "reasoning": f"Founder {founder_name} holds a Stanford CS PhD and has compiled 10+ publications in ML sequencing networks.",
-            "strengths": [
-                f"Founder {founder_name} has deep technical experience.",
-                "Published papers in organic sequence networks"
-            ],
-            "weaknesses": [
-                "Key-man risk due to heavy reliance on founder's specific academic expertise"
-            ],
+            "confidence": "85%",
+            "reasoning": f"Founding leadership for {startup_id} identified as {founder_name}. Background details submitted for evaluation.",
+            "strengths": strengths,
+            "weaknesses": weaknesses,
             "evidence": [
                 {
-                    "source": "Stanford University Registrar",
-                    "confidence": "99%",
-                    "reason": "CS PhD dissertation confirmed and matched.",
+                    "source": "Founder Profile & Intake Submission",
+                    "confidence": "90%",
+                    "reason": f"Declared executive identity ({founder_name}) recorded in diligence intake.",
                     "linkedEntities": [founder_name],
                     "timestamp": "Just now"
                 }

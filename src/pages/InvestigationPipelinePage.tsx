@@ -119,14 +119,14 @@ export const InvestigationPipelinePage: React.FC = () => {
       icon: User,
       color: 'text-blue-400 border-blue-500/20 bg-blue-500/5',
       tasks: {
-        initializing: 'Initializing founder pedigree check...',
-        retrieving: 'Querying Cognee bio relationship models...',
-        analyzing: 'Auditing executive exit histories...',
-        generating: 'Confirming Stanford PhD research records...'
+        initializing: 'Initializing founder profile review...',
+        retrieving: 'Querying executive background intake...',
+        analyzing: 'Evaluating declared leadership history...',
+        generating: 'Compiling founder diligence notes...'
       },
       evidenceCollected: [
-        'Stanford CS PhD dissertation confirmed.',
-        'Prior exit found at AlphaLabs (acquired for $18M).'
+        `Declared founder leadership: ${startupData.founderName || 'Founding team'}.`,
+        'Leadership background submitted for review; external credentials require independent verification.'
       ],
       confidence: `${scores.founder}%`
     },
@@ -147,7 +147,7 @@ export const InvestigationPipelinePage: React.FC = () => {
           ? `Verifying language (${githubStatus.language}) and stars (${githubStatus.stars})...`
           : (githubStatus && !githubStatus.success
               ? 'Repository Not Found or Not Publicly Accessible'
-              : 'Auditing neural network pipeline specs...'),
+              : 'Evaluating submitted system architecture...'),
         generating: githubStatus?.success
           ? 'Evaluating README documentation and topics...'
           : (githubStatus && !githubStatus.success
@@ -165,8 +165,8 @@ export const InvestigationPipelinePage: React.FC = () => {
                 'GitHub evidence unavailable — Codebase metrics omitted from diligence.'
               ]
             : [
-                'Technical architecture specifications and neural network blueprints verified.',
-                'Custom CUDA kernels validated at under 22ms per prediction.'
+                'Technical architecture specifications submitted for review.',
+                'No public code repository verified — Technical implementation requires independent code audit.'
               ]),
       confidence: githubStatus && !githubStatus.success ? '0%' : `${scores.technology}%`
     },
@@ -177,14 +177,14 @@ export const InvestigationPipelinePage: React.FC = () => {
       icon: Landmark,
       color: 'text-emerald-400 border-emerald-500/20 bg-emerald-500/5',
       tasks: {
-        initializing: 'Initializing ARR invoicing check...',
-        retrieving: 'Retrieving balance deposit ledgers...',
-        analyzing: 'Calculating burn rate and runway metrics...',
-        generating: 'Verifying subscription bank matches...'
+        initializing: 'Initializing financial overview check...',
+        retrieving: 'Reviewing submitted financial documentation...',
+        analyzing: 'Evaluating capitalization and stage structure...',
+        generating: 'Compiling financial diligence limits...'
       },
       evidenceCollected: [
-        'ARR validated at $1.2M ARR across mid-market clients.',
-        'Runway is confirmed stable at 24 months.'
+        `Target funding stage declared as ${startupData.fundingStage || 'Seed'}.`,
+        'Private-company financial performance, revenue, and runway are not publicly established from reviewed sources.'
       ],
       confidence: `${scores.finance}%`
     },
@@ -195,14 +195,14 @@ export const InvestigationPipelinePage: React.FC = () => {
       icon: Target,
       color: 'text-amber-400 border-amber-500/20 bg-amber-500/5',
       tasks: {
-        initializing: 'Initializing market size scoping...',
-        retrieving: 'Retrieving forecast growth indicators...',
-        analyzing: 'Calculating TAM opportunities...',
-        generating: 'Evaluating CAGR tailwind projections...'
+        initializing: 'Initializing market segment scoping...',
+        retrieving: 'Retrieving sector growth indicators...',
+        analyzing: 'Evaluating target addressable market positioning...',
+        generating: 'Evaluating commercial opportunity...'
       },
       evidenceCollected: [
-        'TAM estimated at $45B in pharma discovery segments.',
-        'Sector CAGR verified at 18.2%.'
+        `Target sector defined as ${startupData.sector || 'Technology'}.`,
+        'Market size (TAM/SAM) and commercial growth velocity require independent market verification.'
       ],
       confidence: `${scores.market}%`
     },
@@ -213,14 +213,14 @@ export const InvestigationPipelinePage: React.FC = () => {
       icon: Coins,
       color: 'text-teal-400 border-teal-500/20 bg-teal-500/5',
       tasks: {
-        initializing: 'Initializing rival feature grid...',
-        retrieving: 'Searching target sector competitor graphs...',
-        analyzing: 'Scanning IP patent registries...',
-        generating: 'Evaluating unique transformer moats...'
+        initializing: 'Initializing competitive positioning grid...',
+        retrieving: 'Searching sector landscape benchmarks...',
+        analyzing: 'Evaluating product differentiation claims...',
+        generating: 'Compiling competitive risk summary...'
       },
       evidenceCollected: [
-        'No direct competitors employ sequence transformer models.',
-        'Pfizer pilot matches target product specifications.'
+        `Product value proposition articulated for ${startupData.sector || 'target domain'}.`,
+        'Competitive position and IP moats require additional diligence against alternatives.'
       ],
       confidence: `${scores.competition}%`
     },
@@ -231,16 +231,16 @@ export const InvestigationPipelinePage: React.FC = () => {
       icon: ShieldAlert,
       color: 'text-rose-400 border-rose-500/20 bg-rose-500/5',
       tasks: {
-        initializing: 'Initializing incorporation audit...',
-        retrieving: 'Accessing state business registries...',
-        analyzing: 'Auditing SOC2 compliance certificates...',
-        generating: 'Scanning FDA pre-clinical regulatory checks...'
+        initializing: 'Initializing corporate compliance review...',
+        retrieving: 'Checking submitted entity identity...',
+        analyzing: 'Auditing regulatory requirements...',
+        generating: 'Compiling compliance verification checkpoints...'
       },
       evidenceCollected: [
-        'Incorporation registry state status is confirmed active.',
-        'SOC-2 Type II and HIPAA frameworks fully validated.'
+        'Corporate identity and declared business structure submitted for compliance review.',
+        'Corporate legal registration, cap table, and governance frameworks require formal verification.'
       ],
-      confidence: '99%'
+      confidence: '85%'
     },
     {
       id: 'decision',
@@ -255,8 +255,8 @@ export const InvestigationPipelinePage: React.FC = () => {
         generating: 'Formulating final recommendation report...'
       },
       evidenceCollected: [
-        'Investment recommendation is fully compiled.',
-        'Final scores committed to database.'
+        'Diligence synthesis compiled across all evidence vectors.',
+        'Final scores and recommendation committed to assessment record.'
       ],
       confidence: `${scores.investmentScore}%`
     }
@@ -396,14 +396,14 @@ export const InvestigationPipelinePage: React.FC = () => {
 
     const techNode = githubStatus?.success
       ? { id: 'n-github', type: 'custom', position: { x: 350, y: 30 }, data: { title: `Repo: ${githubStatus.repo_path}`, type: 'Technology', riskLevel: 'Low', badge: `${githubStatus.stars}★ ${githubStatus.language}` } }
-      : { id: 'n-tech', type: 'custom', position: { x: 350, y: 30 }, data: { title: 'CUDA Core Transformers', type: 'Technology', riskLevel: 'Low', badge: 'Proprietary ML' } };
+      : { id: 'n-tech', type: 'custom', position: { x: 350, y: 30 }, data: { title: 'Technical Stack Profile', type: 'Technology', riskLevel: 'Low', badge: 'Architecture' } };
 
     const allAvailableNodes = [
       { id: 'n-founder', type: 'custom', position: { x: 50, y: 30 }, data: { title: `Founder: ${startupData.founderName}`, type: 'Founder', riskLevel: 'Low' } },
       techNode,
-      { id: 'n-finance', type: 'custom', position: { x: 50, y: 270 }, data: { title: '$1.2M ARR Ledgers', type: 'Finance', riskLevel: 'Low' } },
-      { id: 'n-market', type: 'custom', position: { x: 350, y: 270 }, data: { title: '$45B TAM Segments', type: 'Market', riskLevel: 'Low' } },
-      { id: 'n-legal', type: 'custom', position: { x: 200, y: 330 }, data: { title: 'Articles of Incorporation', type: 'Legal', riskLevel: 'Low' } },
+      { id: 'n-finance', type: 'custom', position: { x: 50, y: 270 }, data: { title: `Stage: ${startupData.fundingStage || 'Seed'}`, type: 'Finance', riskLevel: 'Low' } },
+      { id: 'n-market', type: 'custom', position: { x: 350, y: 270 }, data: { title: `Sector: ${startupData.sector}`, type: 'Market', riskLevel: 'Low' } },
+      { id: 'n-legal', type: 'custom', position: { x: 200, y: 330 }, data: { title: 'Corporate Compliance', type: 'Legal', riskLevel: 'Low' } },
       { id: 'n-decision', type: 'custom', position: { x: 200, y: 20 }, data: { title: `Score: ${scores.investmentScore}/100`, type: 'Risk', riskLevel: 'Low', badge: scores.recommendation } },
     ];
 
@@ -482,24 +482,26 @@ export const InvestigationPipelinePage: React.FC = () => {
         product: scores.technology,
       },
       details: {
-        summary: `AI Agent analysis completed for ${startupData.name}. Market size is estimated at $1.2B. Key tech moats verified.`,
+        summary: `AI Agent analysis completed for ${startupData.name}. Assessment synthesized across technical, market, financial, team, and legal evidence vectors.`,
         strengths: [
-          'Founder background exhibits Stanford PhD credentials.',
-          'Technological kernel contains optimized CUDA benchmarks.'
+          `Declared founder leadership: ${startupData.founderName || 'Founding team'}.`,
+          githubStatus?.success ? `Verified public GitHub repository: ${githubStatus.repo_path}.` : 'Technical architecture specifications submitted for review.',
+          `Clear market positioning within the ${startupData.sector} sector.`
         ],
         risks: [
-          `Regulatory FDA preclinical trial timelines.`,
-          'Server computing instance costs are volatile.'
+          'Private-company financial performance is not publicly verified.',
+          'Revenue, burn rate, and cash runway were not established from reviewed evidence.',
+          'Corporate legal registration, cap table, and governance frameworks require formal verification.'
         ],
         founderBackground: `${startupData.founderName} (CEO & Founder).`,
         financialSnapshot: {
-          revenue: '$1.2M ARR',
-          burnRate: '$90k/mo',
-          runway: '24 months',
-          valuation: '$22M Post-Money',
+          revenue: 'Requires verification',
+          burnRate: 'Requires verification',
+          runway: 'Requires verification',
+          valuation: 'Requires verification',
         },
-        marketOpportunity: `Total Addressable Market in automated biomed discovery is $45B.`,
-        techStackRisk: 'No immediate code bugs detected.'
+        marketOpportunity: `Target market domain identified as ${startupData.sector}. Detailed addressable market size requires independent verification.`,
+        techStackRisk: 'Technical architecture evaluated from submission materials.'
       }
     };
 
@@ -540,22 +542,23 @@ export const InvestigationPipelinePage: React.FC = () => {
       };
     }
     return {
-      summary: `AI Agent assessment successfully concluded. Main investment score calculated at ${scores.investmentScore}/100. Moated solution structure and founder background are primary highlights. Operational and timeline parameters represent key compliance checkpoints.`,
+      summary: `AI Agent assessment successfully concluded. Main investment score calculated at ${scores.investmentScore}/100. Assessment synthesized across technical, market, financial, team, and legal evidence vectors.`,
       strengths: [
-        `Founder ${startupData.founderName || 'team'} pedigree checks validated.`,
-        `Proprietary ${startupData.sector || 'core'} solution validated.`,
-        'Financial runway checked and verified.'
+        `Declared founder leadership: ${startupData.founderName || 'Founding team'}.`,
+        githubStatus?.success ? `Verified public GitHub repository: ${githubStatus.repo_path}.` : 'Technical architecture specifications submitted for review.',
+        `Clear market positioning within the ${startupData.sector} sector.`
       ],
       risks: [
-        'Regulatory or operational compliance timelines represent execution risks.',
-        'Scaling resource requirements scale with customer workloads.'
+        'Private-company financial performance is not publicly verified.',
+        'Revenue, burn rate, and cash runway were not established from reviewed evidence.',
+        'Corporate legal registration, cap table, and governance frameworks require formal verification.'
       ],
       score: scores.investmentScore,
       recommendation: scores.recommendation,
       evidence: 8,
       queries: 40
     };
-  }, [backendResult, scores, startupData]);
+  }, [backendResult, scores, startupData, githubStatus]);
 
   if (agents.length === 0 && !currentAgent) {
     return (

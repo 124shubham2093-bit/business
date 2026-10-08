@@ -16,21 +16,22 @@ class MarketAgent:
             
         return {
             "score": score,
-            "confidence": "88%",
-            "reasoning": "Target market TAM stands at $45B in pharma discovery segments. Target market CAGR is verified at 18.2%.",
+            "confidence": "82%",
+            "reasoning": f"Market diligence for {startup_id} evaluated commercial positioning and target opportunity. Detailed TAM requires independent market verification.",
             "strengths": [
-                "Massive addressable target space",
-                "Favorable macro industry tailwinds"
+                "Clear market positioning defined in diligence submission.",
+                "Product offerings and target customer persona outlined for evaluation."
             ],
             "weaknesses": [
-                "Procurement cycle in pharmaceutical segments averages 9-12 months"
+                "Market size (TAM/SAM) and commercial growth velocity require independent market verification.",
+                "Customer acquisition cost and sales cycle duration are not publicly established."
             ],
             "evidence": [
                 {
-                    "source": "Medicine Sizing Survey 2026",
-                    "confidence": "85%",
-                    "reason": "Market growth and segment boundaries match survey findings.",
-                    "linkedEntities": ["TAM_Sizing"],
+                    "source": "Market Sizing & Diligence Review",
+                    "confidence": "82%",
+                    "reason": "Commercial positioning and target sector context evaluated from intake materials.",
+                    "linkedEntities": ["market_opportunity"],
                     "timestamp": "Just now"
                 }
             ]

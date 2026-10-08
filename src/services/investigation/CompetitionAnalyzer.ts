@@ -15,19 +15,20 @@ export const CompetitionAnalyzer = {
     }
     
     const strengths = [
-      'First-mover sequence transformer moats compared to standard bioinformatic libraries.',
-      'Active pilot validations indicate strong customer differentiation.'
+      `Differentiated product value proposition defined for ${sector} domain.`,
+      'Target competitive positioning defined in submission materials.'
     ];
     const risks = [
-      `Competitive density is rising across the automated ${sector} segment.`
+      `Competitive position within ${sector} requires additional market diligence against alternative solutions.`,
+      'Defensibility of proprietary IP and customer retention moats requires formal validation.'
     ];
     
     const evidence: Evidence[] = [
       {
-        source: 'BioSim Competitor profile files',
-        confidence: '86%',
-        reason: 'Rivals do not employ proprietary sequence models.',
-        linkedEntities: ['BioSim Corp', 'FoldingWorks'],
+        source: 'Competitive Landscape Review',
+        confidence: '80%',
+        reason: 'Market differentiation claims assessed against sector alternatives.',
+        linkedEntities: [sector],
         timestamp: new Date().toISOString(),
       }
     ];

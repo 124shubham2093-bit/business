@@ -16,32 +16,32 @@ export const FinancialAnalyzer = {
     }
     
     const snapshot: FinancialSnapshot = {
-      revenue: '$1.2M ARR',
-      burnRate: '$90k/mo',
-      runway: '24 months',
-      valuation: '$22M Post-Money',
+      revenue: 'Requires verification',
+      burnRate: 'Requires verification',
+      runway: 'Requires verification',
+      valuation: 'Requires verification',
     };
 
-    const strengths = [
-      'SaaS customer invoice ledgers are clean and validated.',
-      'Capital efficiency runway verified at 24 months.'
+    const hasFinancials = description && (description.toLowerCase().includes('financial') || description.toLowerCase().includes('.xlsx') || description.toLowerCase().includes('.pdf'));
+
+    const strengths = hasFinancials ? [
+      'Financial documentation and diligence overview submitted for review.',
+      `Target capitalization stage declared as ${fundingStage}.`
+    ] : [
+      `Target funding stage declared as ${fundingStage} in diligence intake.`
     ];
+
     const risks = [
-      'Net monthly burn rate remains high relative to seed revenue baseline.'
+      'Private-company financial performance is not publicly verified.',
+      'Revenue, burn rate, and cash runway were not established from reviewed evidence.',
+      'Customer contracts, subscription invoicing, and bank records require verification.'
     ];
     
     const evidence: Evidence[] = [
       {
-        source: 'Audit Invoice Ledgers',
-        confidence: '94%',
-        reason: 'SaaS licensing contracts matched with bank deposit ledgers.',
-        linkedEntities: ['ARR Revenue'],
-        timestamp: new Date().toISOString(),
-      },
-      {
-        source: 'Series A Term Sheet',
-        confidence: '88%',
-        reason: 'Investment targets and lead terms fully aligned.',
+        source: 'Financial Intake Submission',
+        confidence: '85%',
+        reason: 'Preliminary financial profile recorded; formal audit reconciliation required.',
         linkedEntities: [fundingStage],
         timestamp: new Date().toISOString(),
       }

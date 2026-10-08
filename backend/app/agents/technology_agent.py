@@ -23,30 +23,29 @@ class TechnologyAgent:
         if "github repository status: unavailable" in desc_lower:
             confidence = "0%"
             reasoning = "GitHub repository verification failed: Repository Not Found or Not Publicly Accessible. Public code metrics, stars, and language could not be verified."
-            strengths = ["Technical architecture specifications submitted for review"]
+            strengths = ["Technical architecture specifications submitted for review."]
             weaknesses = [
-                "Repository Not Found or Not Publicly Accessible — Public code evidence unavailable",
-                "Server compute dependencies scale exponentially with customer workloads"
+                "Repository Not Found or Not Publicly Accessible — Public code evidence unavailable.",
+                "Technical implementation requires independent code audit."
             ]
         elif "github repository:" in desc_lower:
             confidence = "92%"
-            reasoning = f"Public repository verified on GitHub. Core stack utilizes {tech_list}."
+            reasoning = "Public repository verified on GitHub. Repository telemetry and documentation accessible."
             strengths = [
-                "Public code repository metadata and language verified",
-                "Custom GPU configurations yield high performance margins"
+                "Public GitHub repository and open-source codebase verified.",
+                "Codebase metadata, primary language, and community metrics confirmed."
             ]
             weaknesses = [
-                "Server compute dependencies scale exponentially with customer workloads"
+                "Production infrastructure, security posture, and test coverage require technical audit."
             ]
         else:
             confidence = "85%"
-            reasoning = f"Technical architecture evaluated from submission. Stack references {tech_list}."
+            reasoning = "Technical architecture evaluated from submission materials."
             strengths = [
-                "Technical architecture specifications submitted for review",
-                "Custom GPU configurations yield high performance margins"
+                "Technical architecture specifications submitted for review."
             ]
             weaknesses = [
-                "Server compute dependencies scale exponentially with customer workloads"
+                "No public code repository verified — Technical implementation requires independent code audit."
             ]
             
         return {

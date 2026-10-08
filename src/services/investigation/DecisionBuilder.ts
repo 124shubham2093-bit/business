@@ -23,8 +23,8 @@ export const DecisionBuilder = {
       recommendation = 'PASS';
     }
 
-    const confidence = '94%';
-    const reasoning = `Diligence assessment completes with an investment score of ${investmentScore}/100. Core strengths are highlighted by founder technical pedigree and sequence model moats. High GPU spot prices and FDA approval trials represent primary risks.`;
+    const confidence = '90%';
+    const reasoning = `Diligence assessment completes with an investment score of ${investmentScore}/100. Core strengths and risk factors synthesized across founder, technical, financial, market, competitive, and legal dimensions.`;
 
     const supportingEvidence: Evidence[] = [
       ...founder.evidence,
@@ -53,10 +53,7 @@ export const DecisionBuilder = {
       ...legal.strengths,
     ];
 
-    const weaknesses = [
-      'Conservative enterprise buyer sales cycle delays sales pipeline conversions.',
-      'Container network drift risk when cross-scaling spot allocations.'
-    ];
+    const weaknesses = riskFactors;
 
     return {
       recommendation,

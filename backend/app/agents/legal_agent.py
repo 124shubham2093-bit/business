@@ -16,21 +16,22 @@ class LegalAgent:
             
         return {
             "score": score,
-            "confidence": "99%",
-            "reasoning": "Articles of incorporation are active and validated. Security compliance (SOC-2 Type II) is verified.",
+            "confidence": "85%",
+            "reasoning": f"Legal diligence for {startup_id} recorded corporate identity. Full governance and compliance frameworks require formal documentation audit.",
             "strengths": [
-                "Corporate status is verified in state registries",
-                "SOC-2 Type II security frameworks are fully implemented"
+                "Corporate identity and declared business structure submitted for review.",
+                "Regulatory and commercial diligence profile noted."
             ],
             "weaknesses": [
-                "Biotechnology trials are subject to strict FDA regulatory pathways"
+                "Corporate legal registration, cap table, and IP assignment require formal verification.",
+                "Regulatory compliance, data security certifications, and governance frameworks require documentation audit."
             ],
             "evidence": [
                 {
-                    "source": "State Corporate Registry Database",
-                    "confidence": "99%",
-                    "reason": "Articles of incorporation verified.",
-                    "linkedEntities": ["incorporation_records"],
+                    "source": "Corporate Compliance Intake",
+                    "confidence": "85%",
+                    "reason": "Declared entity structure and commercial profile recorded for legal review.",
+                    "linkedEntities": ["compliance"],
                     "timestamp": "Just now"
                 }
             ]

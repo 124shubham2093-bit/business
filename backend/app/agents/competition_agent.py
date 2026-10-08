@@ -16,21 +16,22 @@ class CompetitionAgent:
             
         return {
             "score": score,
-            "confidence": "86%",
-            "reasoning": "Rival platforms lack proprietary biological sequence transformers, securing the target startup's IP moat.",
+            "confidence": "80%",
+            "reasoning": f"Competitive assessment for {startup_id} evaluated positioning and differentiation claims. IP moat defensibility requires validation.",
             "strengths": [
-                "Patent-protected neural model structures",
-                "Existing pilot validates competitive advantages"
+                "Product differentiation and functional value proposition articulated.",
+                "Target competitive positioning defined in submission materials."
             ],
             "weaknesses": [
-                "Competitive density is rising across automated biomedical modeling"
+                "Competitive position requires additional market diligence against alternative solutions.",
+                "Defensibility of proprietary IP and customer retention moats requires formal validation."
             ],
             "evidence": [
                 {
-                    "source": "Rival profiling files",
-                    "confidence": "86%",
-                    "reason": "Competitors lack custom sequence-trained models.",
-                    "linkedEntities": ["BioSim", "FoldingWorks"],
+                    "source": "Competitive Landscape Review",
+                    "confidence": "80%",
+                    "reason": "Market differentiation claims assessed against general sector benchmarks.",
+                    "linkedEntities": ["competitors"],
                     "timestamp": "Just now"
                 }
             ]
