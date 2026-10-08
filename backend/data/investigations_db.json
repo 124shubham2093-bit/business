@@ -1,0 +1,120 @@
+{
+  "AppWrite": {
+    "id": "st-1759935100",
+    "name": "AppWrite",
+    "logo": "\ud83d\ude80",
+    "elevatorPitch": "Appwrite is an open-source platform for building applications at scale.",
+    "sector": "FinTech AI",
+    "investmentScore": 78,
+    "riskLevel": "Low",
+    "status": "Under Review",
+    "dateInvestigated": "2026-10-08",
+    "github_status": {
+      "success": true,
+      "error": null,
+      "repo_path": "appwrite/appwrite",
+      "description": "Appwrite\u00ae - complete cloud infrastructure for your web, mobile and AI apps. Including Auth, Databases, Storage, Functions, Messaging, Hosting, Realtime and more",
+      "stars": 57598,
+      "forks": 5765,
+      "language": "TypeScript",
+      "topics": [
+        "android",
+        "appwrite",
+        "backend",
+        "backend-as-a-service",
+        "docker",
+        "firebase",
+        "flutter",
+        "hosting",
+        "ios",
+        "javascript",
+        "nextjs",
+        "react",
+        "react-native",
+        "reactnative",
+        "self-hosted",
+        "selfhosted",
+        "serverless",
+        "supabase",
+        "swift",
+        "web"
+      ],
+      "readme_excerpt": "Appwrite is an MCP and agent-first, open-source platform for building and scaling apps."
+    },
+    "githubUrl": "https://github.com/appwrite/appwrite",
+    "metrics": {
+      "financials": 85,
+      "marketSize": 82,
+      "team": 85,
+      "product": 90,
+      "competition": 82,
+      "legal": 85
+    },
+    "details": {
+      "summary": "Diligence analysis completed for AppWrite yielding a score of 78/100. Core strengths and risk factors synthesized across founder, technical, financial, market, competitive, and legal dimensions.",
+      "strengths": [
+        "Declared founder leadership: Eldad Fux.",
+        "Executive leadership profile submitted in diligence materials.",
+        "Public GitHub repository and open-source codebase verified.",
+        "Codebase metadata, primary language, and community metrics confirmed.",
+        "Financial documentation and diligence overview submitted for review.",
+        "Target capitalization structure defined in intake submission.",
+        "Clear market positioning defined in diligence submission.",
+        "Product offerings and target customer persona outlined for evaluation.",
+        "Product differentiation and functional value proposition articulated.",
+        "Target competitive positioning defined in submission materials.",
+        "Corporate identity and declared business structure submitted for review.",
+        "Regulatory and commercial diligence profile noted."
+      ],
+      "risks": [
+        "Founder professional track record and credentials require independent verification.",
+        "Key-person operational dependency on core founding team.",
+        "Production infrastructure, security posture, and test coverage require technical audit.",
+        "Private-company financial performance, revenue, and burn rate are not publicly established from reviewed sources.",
+        "Audited financial statements and bank ledger reconciliation require formal verification.",
+        "Market size (TAM/SAM) and commercial growth velocity require independent market verification.",
+        "Customer acquisition cost and sales cycle duration are not publicly established.",
+        "Competitive position requires additional market diligence against alternative solutions.",
+        "Defensibility of proprietary IP and customer retention moats requires formal validation.",
+        "Corporate legal registration, cap table, and IP assignment require formal verification.",
+        "Regulatory compliance, data security certifications, and governance frameworks require documentation audit."
+      ],
+      "founderBackground": "Founding leadership for AppWrite identified as Eldad Fux. Background details submitted for evaluation.",
+      "financialSnapshot": {
+        "revenue": "Requires verification",
+        "burnRate": "Requires verification",
+        "runway": "Requires verification",
+        "valuation": "Requires verification"
+      },
+      "marketOpportunity": "Market diligence for AppWrite evaluated commercial positioning and target opportunity. Detailed TAM requires independent market verification.",
+      "techStackRisk": "Public repository verified on GitHub. Telemetry and documentation accessible.",
+      "evidenceList": [
+        {
+          "source": "Founder Profile & Intake Submission",
+          "confidence": "90%",
+          "reason": "Declared executive identity (Eldad Fux) recorded in diligence intake.",
+          "linkedEntities": [
+            "Eldad Fux"
+          ],
+          "timestamp": "Just now"
+        },
+        {
+          "source": "GitHub Public API",
+          "confidence": "92%",
+          "reason": "Verified public repository metadata and declared tech stack.",
+          "linkedEntities": [
+            "codebase"
+          ],
+          "timestamp": "Just now"
+        }
+      ],
+      "github_status": {
+        "success": true,
+        "repo_path": "appwrite/appwrite",
+        "stars": 57598,
+        "forks": 5765,
+        "language": "TypeScript"
+      }
+    }
+  }
+}

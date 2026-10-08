@@ -10,12 +10,37 @@ from app.ingestion.entity_extractor import EntityExtractor
 from app.memory.MemoryManager import MemoryManager
 from app.agents.investigation_engine import InvestigationEngine
 from app.repositories.CogneeRepository import CogneeRepository
+import json
+import os
 from typing import Dict, Any
 
 router = APIRouter()
 
-# In-memory dictionary representing active investigations database cache
-_investigations_db: Dict[str, Dict[str, Any]] = {}
+DB_FILE_PATH = os.path.join(
+    os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))),
+    "data",
+    "investigations_db.json"
+)
+
+def _load_investigations_db() -> Dict[str, Dict[str, Any]]:
+    if os.path.exists(DB_FILE_PATH):
+        try:
+            with open(DB_FILE_PATH, "r", encoding="utf-8") as f:
+                return json.load(f)
+        except Exception as e:
+            print("Error loading investigations_db.json:", e)
+    return {}
+
+def _save_investigations_db(db: Dict[str, Dict[str, Any]]) -> None:
+    try:
+        os.makedirs(os.path.dirname(DB_FILE_PATH), exist_ok=True)
+        with open(DB_FILE_PATH, "w", encoding="utf-8") as f:
+            json.dump(db, f, indent=2)
+    except Exception as e:
+        print("Error saving investigations_db.json:", e)
+
+# Persistent dictionary representing active investigations database
+_investigations_db: Dict[str, Dict[str, Any]] = _load_investigations_db()
 
 @router.post("/documents/upload", response_model=UploadResponseSchema)
 async def upload_document(file: UploadFile = File(...)):
@@ -139,8 +164,9 @@ async def create_investigation(req: InvestigationRequestSchema):
             }
         }
         
-        # Store in our endpoints database
+        # Store in our endpoints database and persist to disk
         _investigations_db[req.name] = startup_obj
+        _save_investigations_db(_investigations_db)
         
         return startup_obj
     except Exception as e:
@@ -148,6 +174,8 @@ async def create_investigation(req: InvestigationRequestSchema):
 
 @router.get("/investigations")
 async def get_all_investigations():
+    global _investigations_db
+    _investigations_db = _load_investigations_db()
     return list(_investigations_db.values())
 
 @router.delete("/investigations/{id}")
@@ -164,6 +192,7 @@ async def delete_investigation(id: str):
             break
     if found_key:
         del _investigations_db[found_key]
+        _save_investigations_db(_investigations_db)
         return {"status": "success", "message": f"Investigation '{id}' deleted."}
     raise HTTPException(status_code=404, detail=f"Investigation '{id}' not found.")
 

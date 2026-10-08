@@ -12,7 +12,7 @@ export const NewInvestigationPage: React.FC = () => {
   // Form states
   const [name, setName] = useState('');
   const [founderName, setFounderName] = useState('');
-  const [sector, setSector] = useState('BioTech AI');
+  const [sector, setSector] = useState('SaaS');
   const [fundingStage, setFundingStage] = useState('Seed');
   const [websiteUrl, setWebsiteUrl] = useState('');
   const [githubUrl, setGithubUrl] = useState('');
@@ -230,14 +230,25 @@ export const NewInvestigationPage: React.FC = () => {
                   onChange={(e) => setSector(e.target.value)}
                   className="w-full bg-[var(--bg-subtle)] border border-[var(--border-color)] rounded-lg px-3.5 py-2 text-xs text-[var(--text-primary)] focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition-colors cursor-pointer"
                 >
-                  <option value="BioTech AI" className="bg-[var(--bg-surface)] text-[var(--text-primary)]">BioTech AI</option>
+                  <option value="SaaS" className="bg-[var(--bg-surface)] text-[var(--text-primary)]">SaaS</option>
                   <option value="DevSecOps" className="bg-[var(--bg-surface)] text-[var(--text-primary)]">DevSecOps</option>
-                  <option value="Infrastructure" className="bg-[var(--bg-surface)] text-[var(--text-primary)]">Infrastructure</option>
-                  <option value="FinTech AI" className="bg-[var(--bg-surface)] text-[var(--text-primary)]">FinTech AI</option>
-                  <option value="LegalTech" className="bg-[var(--bg-surface)] text-[var(--text-primary)]">LegalTech</option>
+                  <option value="Developer Tools" className="bg-[var(--bg-surface)] text-[var(--text-primary)]">Developer Tools</option>
+                  <option value="Cloud Infrastructure" className="bg-[var(--bg-surface)] text-[var(--text-primary)]">Cloud Infrastructure</option>
+                  <option value="FinTech" className="bg-[var(--bg-surface)] text-[var(--text-primary)]">FinTech</option>
+                  <option value="HealthTech" className="bg-[var(--bg-surface)] text-[var(--text-primary)]">HealthTech</option>
+                  <option value="BioTech / Life Sciences" className="bg-[var(--bg-surface)] text-[var(--text-primary)]">BioTech / Life Sciences</option>
+                  <option value="EdTech" className="bg-[var(--bg-surface)] text-[var(--text-primary)]">EdTech</option>
+                  <option value="E-Commerce" className="bg-[var(--bg-surface)] text-[var(--text-primary)]">E-Commerce</option>
+                  <option value="AI / Machine Learning" className="bg-[var(--bg-surface)] text-[var(--text-primary)]">AI / Machine Learning</option>
                   <option value="Cybersecurity" className="bg-[var(--bg-surface)] text-[var(--text-primary)]">Cybersecurity</option>
-                  <option value="EdTech AI" className="bg-[var(--bg-surface)] text-[var(--text-primary)]">EdTech AI</option>
-                  <option value="ClimateTech" className="bg-[var(--bg-surface)] text-[var(--text-primary)]">ClimateTech</option>
+                  <option value="Enterprise Software" className="bg-[var(--bg-surface)] text-[var(--text-primary)]">Enterprise Software</option>
+                  <option value="ClimateTech / CleanTech" className="bg-[var(--bg-surface)] text-[var(--text-primary)]">ClimateTech / CleanTech</option>
+                  <option value="Logistics / Supply Chain" className="bg-[var(--bg-surface)] text-[var(--text-primary)]">Logistics / Supply Chain</option>
+                  <option value="PropTech" className="bg-[var(--bg-surface)] text-[var(--text-primary)]">PropTech</option>
+                  <option value="Media / Entertainment" className="bg-[var(--bg-surface)] text-[var(--text-primary)]">Media / Entertainment</option>
+                  <option value="Consumer Technology" className="bg-[var(--bg-surface)] text-[var(--text-primary)]">Consumer Technology</option>
+                  <option value="DeepTech" className="bg-[var(--bg-surface)] text-[var(--text-primary)]">DeepTech</option>
+                  <option value="Other" className="bg-[var(--bg-surface)] text-[var(--text-primary)]">Other</option>
                 </select>
               </div>
 

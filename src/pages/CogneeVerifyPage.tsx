@@ -357,6 +357,11 @@ export const CogneeVerifyPage: React.FC = () => {
         updateStep(currentStep - 1, 'failed', `Error: ${err.message || err}`);
       }
     } finally {
+      // Clean up synthetic test artifacts from investigations database
+      try {
+        await fetch(`${BACKEND_API_BASE}/investigations/Acme%20Health`, { method: 'DELETE' });
+        await fetch(`${BACKEND_API_BASE}/investigations/DataPulse`, { method: 'DELETE' });
+      } catch {}
       setIsRunning(false);
       setCurrentStep(null);
     }
